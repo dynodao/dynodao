@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/dynodao-annotations/dynodao-annotations.iml" filepath="$PROJECT_DIR$/dynodao-annotations/dynodao-annotations.iml" />
+      <module fileurl="file://$PROJECT_DIR$/dynodao-playground/dynodao-playground.iml" filepath="$PROJECT_DIR$/dynodao-playground/dynodao-playground.iml" />
+      <module fileurl="file://$PROJECT_DIR$/dynodao-processor/dynodao-processor.iml" filepath="$PROJECT_DIR$/dynodao-processor/dynodao-processor.iml" />
+    </modules>
+  </component>
+</project>
