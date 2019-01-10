@@ -5,11 +5,12 @@ package org.lemon.dynodao;
  */
 public @interface DynoDao {
 
-
     /**
      * Make a new class? Would require (prefer) adding lombok to the build path...
      * @return true to automatically save an audit trail in the record itself
+     * @deprecated not implemented, just a todo note
      */
+    @Deprecated
     boolean auditTrail() default false;
 
     /**
