@@ -7,6 +7,6 @@ public enum IndexType {
 
     TABLE,
     LOCAL_SECONDARY_INDEX,
-    GLOBAL_SECONDARY_INEX;
+    GLOBAL_SECONDARY_INDEX;
 
 }

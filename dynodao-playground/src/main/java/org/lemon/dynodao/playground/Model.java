@@ -21,10 +21,17 @@ public class Model {
     @DynamoDBIndexRangeKey(localSecondaryIndexName = "local-index-name")
     private String lsiRangeKey;
 
-    @DynamoDBIndexHashKey(globalSecondaryIndexName = "global-index-name")
+    @DynamoDBIndexHashKey(globalSecondaryIndexNames = { "global-index-name", "global-index-2" })
     private String gsiHashKey;
+
     @DynamoDBIndexRangeKey(globalSecondaryIndexName = "global-index-name")
     private String gsiRangeKey;
+
+    @DynamoDBIndexRangeKey(globalSecondaryIndexName = "global-index-2")
+    private String gsiRangeKey2;
+
+    @DynamoDBIndexHashKey(globalSecondaryIndexName = "global-solo-index")
+    private String soloGsiHashKey;
 
     private String attribute;
 

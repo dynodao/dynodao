@@ -115,7 +115,7 @@ class DynamoIndexAnnotatedFields {
             for (String indexName : indexNames(hashAnnotation.globalSecondaryIndexName(), hashAnnotation.globalSecondaryIndexNames())) {
                 Optional<VariableElement> indexRangeKey = getGsiRangeKey(indexName);
                 indexes.add(DynamoIndex.builder()
-                        .indexType(IndexType.GLOBAL_SECONDARY_INEX)
+                        .indexType(IndexType.GLOBAL_SECONDARY_INDEX)
                         .name(indexName)
                         .hashKey(indexHashKey)
                         .rangeKey(indexRangeKey)

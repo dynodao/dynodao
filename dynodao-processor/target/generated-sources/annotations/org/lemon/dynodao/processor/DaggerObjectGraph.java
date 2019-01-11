@@ -7,6 +7,7 @@ import org.lemon.dynodao.processor.generate.IndexPojoGenerator_Factory;
 import org.lemon.dynodao.processor.generate.IndexPojoGenerator_MembersInjector;
 import org.lemon.dynodao.processor.generate.TwoFieldPojoGenerator_Factory;
 import org.lemon.dynodao.processor.generate.TwoFieldPojoGenerator_MembersInjector;
+import org.lemon.dynodao.processor.generate.method.CtorTypeGenerator_Factory;
 import org.lemon.dynodao.processor.index.DynamoIndexParser;
 import org.lemon.dynodao.processor.index.DynamoIndexParser_Factory;
 import org.lemon.dynodao.processor.index.DynamoIndexParser_MembersInjector;
@@ -51,6 +52,8 @@ public final class DaggerObjectGraph implements ObjectGraph {
         Preconditions.checkNotNull(
             contextModule.providesProcessorContext(),
             "Cannot return null from a non-@Nullable @Provides method"));
+    TwoFieldPojoGenerator_MembersInjector.injectCtorGenerator(
+        instance, CtorTypeGenerator_Factory.newCtorTypeGenerator());
     return instance;
   }
 

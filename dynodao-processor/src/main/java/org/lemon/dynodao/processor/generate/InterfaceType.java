@@ -1,20 +1,22 @@
 package org.lemon.dynodao.processor.generate;
 
-import java.lang.reflect.Type;
+import static org.lemon.dynodao.processor.generate.GenerateConstants.PAGINATED_LIST;
+
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.TypeElement;
 
-import com.amazonaws.services.dynamodbv2.datamodeling.PaginatedList;
+import org.lemon.dynodao.DocumentLoad;
+import org.lemon.dynodao.DocumentQuery;
+import org.lemon.dynodao.processor.context.ProcessorContext;
+
 import com.google.common.collect.Iterables;
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.ParameterizedTypeName;
 import com.squareup.javapoet.TypeName;
+
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.lemon.dynodao.DocumentLoad;
-import org.lemon.dynodao.DocumentQuery;
-import org.lemon.dynodao.processor.context.ProcessorContext;
 
 @Getter(AccessLevel.PACKAGE)
 @RequiredArgsConstructor(access = AccessLevel.PACKAGE)
@@ -30,7 +32,7 @@ enum InterfaceType {
     DOCUMENT_QUERY(DocumentQuery.class) {
         @Override
         TypeName asReturnType(TypeElement document, ProcessorContext processorContext) {
-            return ParameterizedTypeName.get(ClassName.get(PaginatedList.class), TypeName.get(document.asType()));
+            return ParameterizedTypeName.get(PAGINATED_LIST, TypeName.get(document.asType()));
         }
     };
 

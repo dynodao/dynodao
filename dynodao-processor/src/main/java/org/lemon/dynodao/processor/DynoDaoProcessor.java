@@ -1,6 +1,9 @@
 package org.lemon.dynodao.processor;
 
+import static java.util.stream.Collectors.toSet;
+
 import java.util.Set;
+
 import javax.annotation.processing.AbstractProcessor;
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.annotation.processing.Processor;
@@ -12,15 +15,14 @@ import javax.lang.model.SourceVersion;
 import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.TypeElement;
 
-import com.google.auto.service.AutoService;
-import com.squareup.javapoet.TypeSpec;
 import org.lemon.dynodao.DynoDao;
 import org.lemon.dynodao.processor.context.ProcessorContext;
 import org.lemon.dynodao.processor.generate.IndexPojoGenerator;
 import org.lemon.dynodao.processor.index.DynamoIndex;
 import org.lemon.dynodao.processor.index.DynamoIndexParser;
 
-import static java.util.stream.Collectors.toSet;
+import com.google.auto.service.AutoService;
+import com.squareup.javapoet.TypeSpec;
 
 /**
  * The annotation processor for {@link org.lemon.dynodao.DynoDao}.
