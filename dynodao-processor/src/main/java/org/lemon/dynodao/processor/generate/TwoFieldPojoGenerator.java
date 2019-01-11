@@ -87,6 +87,8 @@ class TwoFieldPojoGenerator {
                     .addStatement("query.addExpressionAttributeNamesEntry($S, $S)", "#" + hash, hash)
                     .addStatement("query.addExpressionAttributeNamesEntry($S, $S)", "#" + range, range)
                     // TODO need to select the proper withX method here
+                    // https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/HowItWorks.CoreComponents.html#HowItWorks.CoreComponents.TablesItemsAttributes
+                    // The only data types allowed for primary key attributes are string, number, or binary. 
                     .addStatement("query.addExpressionAttributeValuesEntry($S, new $T().withS($L))", ":" + hash, AttributeValue.class, hash)
                     .addStatement("query.addExpressionAttributeValuesEntry($S, new $T().withS($L))", ":" + range, AttributeValue.class, range)
                     .addStatement("return $N.query($T.class, query)", dynamoDbMapper, document.asType());
