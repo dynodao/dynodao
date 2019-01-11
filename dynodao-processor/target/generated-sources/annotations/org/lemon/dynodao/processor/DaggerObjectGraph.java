@@ -2,6 +2,11 @@ package org.lemon.dynodao.processor;
 
 import dagger.internal.Preconditions;
 import javax.annotation.Generated;
+import org.lemon.dynodao.processor.generate.IndexPojoGenerator;
+import org.lemon.dynodao.processor.generate.IndexPojoGenerator_Factory;
+import org.lemon.dynodao.processor.generate.IndexPojoGenerator_MembersInjector;
+import org.lemon.dynodao.processor.generate.TwoFieldPojoGenerator_Factory;
+import org.lemon.dynodao.processor.generate.TwoFieldPojoGenerator_MembersInjector;
 import org.lemon.dynodao.processor.index.DynamoIndexParser;
 import org.lemon.dynodao.processor.index.DynamoIndexParser_Factory;
 import org.lemon.dynodao.processor.index.DynamoIndexParser_MembersInjector;
@@ -31,11 +36,6 @@ public final class DaggerObjectGraph implements ObjectGraph {
     injectDynoDaoProcessor(processor);
   }
 
-  @Override
-  public DynamoIndexParser dynamoIndexParser() {
-    return injectDynamoIndexParser(DynamoIndexParser_Factory.newDynamoIndexParser());
-  }
-
   private DynamoIndexParser injectDynamoIndexParser(DynamoIndexParser instance) {
     DynamoIndexParser_MembersInjector.injectProcessorContext(
         instance,
@@ -45,9 +45,32 @@ public final class DaggerObjectGraph implements ObjectGraph {
     return instance;
   }
 
+  private Object injectTwoFieldPojoGenerator(Object instance) {
+    TwoFieldPojoGenerator_MembersInjector.injectProcessorContext(
+        instance,
+        Preconditions.checkNotNull(
+            contextModule.providesProcessorContext(),
+            "Cannot return null from a non-@Nullable @Provides method"));
+    return instance;
+  }
+
+  private IndexPojoGenerator injectIndexPojoGenerator(IndexPojoGenerator instance) {
+    IndexPojoGenerator_MembersInjector.injectProcessorContext(
+        instance,
+        Preconditions.checkNotNull(
+            contextModule.providesProcessorContext(),
+            "Cannot return null from a non-@Nullable @Provides method"));
+    IndexPojoGenerator_MembersInjector.injectTwoFieldPojoGenerator(
+        instance,
+        injectTwoFieldPojoGenerator(TwoFieldPojoGenerator_Factory.newTwoFieldPojoGenerator()));
+    return instance;
+  }
+
   private DynoDaoProcessor injectDynoDaoProcessor(DynoDaoProcessor instance) {
     DynoDaoProcessor_MembersInjector.injectDynamoIndexParser(
         instance, injectDynamoIndexParser(DynamoIndexParser_Factory.newDynamoIndexParser()));
+    DynoDaoProcessor_MembersInjector.injectIndexPojoGenerator(
+        instance, injectIndexPojoGenerator(IndexPojoGenerator_Factory.newIndexPojoGenerator()));
     return instance;
   }
 

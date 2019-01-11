@@ -4,9 +4,10 @@ import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBQueryExpression;
 import com.amazonaws.services.dynamodbv2.datamodeling.PaginatedList;
 import com.amazonaws.services.dynamodbv2.model.AttributeValue;
+import org.lemon.dynodao.DocumentQuery;
 import org.lemon.dynodao.playground.Model;
 
-public class HashKeyModelQuery implements ModelQuery {
+public class HashKeyModelQuery implements DocumentQuery<Model> {
 
     private final String hashKey;
 

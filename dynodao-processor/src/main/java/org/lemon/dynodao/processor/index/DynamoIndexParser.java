@@ -12,9 +12,9 @@ import org.lemon.dynodao.processor.context.ProcessorContext;
  */
 public class DynamoIndexParser {
 
-    @Inject DynamoIndexParser() { }
-
     @Inject ProcessorContext processorContext;
+
+    @Inject DynamoIndexParser() { }
 
     /**
      * Returns all of the dynamo indexes in the document object.

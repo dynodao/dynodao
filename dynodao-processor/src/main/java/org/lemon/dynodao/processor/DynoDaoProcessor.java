@@ -13,8 +13,10 @@ import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.TypeElement;
 
 import com.google.auto.service.AutoService;
+import com.squareup.javapoet.TypeSpec;
 import org.lemon.dynodao.DynoDao;
 import org.lemon.dynodao.processor.context.ProcessorContext;
+import org.lemon.dynodao.processor.generate.IndexPojoGenerator;
 import org.lemon.dynodao.processor.index.DynamoIndex;
 import org.lemon.dynodao.processor.index.DynamoIndexParser;
 
@@ -31,6 +33,7 @@ public class DynoDaoProcessor extends AbstractProcessor {
     private ProcessorContext processorContext;
 
     @Inject DynamoIndexParser dynamoIndexParser;
+    @Inject IndexPojoGenerator indexPojoGenerator;
 
     @Override
     public synchronized void init(ProcessingEnvironment processingEnv) {
@@ -64,7 +67,10 @@ public class DynoDaoProcessor extends AbstractProcessor {
     private void processElements(Set<TypeElement> elements) {
         for (TypeElement document : elements) {
             Set<DynamoIndex> indexes = dynamoIndexParser.getIndexes(document);
-            processorContext.submitError(indexes);
+
+            Set<TypeSpec> types = indexPojoGenerator.buildPojos(document, indexes);
+
+            processorContext.submitError(types.stream().toArray());
         }
     }
 

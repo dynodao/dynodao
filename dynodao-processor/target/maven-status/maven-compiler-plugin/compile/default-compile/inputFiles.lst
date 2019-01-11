@@ -5,4 +5,7 @@ G:\git\dynodao\dynodao-processor\src\main\java\org\lemon\dynodao\processor\DynoD
 G:\git\dynodao\dynodao-processor\src\main\java\org\lemon\dynodao\processor\context\ProcessorContext.java
 G:\git\dynodao\dynodao-processor\src\main\java\org\lemon\dynodao\processor\context\ProcessorMessage.java
 G:\git\dynodao\dynodao-processor\src\main\java\org\lemon\dynodao\processor\index\DynamoIndexAnnotatedFields.java
+G:\git\dynodao\dynodao-processor\src\main\java\org\lemon\dynodao\processor\generate\InterfaceType.java
+G:\git\dynodao\dynodao-processor\src\main\java\org\lemon\dynodao\processor\generate\IndexPojoGenerator.java
+G:\git\dynodao\dynodao-processor\src\main\java\org\lemon\dynodao\processor\generate\TwoFieldPojoGenerator.java
 G:\git\dynodao\dynodao-processor\src\main\java\org\lemon\dynodao\processor\index\IndexType.java

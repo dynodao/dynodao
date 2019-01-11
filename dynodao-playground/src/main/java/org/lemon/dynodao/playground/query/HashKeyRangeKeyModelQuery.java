@@ -1,9 +1,10 @@
 package org.lemon.dynodao.playground.query;
 
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
+import org.lemon.dynodao.DocumentLoad;
 import org.lemon.dynodao.playground.Model;
 
-public class HashKeyRangeKeyModelQuery implements ModelLoad {
+public class HashKeyRangeKeyModelQuery implements DocumentLoad<Model> {
 
     private final String hashKey;
     private final String rangeKey;
