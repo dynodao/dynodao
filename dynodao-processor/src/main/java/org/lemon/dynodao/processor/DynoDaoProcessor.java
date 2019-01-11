@@ -1,7 +1,5 @@
 package org.lemon.dynodao.processor;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Set;
 import javax.annotation.processing.AbstractProcessor;
 import javax.annotation.processing.ProcessingEnvironment;
@@ -17,6 +15,7 @@ import javax.lang.model.element.TypeElement;
 import com.google.auto.service.AutoService;
 import org.lemon.dynodao.DynoDao;
 import org.lemon.dynodao.processor.context.ProcessorContext;
+import org.lemon.dynodao.processor.index.DynamoIndex;
 import org.lemon.dynodao.processor.index.DynamoIndexParser;
 
 import static java.util.stream.Collectors.toSet;
@@ -63,7 +62,10 @@ public class DynoDaoProcessor extends AbstractProcessor {
     }
 
     private void processElements(Set<TypeElement> elements) {
-        elements.forEach(dynamoIndexParser::getIndexes);
+        for (TypeElement document : elements) {
+            Set<DynamoIndex> indexes = dynamoIndexParser.getIndexes(document);
+            processorContext.submitError(indexes);
+        }
     }
 
 }

@@ -18,7 +18,7 @@ public class Model {
     @DynamoDBRangeKey
     private String rangeKey;
 
-    @DynamoDBIndexRangeKey(localSecondaryIndexNames = "local-index-name")
+    @DynamoDBIndexRangeKey(localSecondaryIndexName = "local-index-name")
     private String lsiRangeKey;
 
     @DynamoDBIndexHashKey(globalSecondaryIndexName = "global-index-name")

@@ -1,14 +1,11 @@
 package org.lemon.dynodao.processor.index;
 
-import java.lang.annotation.Annotation;
+import java.util.HashSet;
 import java.util.Set;
 import javax.inject.Inject;
 import javax.lang.model.element.TypeElement;
-import javax.lang.model.element.VariableElement;
 
-import com.google.common.collect.Multimap;
 import org.lemon.dynodao.processor.context.ProcessorContext;
-import org.omg.DynamicAny.DynAny;
 
 /**
  * Parses a dynamo document class and extracts all of the indexes that the table has.
@@ -20,18 +17,18 @@ public class DynamoIndexParser {
     @Inject ProcessorContext processorContext;
 
     /**
-     *
-     * @param document
+     * Returns all of the dynamo indexes in the document object.
+     * @param document the document to get indexes from
      */
-    public void getIndexes(TypeElement document) {
+    public Set<DynamoIndex> getIndexes(TypeElement document) {
         DynamoIndexAnnotatedFields fields = getKeyFields(document);
 
-        DynamoIndex table = fields.getTable();
-        Set<DynamoIndex> lsi = fields.getLocalSecondaryIndexes();
+        Set<DynamoIndex> indexes = new HashSet<>();
+        indexes.add(fields.getTable());
+        indexes.addAll(fields.getLocalSecondaryIndexes());
+        indexes.addAll(fields.getGlobalSecondaryIndexes());
 
-        lsi.add(table);
-
-        lsi.forEach(i -> processorContext.submitErrorMessage("%s", i));
+        return indexes;
     }
 
     private DynamoIndexAnnotatedFields getKeyFields(TypeElement document) {

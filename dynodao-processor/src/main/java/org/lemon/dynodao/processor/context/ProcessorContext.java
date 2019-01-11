@@ -55,6 +55,14 @@ public class ProcessorContext {
     }
 
     /**
+     * @param args the objects to display
+     * @return #submitErrorMessage
+     */
+    public ProcessorMessage submitError(Object... args) {
+        return submitErrorMessage(new String(new char[args.length]).replace("\0", "%s\n"), args);
+    }
+
+    /**
      * Produces and returns a new error, which will be displayed at the end of the round.
      * The message can be modified to add additional context after return.
      * @param format the error format message
