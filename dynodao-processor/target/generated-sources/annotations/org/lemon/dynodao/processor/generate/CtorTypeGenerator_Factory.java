@@ -1,4 +1,4 @@
-package org.lemon.dynodao.processor.generate.method;
+package org.lemon.dynodao.processor.generate;
 
 import dagger.internal.Factory;
 import javax.annotation.Generated;

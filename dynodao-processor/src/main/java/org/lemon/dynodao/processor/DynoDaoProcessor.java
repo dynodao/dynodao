@@ -1,8 +1,17 @@
 package org.lemon.dynodao.processor;
 
+import static java.util.Collections.emptyList;
 import static java.util.stream.Collectors.toSet;
 
-import java.util.Set;
+import com.google.auto.service.AutoService;
+import com.squareup.javapoet.TypeSpec;
+import org.lemon.dynodao.DynoDao;
+import org.lemon.dynodao.processor.context.ProcessorContext;
+import org.lemon.dynodao.processor.generate.IndexPojoGenerator;
+import org.lemon.dynodao.processor.index.DynamoIndex;
+import org.lemon.dynodao.processor.index.DynamoIndexParser;
+import org.lemon.dynodao.processor.model.IndexLengthType;
+import org.lemon.dynodao.processor.model.PojoClassBuilder;
 
 import javax.annotation.processing.AbstractProcessor;
 import javax.annotation.processing.ProcessingEnvironment;
@@ -14,15 +23,9 @@ import javax.inject.Inject;
 import javax.lang.model.SourceVersion;
 import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.TypeElement;
-
-import org.lemon.dynodao.DynoDao;
-import org.lemon.dynodao.processor.context.ProcessorContext;
-import org.lemon.dynodao.processor.generate.IndexPojoGenerator;
-import org.lemon.dynodao.processor.index.DynamoIndex;
-import org.lemon.dynodao.processor.index.DynamoIndexParser;
-
-import com.google.auto.service.AutoService;
-import com.squareup.javapoet.TypeSpec;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
 
 /**
  * The annotation processor for {@link org.lemon.dynodao.DynoDao}.
@@ -72,8 +75,26 @@ public class DynoDaoProcessor extends AbstractProcessor {
 
             Set<TypeSpec> types = indexPojoGenerator.buildPojos(document, indexes);
 
-            processorContext.submitError(types.stream().toArray());
+            List<PojoClassBuilder> pojos = getPojos(document, indexes);
+
+            processorContext.submitError(pojos.stream().toArray());
         }
+    }
+
+    private List<PojoClassBuilder> getPojos(TypeElement document, Set<DynamoIndex> indexes) {
+        List<PojoClassBuilder> pojos = new ArrayList<>();
+        pojos.addAll(getLeafPojos(document, indexes));
+        return pojos;
+    }
+
+    private List<PojoClassBuilder> getLeafPojos(TypeElement document, Set<DynamoIndex> indexes) {
+        List<PojoClassBuilder> pojos = new ArrayList<>();
+        for (DynamoIndex index : indexes) {
+            PojoClassBuilder pojo = new PojoClassBuilder(document);
+            pojo.setIndex(index, IndexLengthType.lengthOf(index));
+            pojos.add(pojo);
+        }
+        return pojos;
     }
 
 }

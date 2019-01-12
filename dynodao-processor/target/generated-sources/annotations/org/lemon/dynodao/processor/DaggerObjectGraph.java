@@ -2,12 +2,12 @@ package org.lemon.dynodao.processor;
 
 import dagger.internal.Preconditions;
 import javax.annotation.Generated;
+import org.lemon.dynodao.processor.generate.CtorTypeGenerator_Factory;
 import org.lemon.dynodao.processor.generate.IndexPojoGenerator;
 import org.lemon.dynodao.processor.generate.IndexPojoGenerator_Factory;
 import org.lemon.dynodao.processor.generate.IndexPojoGenerator_MembersInjector;
 import org.lemon.dynodao.processor.generate.TwoFieldPojoGenerator_Factory;
 import org.lemon.dynodao.processor.generate.TwoFieldPojoGenerator_MembersInjector;
-import org.lemon.dynodao.processor.generate.method.CtorTypeGenerator_Factory;
 import org.lemon.dynodao.processor.index.DynamoIndexParser;
 import org.lemon.dynodao.processor.index.DynamoIndexParser_Factory;
 import org.lemon.dynodao.processor.index.DynamoIndexParser_MembersInjector;

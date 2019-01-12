@@ -4,7 +4,6 @@ import dagger.MembersInjector;
 import javax.annotation.Generated;
 import javax.inject.Provider;
 import org.lemon.dynodao.processor.context.ProcessorContext;
-import org.lemon.dynodao.processor.generate.method.CtorTypeGenerator;
 
 @Generated(
   value = "dagger.internal.codegen.ComponentProcessor",
