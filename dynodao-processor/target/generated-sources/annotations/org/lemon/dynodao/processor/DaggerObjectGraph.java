@@ -8,6 +8,17 @@ import org.lemon.dynodao.processor.generate.IndexPojoGenerator_Factory;
 import org.lemon.dynodao.processor.generate.IndexPojoGenerator_MembersInjector;
 import org.lemon.dynodao.processor.generate.TwoFieldPojoGenerator_Factory;
 import org.lemon.dynodao.processor.generate.TwoFieldPojoGenerator_MembersInjector;
+import org.lemon.dynodao.processor.generate.type.CtorTypeSpecMutator_Factory;
+import org.lemon.dynodao.processor.generate.type.DocumentLoadTypeSpecMutator_Factory;
+import org.lemon.dynodao.processor.generate.type.DocumentLoadTypeSpecMutator_MembersInjector;
+import org.lemon.dynodao.processor.generate.type.DocumentQueryTypeSpecMutator_Factory;
+import org.lemon.dynodao.processor.generate.type.DocumentQueryTypeSpecMutator_MembersInjector;
+import org.lemon.dynodao.processor.generate.type.FieldTypeSpecMutator_Factory;
+import org.lemon.dynodao.processor.generate.type.ModifiersTypeSpecMutator_Factory;
+import org.lemon.dynodao.processor.generate.type.PojoTypeSpecFactory;
+import org.lemon.dynodao.processor.generate.type.PojoTypeSpecFactory_Factory;
+import org.lemon.dynodao.processor.generate.type.PojoTypeSpecFactory_MembersInjector;
+import org.lemon.dynodao.processor.generate.type.SuperInterfaceTypeSpecMutator_Factory;
 import org.lemon.dynodao.processor.index.DynamoIndexParser;
 import org.lemon.dynodao.processor.index.DynamoIndexParser_Factory;
 import org.lemon.dynodao.processor.index.DynamoIndexParser_MembersInjector;
@@ -69,11 +80,53 @@ public final class DaggerObjectGraph implements ObjectGraph {
     return instance;
   }
 
+  private Object injectDocumentLoadTypeSpecMutator(Object instance) {
+    DocumentLoadTypeSpecMutator_MembersInjector.injectProcessorContext(
+        instance,
+        Preconditions.checkNotNull(
+            contextModule.providesProcessorContext(),
+            "Cannot return null from a non-@Nullable @Provides method"));
+    DocumentLoadTypeSpecMutator_MembersInjector.injectInit(instance);
+    return instance;
+  }
+
+  private Object injectDocumentQueryTypeSpecMutator(Object instance) {
+    DocumentQueryTypeSpecMutator_MembersInjector.injectProcessorContext(
+        instance,
+        Preconditions.checkNotNull(
+            contextModule.providesProcessorContext(),
+            "Cannot return null from a non-@Nullable @Provides method"));
+    DocumentQueryTypeSpecMutator_MembersInjector.injectInit(instance);
+    return instance;
+  }
+
+  private PojoTypeSpecFactory injectPojoTypeSpecFactory(PojoTypeSpecFactory instance) {
+    PojoTypeSpecFactory_MembersInjector.injectModifiersTypeSpecMutator(
+        instance, ModifiersTypeSpecMutator_Factory.newModifiersTypeSpecMutator());
+    PojoTypeSpecFactory_MembersInjector.injectSuperInterfaceTypeSpecMutator(
+        instance, SuperInterfaceTypeSpecMutator_Factory.newSuperInterfaceTypeSpecMutator());
+    PojoTypeSpecFactory_MembersInjector.injectFieldTypeSpecMutator(
+        instance, FieldTypeSpecMutator_Factory.newFieldTypeSpecMutator());
+    PojoTypeSpecFactory_MembersInjector.injectCtorTypeSpecMutator(
+        instance, CtorTypeSpecMutator_Factory.newCtorTypeSpecMutator());
+    PojoTypeSpecFactory_MembersInjector.injectDocumentLoadTypeSpecMutator(
+        instance,
+        injectDocumentLoadTypeSpecMutator(
+            DocumentLoadTypeSpecMutator_Factory.newDocumentLoadTypeSpecMutator()));
+    PojoTypeSpecFactory_MembersInjector.injectDocumentQueryTypeSpecMutator(
+        instance,
+        injectDocumentQueryTypeSpecMutator(
+            DocumentQueryTypeSpecMutator_Factory.newDocumentQueryTypeSpecMutator()));
+    return instance;
+  }
+
   private DynoDaoProcessor injectDynoDaoProcessor(DynoDaoProcessor instance) {
     DynoDaoProcessor_MembersInjector.injectDynamoIndexParser(
         instance, injectDynamoIndexParser(DynamoIndexParser_Factory.newDynamoIndexParser()));
     DynoDaoProcessor_MembersInjector.injectIndexPojoGenerator(
         instance, injectIndexPojoGenerator(IndexPojoGenerator_Factory.newIndexPojoGenerator()));
+    DynoDaoProcessor_MembersInjector.injectPojoTypeSpecFactory(
+        instance, injectPojoTypeSpecFactory(PojoTypeSpecFactory_Factory.newPojoTypeSpecFactory()));
     return instance;
   }
 

@@ -4,14 +4,15 @@ import com.squareup.javapoet.TypeSpec;
 import org.lemon.dynodao.processor.model.PojoClassBuilder;
 
 import javax.inject.Inject;
+import javax.lang.model.element.Modifier;
 
-class FieldTypeSpecMutator implements TypeSpecMutator {
+class ModifiersTypeSpecMutator implements TypeSpecMutator {
 
-    @Inject FieldTypeSpecMutator() { }
+    @Inject ModifiersTypeSpecMutator() { }
 
     @Override
     public void mutate(TypeSpec.Builder typeSpec, PojoClassBuilder pojo) {
-        typeSpec.addFields(pojo.getFields());
+        typeSpec.addModifiers(Modifier.PUBLIC);
     }
 
 }

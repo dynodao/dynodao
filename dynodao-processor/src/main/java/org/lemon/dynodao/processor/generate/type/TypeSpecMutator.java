@@ -12,5 +12,5 @@ public interface TypeSpecMutator {
      * @param pojo the pojo being built
      * @return the methods to add
      */
-    void build(TypeSpec.Builder typeSpec, PojoClassBuilder pojo);
+    void mutate(TypeSpec.Builder typeSpec, PojoClassBuilder pojo);
 }

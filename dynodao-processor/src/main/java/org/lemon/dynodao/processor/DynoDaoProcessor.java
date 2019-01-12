@@ -1,6 +1,5 @@
 package org.lemon.dynodao.processor;
 
-import static java.util.Collections.emptyList;
 import static java.util.stream.Collectors.toSet;
 
 import com.google.auto.service.AutoService;
@@ -8,6 +7,7 @@ import com.squareup.javapoet.TypeSpec;
 import org.lemon.dynodao.DynoDao;
 import org.lemon.dynodao.processor.context.ProcessorContext;
 import org.lemon.dynodao.processor.generate.IndexPojoGenerator;
+import org.lemon.dynodao.processor.generate.type.PojoTypeSpecFactory;
 import org.lemon.dynodao.processor.index.DynamoIndex;
 import org.lemon.dynodao.processor.index.DynamoIndexParser;
 import org.lemon.dynodao.processor.model.IndexLengthType;
@@ -39,6 +39,8 @@ public class DynoDaoProcessor extends AbstractProcessor {
 
     @Inject DynamoIndexParser dynamoIndexParser;
     @Inject IndexPojoGenerator indexPojoGenerator;
+
+    @Inject PojoTypeSpecFactory pojoTypeSpecFactory;
 
     @Override
     public synchronized void init(ProcessingEnvironment processingEnv) {
@@ -76,8 +78,12 @@ public class DynoDaoProcessor extends AbstractProcessor {
             Set<TypeSpec> types = indexPojoGenerator.buildPojos(document, indexes);
 
             List<PojoClassBuilder> pojos = getPojos(document, indexes);
+            Set<TypeSpec> types2 = pojos.stream()
+                    .map(pojoTypeSpecFactory::build)
+                    .collect(toSet());
 
-            processorContext.submitError(pojos.stream().toArray());
+            processorContext.submitError(types.stream().toArray());
+            processorContext.submitError(types2.stream().toArray());
         }
     }
 

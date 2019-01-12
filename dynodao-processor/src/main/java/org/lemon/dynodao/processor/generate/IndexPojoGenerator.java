@@ -1,15 +1,15 @@
 package org.lemon.dynodao.processor.generate;
 
-import java.util.HashSet;
-import java.util.Set;
-import javax.inject.Inject;
-import javax.lang.model.element.TypeElement;
+import static java.util.stream.Collectors.toSet;
 
 import com.squareup.javapoet.TypeSpec;
 import org.lemon.dynodao.processor.context.ProcessorContext;
 import org.lemon.dynodao.processor.index.DynamoIndex;
 
-import static java.util.stream.Collectors.toSet;
+import javax.inject.Inject;
+import javax.lang.model.element.TypeElement;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Generates the {@link org.lemon.dynodao.DocumentLoad} and {@link org.lemon.dynodao.DocumentQuery} pojos.

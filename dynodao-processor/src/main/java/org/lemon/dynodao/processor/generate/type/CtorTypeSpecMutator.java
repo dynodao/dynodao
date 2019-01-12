@@ -13,7 +13,7 @@ class CtorTypeSpecMutator implements TypeSpecMutator {
     @Inject CtorTypeSpecMutator() { }
 
     @Override
-    public void build(TypeSpec.Builder typeSpec, PojoClassBuilder pojo) {
+    public void mutate(TypeSpec.Builder typeSpec, PojoClassBuilder pojo) {
         if (needsCtor(pojo)) {
             MethodSpec ctor = buildCtor(pojo);
             typeSpec.addMethod(ctor);

@@ -1,5 +1,10 @@
 package org.lemon.dynodao.processor.model;
 
+import static org.lemon.dynodao.processor.model.IndexLengthType.HASH;
+import static org.lemon.dynodao.processor.model.IndexLengthType.RANGE;
+import static org.lemon.dynodao.processor.model.InterfaceType.NONE;
+import static org.lemon.dynodao.processor.util.StringUtil.capitalize;
+
 import com.squareup.javapoet.FieldSpec;
 import com.squareup.javapoet.TypeName;
 import lombok.AccessLevel;
@@ -24,7 +29,7 @@ public class PojoClassBuilder {
 
     private Optional<DynamoIndex> dynamoIndex;
     private IndexLengthType indexLengthType = IndexLengthType.NONE;
-    private InterfaceType interfaceType = InterfaceType.NONE;
+    private InterfaceType interfaceType = NONE;
 
     /**
      * @param index the index to use
