@@ -1,7 +1,5 @@
 package org.lemon.dynodao.processor.model;
 
-import static org.lemon.dynodao.processor.model.InterfaceType.NONE;
-
 import com.squareup.javapoet.FieldSpec;
 import com.squareup.javapoet.TypeName;
 import com.squareup.javapoet.TypeSpec;
@@ -17,6 +15,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * Data model for a pojo type to generate.
+ */
 @Data
 @Setter(AccessLevel.NONE)
 public class PojoClassBuilder {
@@ -26,7 +27,7 @@ public class PojoClassBuilder {
 
     private Optional<DynamoIndex> dynamoIndex;
     private IndexLengthType indexLengthType = IndexLengthType.NONE;
-    private InterfaceType interfaceType = NONE;
+    private InterfaceType interfaceType = InterfaceType.NONE;
 
     private final List<TypeSpec> targetWithers = new ArrayList<>();
 
@@ -49,6 +50,11 @@ public class PojoClassBuilder {
         fields.add(field);
     }
 
+    /**
+     * Specifies this pojo should have a <tt>with</tt> method to create the given type.
+     * The type is creating using fields of this pojo, plus arguments sent to the wither method.
+     * @param targetWither the type of class to create using a wither
+     */
     public void addWither(TypeSpec targetWither) {
         targetWithers.add(targetWither);
     }

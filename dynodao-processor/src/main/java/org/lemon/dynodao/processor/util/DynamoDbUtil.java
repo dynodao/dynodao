@@ -16,8 +16,6 @@ public class DynamoDbUtil {
     private static final ClassName DYNAMO_DB_QUERY_EXPRESSION = ClassName.get("com.amazonaws.services.dynamodbv2.datamodeling", "DynamoDBQueryExpression");
     private static final ClassName ATTRIBUTE_VALUE = ClassName.get("com.amazonaws.services.dynamodbv2.model", "AttributeValue");
 
-    private static final ParameterSpec DYNAMO_DB_MAPPER_PARAM = ParameterSpec.builder(DYNAMO_DB_MAPPER, "dynamoDbMapper").build();
-
     /**
      * @param document the document type
      * @return the type name for {@link com.amazonaws.services.dynamodbv2.datamodeling.PaginatedList} with the document as the template type

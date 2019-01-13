@@ -42,20 +42,16 @@ import java.util.stream.Stream;
 @SupportedAnnotationTypes("org.lemon.dynodao.*")
 public class DynoDaoProcessor extends AbstractProcessor {
 
-    private ProcessorContext processorContext;
-
+    @Inject ProcessorContext processorContext;
     @Inject DynamoIndexParser dynamoIndexParser;
-
     @Inject PojoTypeSpecFactory pojoTypeSpecFactory;
-
     @Inject TypeSpecWriter typeSpecWriter;
 
     @Override
     public synchronized void init(ProcessingEnvironment processingEnv) {
         super.init(processingEnv);
-        processorContext = new ProcessorContext(processingEnv);
         DaggerObjectGraph.builder()
-                .contextModule(new ContextModule(processorContext))
+                .contextModule(new ContextModule(new ProcessorContext(processingEnv)))
                 .build().inject(this);
     }
 

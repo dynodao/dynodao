@@ -18,6 +18,9 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Stream;
 
+/**
+ * Builder for parsing a DynamoDB annotated class.
+ */
 @Data
 class DynamoIndexAnnotatedFields {
 
@@ -27,7 +30,7 @@ class DynamoIndexAnnotatedFields {
     private Set<VariableElement> indexRangeKeys = new HashSet<>();
 
     /**
-     * Tries to add the element to this field set.
+     * Adds the element to this field set, if it is applicable.
      * @param element the element to add
      */
     void append(Element element) {

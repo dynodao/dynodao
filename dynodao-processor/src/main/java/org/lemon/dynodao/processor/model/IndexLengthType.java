@@ -9,20 +9,34 @@ import javax.lang.model.element.VariableElement;
 import java.util.Arrays;
 import java.util.List;
 
+/**
+ * The length of a dynamo index.
+ */
 public enum IndexLengthType {
 
+    /**
+     * A placeholder length, to specify there is no index.
+     */
     NONE() {
         @Override
         public List<VariableElement> getFields(DynamoIndex index) {
             return emptyList();
         }
     },
+
+    /**
+     * The index only has a hash key.
+     */
     HASH() {
         @Override
         public List<VariableElement> getFields(DynamoIndex index) {
             return singletonList(index.getHashKey());
         }
     },
+
+    /**
+     * The index has a hash key and a range key.
+     */
     RANGE() {
         @Override
         public List<VariableElement> getFields(DynamoIndex index) {

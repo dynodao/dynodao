@@ -7,6 +7,9 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import org.lemon.dynodao.processor.context.ProcessorContext;
 
+/**
+ * Dagger component to inject the processor.
+ */
 @Component(modules = ContextModule.class)
 public interface ObjectGraph {
 
@@ -14,6 +17,10 @@ public interface ObjectGraph {
 
 }
 
+/**
+ * Utility module to share the {@link ProcessorContext} everywhere via injection, rather than keeping it
+ * as an argument to all methods.
+ */
 @Module
 @RequiredArgsConstructor(access = AccessLevel.PACKAGE)
 class ContextModule {
@@ -24,5 +31,4 @@ class ContextModule {
     ProcessorContext providesProcessorContext() {
         return processorContext;
     }
-
 }

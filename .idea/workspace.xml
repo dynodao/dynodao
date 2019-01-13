@@ -2,16 +2,14 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="8ae76a29-2567-4193-a06f-e662aa600ecf" name="Default" comment="">
-      <change beforePath="" afterPath="$PROJECT_DIR$/dynodao-processor/src/main/java/org/lemon/dynodao/processor/TypeSpecWriter.java" />
-      <change beforePath="" afterPath="$PROJECT_DIR$/dynodao-processor/src/main/java/org/lemon/dynodao/processor/generate/WitherTypeSpecMutator.java" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change beforePath="$PROJECT_DIR$/dynodao-api/pom.xml" afterPath="$PROJECT_DIR$/dynodao-api/pom.xml" />
-      <change beforePath="$PROJECT_DIR$/dynodao-api/src/main/java/org/lemon/dynodao/DynoDao.java" afterPath="$PROJECT_DIR$/dynodao-api/src/main/java/org/lemon/dynodao/DynoDao.java" />
-      <change beforePath="$PROJECT_DIR$/dynodao-playground/pom.xml" afterPath="$PROJECT_DIR$/dynodao-playground/pom.xml" />
-      <change beforePath="$PROJECT_DIR$/dynodao-processor/pom.xml" afterPath="$PROJECT_DIR$/dynodao-processor/pom.xml" />
       <change beforePath="$PROJECT_DIR$/dynodao-processor/src/main/java/org/lemon/dynodao/processor/DynoDaoProcessor.java" afterPath="$PROJECT_DIR$/dynodao-processor/src/main/java/org/lemon/dynodao/processor/DynoDaoProcessor.java" />
-      <change beforePath="$PROJECT_DIR$/dynodao-processor/src/main/java/org/lemon/dynodao/processor/generate/PojoTypeSpecFactory.java" afterPath="$PROJECT_DIR$/dynodao-processor/src/main/java/org/lemon/dynodao/processor/generate/PojoTypeSpecFactory.java" />
+      <change beforePath="$PROJECT_DIR$/dynodao-processor/src/main/java/org/lemon/dynodao/processor/ObjectGraph.java" afterPath="$PROJECT_DIR$/dynodao-processor/src/main/java/org/lemon/dynodao/processor/ObjectGraph.java" />
+      <change beforePath="$PROJECT_DIR$/dynodao-processor/src/main/java/org/lemon/dynodao/processor/TypeSpecWriter.java" afterPath="$PROJECT_DIR$/dynodao-processor/src/main/java/org/lemon/dynodao/processor/TypeSpecWriter.java" />
+      <change beforePath="$PROJECT_DIR$/dynodao-processor/src/main/java/org/lemon/dynodao/processor/index/DynamoIndexAnnotatedFields.java" afterPath="$PROJECT_DIR$/dynodao-processor/src/main/java/org/lemon/dynodao/processor/index/DynamoIndexAnnotatedFields.java" />
+      <change beforePath="$PROJECT_DIR$/dynodao-processor/src/main/java/org/lemon/dynodao/processor/model/IndexLengthType.java" afterPath="$PROJECT_DIR$/dynodao-processor/src/main/java/org/lemon/dynodao/processor/model/IndexLengthType.java" />
+      <change beforePath="$PROJECT_DIR$/dynodao-processor/src/main/java/org/lemon/dynodao/processor/model/InterfaceType.java" afterPath="$PROJECT_DIR$/dynodao-processor/src/main/java/org/lemon/dynodao/processor/model/InterfaceType.java" />
       <change beforePath="$PROJECT_DIR$/dynodao-processor/src/main/java/org/lemon/dynodao/processor/model/PojoClassBuilder.java" afterPath="$PROJECT_DIR$/dynodao-processor/src/main/java/org/lemon/dynodao/processor/model/PojoClassBuilder.java" />
+      <change beforePath="$PROJECT_DIR$/dynodao-processor/src/main/java/org/lemon/dynodao/processor/util/DynamoDbUtil.java" afterPath="$PROJECT_DIR$/dynodao-processor/src/main/java/org/lemon/dynodao/processor/util/DynamoDbUtil.java" />
     </list>
     <ignored path="$PROJECT_DIR$/out/" />
     <ignored path="$PROJECT_DIR$/dynodao-annotations/target/" />
@@ -66,8 +64,8 @@
       <file leaf-file-name="DynoDaoProcessor.java" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/dynodao-processor/src/main/java/org/lemon/dynodao/processor/DynoDaoProcessor.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="212">
-              <caret line="116" column="74" lean-forward="false" selection-start-line="116" selection-start-column="74" selection-end-line="116" selection-end-column="74" />
+            <state relative-caret-position="-604">
+              <caret line="55" column="5" lean-forward="true" selection-start-line="55" selection-start-column="5" selection-end-line="55" selection-end-column="5" />
               <folding />
             </state>
           </provider>
@@ -76,8 +74,8 @@
       <file leaf-file-name="WitherTypeSpecMutator.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/dynodao-processor/src/main/java/org/lemon/dynodao/processor/generate/WitherTypeSpecMutator.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="263">
-              <caret line="23" column="27" lean-forward="false" selection-start-line="23" selection-start-column="6" selection-end-line="23" selection-end-column="27" />
+            <state relative-caret-position="314">
+              <caret line="32" column="9" lean-forward="true" selection-start-line="32" selection-start-column="9" selection-end-line="32" selection-end-column="9" />
               <folding>
                 <element signature="imports" expanded="true" />
               </folding>
@@ -88,8 +86,8 @@
       <file leaf-file-name="TypeSpecWriter.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/dynodao-processor/src/main/java/org/lemon/dynodao/processor/TypeSpecWriter.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="263">
-              <caret line="29" column="17" lean-forward="false" selection-start-line="29" selection-start-column="17" selection-end-line="29" selection-end-column="17" />
+            <state relative-caret-position="433">
+              <caret line="56" column="0" lean-forward="true" selection-start-line="56" selection-start-column="0" selection-end-line="56" selection-end-column="0" />
               <folding>
                 <element signature="imports" expanded="true" />
               </folding>
@@ -112,13 +110,23 @@
       <file leaf-file-name="PojoClassBuilder.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/dynodao-processor/src/main/java/org/lemon/dynodao/processor/model/PojoClassBuilder.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="127">
-              <caret line="30" column="46" lean-forward="false" selection-start-line="30" selection-start-column="46" selection-end-line="30" selection-end-column="46" />
+            <state relative-caret-position="289">
+              <caret line="26" column="0" lean-forward="true" selection-start-line="26" selection-start-column="0" selection-end-line="26" selection-end-column="0" />
               <folding>
                 <element signature="imports" expanded="true" />
-                <element signature="e#1767#1768#0" expanded="true" />
-                <element signature="e#1814#1815#0" expanded="true" />
+                <element signature="e#2034#2035#0" expanded="true" />
+                <element signature="e#2081#2082#0" expanded="true" />
               </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="InterfaceType.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/dynodao-processor/src/main/java/org/lemon/dynodao/processor/model/InterfaceType.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="246">
+              <caret line="25" column="0" lean-forward="true" selection-start-line="25" selection-start-column="0" selection-end-line="25" selection-end-column="0" />
+              <folding />
             </state>
           </provider>
         </entry>
@@ -155,8 +163,6 @@
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
-        <option value="$PROJECT_DIR$/dynodao-processor/src/main/java/org/lemon/dynodao/processor/model/QueryClassNode.java" />
-        <option value="$PROJECT_DIR$/dynodao-processor/src/main/java/org/lemon/dynodao/processor/model/BuilderClass.java" />
         <option value="$PROJECT_DIR$/dynodao-processor/src/main/java/org/lemon/dynodao/processor/model/DocumentQueryMode.java" />
         <option value="$PROJECT_DIR$/dynodao-processor/src/main/java/org/lemon/dynodao/processor/method/CtorTypeGenerator.java" />
         <option value="$PROJECT_DIR$/dynodao-processor/src/main/java/org/lemon/dynodao/processor/generate/DocumentQueryModel.java" />
@@ -175,12 +181,9 @@
         <option value="$PROJECT_DIR$/dynodao-processor/src/main/java/org/lemon/dynodao/processor/generate/method/TypeSpecMutator.java" />
         <option value="$PROJECT_DIR$/dynodao-processor/src/main/java/org/lemon/dynodao/processor/generate/type/TypeSpecMutator.java" />
         <option value="$PROJECT_DIR$/dynodao-processor/src/main/java/org/lemon/dynodao/processor/generate/type/FieldTypeSpecMutator.java" />
-        <option value="$PROJECT_DIR$/dynodao-processor/src/main/java/org/lemon/dynodao/processor/model/IndexLengthType.java" />
         <option value="$PROJECT_DIR$/dynodao-processor/src/main/java/org/lemon/dynodao/processor/util/DynamoDbConstants.java" />
-        <option value="$PROJECT_DIR$/dynodao-processor/src/main/java/org/lemon/dynodao/processor/util/DynamoDbUtil.java" />
         <option value="$PROJECT_DIR$/dynodao-processor/src/main/java/org/lemon/dynodao/processor/generate/type/ModifiersTypeSpecMutator.java" />
         <option value="$PROJECT_DIR$/dynodao-processor/src/main/java/org/lemon/dynodao/processor/generate/type/SuperInterfaceTypeSpecMutator.java" />
-        <option value="$PROJECT_DIR$/dynodao-processor/src/main/java/org/lemon/dynodao/processor/model/InterfaceType.java" />
         <option value="$PROJECT_DIR$/dynodao-processor/src/main/java/org/lemon/dynodao/processor/generate/type/DocumentLoadTypeSpecMutator.java" />
         <option value="$PROJECT_DIR$/dynodao-processor/src/main/java/org/lemon/dynodao/processor/generate/IndexPojoGenerator.java" />
         <option value="$PROJECT_DIR$/dynodao-processor/src/main/java/org/lemon/dynodao/processor/generate/type/PojoTypeSpecFactory.java" />
@@ -200,12 +203,17 @@
         <option value="$PROJECT_DIR$/dynodao-api/pom.xml" />
         <option value="$PROJECT_DIR$/dynodao-processor/pom.xml" />
         <option value="$PROJECT_DIR$/dynodao-playground/pom.xml" />
-        <option value="$PROJECT_DIR$/dynodao-processor/src/main/java/org/lemon/dynodao/processor/model/PojoClassBuilder.java" />
         <option value="$PROJECT_DIR$/dynodao-api/src/main/java/org/lemon/dynodao/DynoDao.java" />
         <option value="$PROJECT_DIR$/dynodao-processor/src/main/java/org/lemon/dynodao/processor/generate/WitherTypeSpecMutator.java" />
         <option value="$PROJECT_DIR$/dynodao-processor/src/main/java/org/lemon/dynodao/processor/generate/PojoTypeSpecFactory.java" />
         <option value="$PROJECT_DIR$/dynodao-processor/src/main/java/org/lemon/dynodao/processor/TypeSpecWriter.java" />
+        <option value="$PROJECT_DIR$/dynodao-processor/src/main/java/org/lemon/dynodao/processor/model/PojoClassBuilder.java" />
+        <option value="$PROJECT_DIR$/dynodao-processor/src/main/java/org/lemon/dynodao/processor/util/DynamoDbUtil.java" />
+        <option value="$PROJECT_DIR$/dynodao-processor/src/main/java/org/lemon/dynodao/processor/index/DynamoIndexAnnotatedFields.java" />
+        <option value="$PROJECT_DIR$/dynodao-processor/src/main/java/org/lemon/dynodao/processor/model/IndexLengthType.java" />
+        <option value="$PROJECT_DIR$/dynodao-processor/src/main/java/org/lemon/dynodao/processor/model/InterfaceType.java" />
         <option value="$PROJECT_DIR$/dynodao-processor/src/main/java/org/lemon/dynodao/processor/DynoDaoProcessor.java" />
+        <option value="$PROJECT_DIR$/dynodao-processor/src/main/java/org/lemon/dynodao/processor/ObjectGraph.java" />
       </list>
     </option>
   </component>
@@ -251,10 +259,6 @@
       <pane id="ProjectPane">
         <subPane>
           <expand>
-            <path>
-              <item name="dynodao" type="b2602c69:ProjectViewProjectNode" />
-              <item name="dynodao-api" type="462c0819:PsiDirectoryNode" />
-            </path>
             <path>
               <item name="dynodao" type="b2602c69:ProjectViewProjectNode" />
               <item name="dynodao-playground" type="462c0819:PsiDirectoryNode" />
@@ -739,50 +743,6 @@
     <watches-manager />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/dynodao-processor/src/main/java/org/lemon/dynodao/processor/index/DynamoIndex.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="210">
-          <caret line="18" column="42" lean-forward="true" selection-start-line="18" selection-start-column="42" selection-end-line="18" selection-end-column="42" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/dynodao-processor/src/main/java/org/lemon/dynodao/processor/generate/method/AgainstIndexTypeGenerator.java" />
-    <entry file="file://$PROJECT_DIR$/dynodao-playground/src/main/java/org/lemon/dynodao/playground/query/HashKeyModelQuery.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="300">
-          <caret line="25" column="13" lean-forward="true" selection-start-line="25" selection-start-column="13" selection-end-line="25" selection-end-column="13" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/dynodao-processor/src/main/java/org/lemon/dynodao/processor/model/TheModel.java" />
-    <entry file="file://$PROJECT_DIR$/dynodao-playground/src/main/java/org/lemon/dynodao/playground/query/GsiHashKeyModelQuery.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="360">
-          <caret line="31" column="0" lean-forward="true" selection-start-line="31" selection-start-column="0" selection-end-line="31" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/dynodao-playground/src/main/java/org/lemon/dynodao/playground/Model.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="285">
-          <caret line="25" column="0" lean-forward="true" selection-start-line="25" selection-start-column="0" selection-end-line="25" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/dynodao-playground/src/main/java/org/lemon/dynodao/playground/query/ModelQueryBuilder.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="165">
-          <caret line="15" column="0" lean-forward="false" selection-start-line="15" selection-start-column="0" selection-end-line="15" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="jar://$MAVEN_REPOSITORY$/com/squareup/javapoet/1.8.0/javapoet-1.8.0.jar!/com/squareup/javapoet/FieldSpec.class">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="96">
-          <caret line="69" column="13" lean-forward="false" selection-start-line="69" selection-start-column="13" selection-end-line="69" selection-end-column="13" />
-        </state>
-      </provider>
-    </entry>
     <entry file="jar:///usr/lib/jvm/java-8-openjdk-amd64/src.zip!/javax/lang/model/element/Modifier.java" />
     <entry file="file://$PROJECT_DIR$/dynodao-processor/src/main/java/org/lemon/dynodao/processor/util/StringUtil.java">
       <provider selected="true" editor-type-id="text-editor">
@@ -795,49 +755,8 @@
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/dynodao-processor/src/main/java/org/lemon/dynodao/processor/generate/CtorTypeGenerator.java" />
-    <entry file="file://$PROJECT_DIR$/dynodao-processor/src/main/java/org/lemon/dynodao/processor/util/DynamoDbUtil.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="782">
-          <caret line="46" column="46" lean-forward="true" selection-start-line="46" selection-start-column="46" selection-end-line="46" selection-end-column="46" />
-          <folding>
-            <element signature="imports" expanded="false" />
-            <element signature="e#1567#1568#0" expanded="false" />
-            <element signature="e#1606#1607#0" expanded="false" />
-            <element signature="e#2201#2202#0" expanded="false" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/dynodao-processor/src/main/java/org/lemon/dynodao/processor/generate/FullIndexDocumentQuery.java" />
-    <entry file="file://$PROJECT_DIR$/dynodao-processor/src/main/java/org/lemon/dynodao/processor/model/IndexLengthType.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="569">
-          <caret line="42" column="38" lean-forward="false" selection-start-line="42" selection-start-column="38" selection-end-line="42" selection-end-column="38" />
-          <folding>
-            <element signature="imports" expanded="false" />
-            <element signature="e#424#425#0" expanded="false" />
-            <element signature="e#466#467#0" expanded="false" />
-            <element signature="e#572#573#0" expanded="false" />
-            <element signature="e#636#637#0" expanded="false" />
-            <element signature="e#1347#1348#0" expanded="false" />
-            <element signature="e#1416#1417#0" expanded="false" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/dynodao-processor/src/main/java/org/lemon/dynodao/processor/generate/InterfaceType.java" />
-    <entry file="file://$PROJECT_DIR$/dynodao-processor/src/main/java/org/lemon/dynodao/processor/model/InterfaceType.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="342">
-          <caret line="27" column="0" lean-forward="false" selection-start-line="27" selection-start-column="0" selection-end-line="27" selection-end-column="0" />
-          <folding>
-            <element signature="imports" expanded="false" />
-            <element signature="e#656#657#0" expanded="false" />
-            <element signature="e#705#706#0" expanded="false" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/dynodao-processor/src/main/java/org/lemon/dynodao/processor/generate/GenerateConstants.java" />
     <entry file="file://$PROJECT_DIR$/dynodao-processor/src/main/java/org/lemon/dynodao/processor/generate/TwoFieldPojoGenerator.java" />
     <entry file="file://$PROJECT_DIR$/dynodao-processor/src/main/java/org/lemon/dynodao/processor/generate/IndexPojoGenerator.java" />
@@ -929,14 +848,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/dynodao-processor/src/main/java/org/lemon/dynodao/processor/generate/DocumentQueryTypeSpecMutator.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="178">
-          <caret line="46" column="5" lean-forward="true" selection-start-line="46" selection-start-column="5" selection-end-line="46" selection-end-column="5" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/dynodao-processor/src/main/java/org/lemon/dynodao/processor/generate/FieldTypeSpecMutator.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="102">
@@ -993,14 +904,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/dynodao-playground/pom.xml">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="561">
-          <caret line="48" column="24" lean-forward="false" selection-start-line="48" selection-start-column="24" selection-end-line="48" selection-end-column="24" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/dynodao-processor/src/main/java/org/lemon/dynodao/processor/generate/TypeSpecMutator.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="289">
@@ -1013,26 +916,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="952">
           <caret line="56" column="35" lean-forward="false" selection-start-line="56" selection-start-column="35" selection-end-line="56" selection-end-column="35" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/dynodao-processor/src/main/java/org/lemon/dynodao/processor/model/PojoClassBuilder.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="127">
-          <caret line="30" column="46" lean-forward="false" selection-start-line="30" selection-start-column="46" selection-end-line="30" selection-end-column="46" />
-          <folding>
-            <element signature="imports" expanded="true" />
-            <element signature="e#1767#1768#0" expanded="true" />
-            <element signature="e#1814#1815#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/dynodao-processor/src/main/java/org/lemon/dynodao/processor/context/ProcessorContext.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-740">
-          <caret line="19" column="13" lean-forward="false" selection-start-line="19" selection-start-column="13" selection-end-line="19" selection-end-column="13" />
           <folding />
         </state>
       </provider>
@@ -1060,26 +943,6 @@
         <state relative-caret-position="102">
           <caret line="13" column="65" lean-forward="false" selection-start-line="13" selection-start-column="65" selection-end-line="13" selection-end-column="65" />
           <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/dynodao-processor/src/main/java/org/lemon/dynodao/processor/generate/WitherTypeSpecMutator.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="263">
-          <caret line="23" column="27" lean-forward="false" selection-start-line="23" selection-start-column="6" selection-end-line="23" selection-end-column="27" />
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/dynodao-processor/src/main/java/org/lemon/dynodao/processor/TypeSpecWriter.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="263">
-          <caret line="29" column="17" lean-forward="false" selection-start-line="29" selection-start-column="17" selection-end-line="29" selection-end-column="17" />
-          <folding>
-            <element signature="imports" expanded="true" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -1111,10 +974,174 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/dynodao-processor/src/main/java/org/lemon/dynodao/processor/generate/WitherTypeSpecMutator.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="314">
+          <caret line="32" column="9" lean-forward="true" selection-start-line="32" selection-start-column="9" selection-end-line="32" selection-end-column="9" />
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/dynodao-processor/src/main/java/org/lemon/dynodao/processor/context/ProcessorContext.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-527">
+          <caret line="19" column="13" lean-forward="false" selection-start-line="19" selection-start-column="13" selection-end-line="19" selection-end-column="13" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/dynodao-processor/src/main/java/org/lemon/dynodao/processor/context/ProcessorMessage.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-723">
+          <caret line="14" column="13" lean-forward="false" selection-start-line="14" selection-start-column="13" selection-end-line="14" selection-end-column="13" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/dynodao-processor/src/main/java/org/lemon/dynodao/processor/TypeSpecWriter.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="433">
+          <caret line="56" column="0" lean-forward="true" selection-start-line="56" selection-start-column="0" selection-end-line="56" selection-end-column="0" />
+          <folding>
+            <element signature="imports" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/dynodao-processor/src/main/java/org/lemon/dynodao/processor/util/DynamoDbUtil.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="153">
+          <caret line="18" column="0" lean-forward="false" selection-start-line="18" selection-start-column="0" selection-end-line="18" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/dynodao-processor/src/main/java/org/lemon/dynodao/processor/generate/DocumentQueryTypeSpecMutator.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="459">
+          <caret line="46" column="5" lean-forward="true" selection-start-line="46" selection-start-column="5" selection-end-line="46" selection-end-column="5" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/dynodao-playground/pom.xml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="405">
+          <caret line="36" column="18" lean-forward="true" selection-start-line="36" selection-start-column="18" selection-end-line="36" selection-end-column="18" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/dynodao-playground/target/generated-sources/annotations/org/lemon/dynodao/playground/GsiHashKeyGsiRangeKey2ModelDocumentQuery.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="17">
+          <caret line="9" column="13" lean-forward="false" selection-start-line="9" selection-start-column="13" selection-end-line="9" selection-end-column="13" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/dynodao-processor/src/main/java/org/lemon/dynodao/processor/index/DynamoIndex.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="306">
+          <caret line="22" column="0" lean-forward="true" selection-start-line="22" selection-start-column="0" selection-end-line="22" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/dynodao-processor/src/main/java/org/lemon/dynodao/processor/index/DynamoIndexAnnotatedFields.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-1148">
+          <caret line="32" column="63" lean-forward="false" selection-start-line="32" selection-start-column="63" selection-end-line="32" selection-end-column="63" />
+          <folding>
+            <element signature="e#1751#1752#0" expanded="true" />
+            <element signature="e#1818#1819#0" expanded="true" />
+            <element signature="e#1874#1875#0" expanded="true" />
+            <element signature="e#1947#1948#0" expanded="true" />
+            <element signature="e#2004#2005#0" expanded="true" />
+            <element signature="e#2078#2079#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/dynodao-processor/src/main/java/org/lemon/dynodao/processor/index/DynamoIndexParser.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="68">
+          <caret line="12" column="13" lean-forward="false" selection-start-line="12" selection-start-column="13" selection-end-line="12" selection-end-column="13" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/dynodao-processor/src/main/java/org/lemon/dynodao/processor/index/IndexType.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="85">
+          <caret line="5" column="12" lean-forward="false" selection-start-line="5" selection-start-column="12" selection-end-line="5" selection-end-column="12" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/dynodao-processor/src/main/java/org/lemon/dynodao/processor/model/IndexLengthType.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="340">
+          <caret line="54" column="55" lean-forward="true" selection-start-line="54" selection-start-column="55" selection-end-line="54" selection-end-column="55" />
+          <folding>
+            <element signature="e#540#541#0" expanded="true" />
+            <element signature="e#582#583#0" expanded="true" />
+            <element signature="e#743#744#0" expanded="true" />
+            <element signature="e#807#808#0" expanded="true" />
+            <element signature="e#1584#1585#0" expanded="true" />
+            <element signature="e#1653#1654#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/dynodao-processor/src/main/java/org/lemon/dynodao/processor/model/PojoClassBuilder.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="289">
+          <caret line="26" column="0" lean-forward="true" selection-start-line="26" selection-start-column="0" selection-end-line="26" selection-end-column="0" />
+          <folding>
+            <element signature="imports" expanded="true" />
+            <element signature="e#2034#2035#0" expanded="true" />
+            <element signature="e#2081#2082#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/dynodao-processor/src/main/java/org/lemon/dynodao/processor/model/InterfaceType.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="246">
+          <caret line="25" column="0" lean-forward="true" selection-start-line="25" selection-start-column="0" selection-end-line="25" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/dynodao-processor/target/generated-sources/annotations/org/lemon/dynodao/processor/DaggerObjectGraph.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="323">
+          <caret line="47" column="14" lean-forward="false" selection-start-line="47" selection-start-column="14" selection-end-line="47" selection-end-column="14" />
+          <folding>
+            <element signature="e#2303#2304#0" expanded="true" />
+            <element signature="e#2346#2347#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/dynodao-processor/src/main/java/org/lemon/dynodao/processor/ObjectGraph.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="204">
+          <caret line="17" column="1" lean-forward="true" selection-start-line="17" selection-start-column="1" selection-end-line="17" selection-end-column="1" />
+          <folding>
+            <element signature="e#762#763#0" expanded="true" />
+            <element signature="e#801#802#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/dynodao-processor/src/main/java/org/lemon/dynodao/processor/DynoDaoProcessor.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="212">
-          <caret line="116" column="74" lean-forward="false" selection-start-line="116" selection-start-column="74" selection-end-line="116" selection-end-column="74" />
+        <state relative-caret-position="-604">
+          <caret line="55" column="5" lean-forward="true" selection-start-line="55" selection-start-column="5" selection-end-line="55" selection-end-column="5" />
           <folding />
         </state>
       </provider>

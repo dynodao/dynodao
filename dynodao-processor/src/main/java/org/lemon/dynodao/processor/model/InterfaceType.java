@@ -1,6 +1,7 @@
 package org.lemon.dynodao.processor.model;
 
 import lombok.AccessLevel;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.lemon.dynodao.DocumentLoad;
 import org.lemon.dynodao.DocumentQuery;
@@ -9,21 +10,19 @@ import org.lemon.dynodao.processor.index.IndexType;
 
 import java.util.Optional;
 
+/**
+ * Indicates which of {@link DocumentLoad} or {@link DocumentQuery} interfaces a type
+ * should implement, if any.
+ */
+@Getter
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public enum InterfaceType {
 
-    NONE(null),
-    DOCUMENT_LOAD(DocumentLoad.class),
-    DOCUMENT_QUERY(DocumentQuery.class);
+    NONE(Optional.empty()),
+    DOCUMENT_LOAD(Optional.of(DocumentLoad.class)),
+    DOCUMENT_QUERY(Optional.of(DocumentQuery.class));
 
-    private final Class<?> clazz;
-
-    /**
-     * @return the class of the interface, if any
-     */
-    public Optional<Class<?>> getInterfaceClass() {
-        return Optional.ofNullable(clazz);
-    }
+    private final Optional<Class<?>> interfaceClass;
 
     /**
      * Returns the interface for the given index and length type.
