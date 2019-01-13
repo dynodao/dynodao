@@ -1,8 +1,17 @@
 package org.lemon.dynodao;
 
+import java.lang.annotation.Documented;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+
 /**
  * Marks a model class for dynamo dao generation.
  */
+@Documented
+@Target(ElementType.TYPE)
+@Retention(RetentionPolicy.SOURCE)
 public @interface DynoDao {
 
     /**

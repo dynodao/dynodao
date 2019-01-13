@@ -14,6 +14,7 @@ public class PojoTypeSpecFactory {
     @Inject SuperInterfaceTypeSpecMutator superInterfaceTypeSpecMutator;
     @Inject FieldTypeSpecMutator fieldTypeSpecMutator;
     @Inject CtorTypeSpecMutator ctorTypeSpecMutator;
+    @Inject WitherTypeSpecMutator witherTypeSpecMutator;
     @Inject DocumentLoadTypeSpecMutator documentLoadTypeSpecMutator;
     @Inject DocumentQueryTypeSpecMutator documentQueryTypeSpecMutator;
     @Inject EqualsTypeSpecMutator equalsTypeSpecMutator;
@@ -48,6 +49,8 @@ public class PojoTypeSpecFactory {
         superInterfaceTypeSpecMutator.mutate(typeSpec, pojo);
         fieldTypeSpecMutator.mutate(typeSpec, pojo);
         ctorTypeSpecMutator.mutate(typeSpec, pojo);
+
+        witherTypeSpecMutator.mutate(typeSpec, pojo);
 
         documentLoadTypeSpecMutator.mutate(typeSpec, pojo);
         documentQueryTypeSpecMutator.mutate(typeSpec, pojo);

@@ -4,6 +4,7 @@ import static org.lemon.dynodao.processor.model.InterfaceType.NONE;
 
 import com.squareup.javapoet.FieldSpec;
 import com.squareup.javapoet.TypeName;
+import com.squareup.javapoet.TypeSpec;
 import lombok.AccessLevel;
 import lombok.Data;
 import lombok.Setter;
@@ -27,6 +28,8 @@ public class PojoClassBuilder {
     private IndexLengthType indexLengthType = IndexLengthType.NONE;
     private InterfaceType interfaceType = NONE;
 
+    private final List<TypeSpec> targetWithers = new ArrayList<>();
+
     /**
      * @param index the index to use
      * @param indexLengthType the number of fields to use from the index
@@ -44,6 +47,10 @@ public class PojoClassBuilder {
                 .addModifiers(Modifier.PRIVATE, Modifier.FINAL)
                 .build();
         fields.add(field);
+    }
+
+    public void addWither(TypeSpec targetWither) {
+        targetWithers.add(targetWither);
     }
 
 }

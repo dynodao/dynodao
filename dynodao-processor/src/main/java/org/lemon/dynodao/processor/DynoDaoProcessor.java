@@ -1,5 +1,6 @@
 package org.lemon.dynodao.processor;
 
+import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toSet;
 
 import com.google.auto.service.AutoService;
@@ -10,6 +11,7 @@ import org.lemon.dynodao.processor.context.ProcessorContext;
 import org.lemon.dynodao.processor.generate.PojoTypeSpecFactory;
 import org.lemon.dynodao.processor.index.DynamoIndex;
 import org.lemon.dynodao.processor.index.DynamoIndexParser;
+import org.lemon.dynodao.processor.index.IndexType;
 import org.lemon.dynodao.processor.model.IndexLengthType;
 import org.lemon.dynodao.processor.model.PojoClassBuilder;
 
@@ -23,11 +25,14 @@ import javax.inject.Inject;
 import javax.lang.model.SourceVersion;
 import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.TypeElement;
+import javax.lang.model.element.VariableElement;
 import java.io.IOException;
 import java.io.UncheckedIOException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Stream;
 
 /**
  * The annotation processor for {@link org.lemon.dynodao.DynoDao}.
@@ -42,6 +47,8 @@ public class DynoDaoProcessor extends AbstractProcessor {
     @Inject DynamoIndexParser dynamoIndexParser;
 
     @Inject PojoTypeSpecFactory pojoTypeSpecFactory;
+
+    @Inject TypeSpecWriter typeSpecWriter;
 
     @Override
     public synchronized void init(ProcessingEnvironment processingEnv) {
@@ -76,19 +83,21 @@ public class DynoDaoProcessor extends AbstractProcessor {
         for (TypeElement document : elements) {
             Set<DynamoIndex> indexes = dynamoIndexParser.getIndexes(document);
 
-            List<PojoClassBuilder> pojos = getPojos(document, indexes);
-            Set<TypeSpec> types = pojos.stream()
-                    .map(pojoTypeSpecFactory::build)
-                    .collect(toSet());
+            List<PojoClassBuilder> leafPojos = getLeafPojos(document, indexes);
+            Set<TypeSpec> leafPojoTypes = toTypeSpecs(leafPojos);
 
-            types.forEach(type -> write(document, type));
+            List<PojoClassBuilder> certainIndexTrunkPojos = getCertainIndexTrunkPojos(document, indexes, leafPojoTypes);
+            Set<TypeSpec> certainIndexTrunkPojoTypes = toTypeSpecs(certainIndexTrunkPojos);
+
+            typeSpecWriter.writeAll(document, leafPojoTypes);
+            typeSpecWriter.writeAll(document, certainIndexTrunkPojoTypes);
         }
     }
 
-    private List<PojoClassBuilder> getPojos(TypeElement document, Set<DynamoIndex> indexes) {
-        List<PojoClassBuilder> pojos = new ArrayList<>();
-        pojos.addAll(getLeafPojos(document, indexes));
-        return pojos;
+    private Set<TypeSpec> toTypeSpecs(Collection<PojoClassBuilder> pojos) {
+        return pojos.stream()
+                .map(pojoTypeSpecFactory::build)
+                .collect(toSet());
     }
 
     private List<PojoClassBuilder> getLeafPojos(TypeElement document, Set<DynamoIndex> indexes) {
@@ -101,25 +110,34 @@ public class DynoDaoProcessor extends AbstractProcessor {
         return pojos;
     }
 
-    private void write(TypeElement document, TypeSpec type) {
-        JavaFile file = JavaFile.builder(getDynoDaoPackageName(document), type)
-                .indent("    ")
-                .build();
-        try {
-            file.writeTo(processorContext.getFiler());
-        } catch (IOException e) {
-            throw new UncheckedIOException(String.format("got IOException when writing file\n%s", file), e);
-        }
+    private List<PojoClassBuilder> getCertainIndexTrunkPojos(TypeElement document, Set<DynamoIndex> indexes, Set<TypeSpec> leafPojoTypes) {
+        return indexes.stream()
+                .filter(index -> !index.getIndexType().equals(IndexType.LOCAL_SECONDARY_INDEX))
+                .filter(index -> IndexLengthType.lengthOf(index).equals(IndexLengthType.RANGE))
+                .filter(index -> !isAmbiguousIndexHashKey(index, indexes))
+                .map(index -> {
+                    PojoClassBuilder pojo = new PojoClassBuilder(document);
+                    pojo.setIndex(index, IndexLengthType.HASH);
+                    leafPojoTypes.stream()
+                            .filter(leaf -> leaf.fieldSpecs.containsAll(pojo.getFields()))
+                            .forEach(pojo::addWither);
+                    return pojo;
+                })
+                .collect(toList());
     }
 
-    private String getDynoDaoPackageName(TypeElement document) {
-        DynoDao dynoDao = document.getAnnotation(DynoDao.class);
-        String packageName = dynoDao.implPackage();
-        if (packageName == null || packageName.isEmpty()) {
-            return processorContext.getElementUtils().getPackageOf(document).toString();
-        } else {
-            return packageName;
+    private Set<DynamoIndex> getAmbiguousHashKeyIndexes(DynamoIndex index, Set<DynamoIndex> indexes) {
+        Stream<DynamoIndex> stream = indexes.stream()
+                .filter(i -> !i.equals(index))
+                .filter(i -> i.getHashKey().equals(index.getHashKey()));
+        if (!index.getIndexType().equals(IndexType.GLOBAL_SECONDARY_INDEX)) {
+            stream = stream.filter(i -> i.getIndexType().equals(IndexType.GLOBAL_SECONDARY_INDEX));
         }
+        return stream.collect(toSet());
+    }
+
+    private boolean isAmbiguousIndexHashKey(DynamoIndex index, Set<DynamoIndex> indexes) {
+        return !getAmbiguousHashKeyIndexes(index, indexes).isEmpty();
     }
 
 }
