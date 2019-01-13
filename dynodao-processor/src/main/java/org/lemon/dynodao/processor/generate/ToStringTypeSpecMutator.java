@@ -32,6 +32,20 @@ class ToStringTypeSpecMutator implements TypeSpecMutator {
     }
 
     private MethodSpec buildToString(String className, PojoClassBuilder pojo) {
+        if (pojo.getFields().isEmpty()) {
+            return buildNoFieldsToString(className);
+        } else {
+            return buildPojoToString(className, pojo);
+        }
+    }
+
+    private MethodSpec buildNoFieldsToString(String className) {
+        return toStringWithNoBody.toBuilder()
+                .addStatement("return $S", className + "()")
+                .build();
+    }
+
+    private MethodSpec buildPojoToString(String className, PojoClassBuilder pojo) {
         MethodSpec.Builder toString = toStringWithNoBody.toBuilder()
                 .addStatement("$T sb = new $T()", StringBuilder.class, StringBuilder.class)
                 .addStatement("sb.append($S)", className + "(");
