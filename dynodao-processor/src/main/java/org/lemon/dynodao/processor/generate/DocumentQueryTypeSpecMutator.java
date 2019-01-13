@@ -6,6 +6,7 @@ import static org.lemon.dynodao.processor.util.DynamoDbUtil.dynamoDbMapper;
 import static org.lemon.dynodao.processor.util.DynamoDbUtil.dynamoDbQueryExpression;
 import static org.lemon.dynodao.processor.util.DynamoDbUtil.paginatedList;
 
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
 import com.squareup.javapoet.MethodSpec;
 import com.squareup.javapoet.ParameterSpec;
 import com.squareup.javapoet.TypeName;
@@ -20,6 +21,10 @@ import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
 
+/**
+ * Implements the {@link org.lemon.dynodao.DocumentQuery#query(DynamoDBMapper)} method. If the type does not implement
+ * {@link org.lemon.dynodao.DocumentQuery}, then nothing is added.
+ */
 class DocumentQueryTypeSpecMutator implements TypeSpecMutator {
 
     @Inject ProcessorContext processorContext;
@@ -34,12 +39,11 @@ class DocumentQueryTypeSpecMutator implements TypeSpecMutator {
 
         TypeElement interfaceType = processorContext.getElementUtils().getTypeElement(InterfaceType.DOCUMENT_QUERY.getInterfaceClass().get().getCanonicalName());
         ExecutableElement method = (ExecutableElement) interfaceType.getEnclosedElements().iterator().next();
-        MethodSpec.Builder load = MethodSpec.methodBuilder(method.getSimpleName().toString())
+        queryWithNoReturnOrBody = MethodSpec.methodBuilder(method.getSimpleName().toString())
                 .addAnnotation(Override.class)
                 .addModifiers(Modifier.PUBLIC)
-                .addParameter(dynamoDbMapperParam);
-
-        queryWithNoReturnOrBody = load.build();
+                .addParameter(dynamoDbMapperParam)
+                .build();
     }
 
     @Override

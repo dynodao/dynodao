@@ -6,6 +6,9 @@ import org.lemon.dynodao.processor.model.PojoClassBuilder;
 import javax.inject.Inject;
 import javax.lang.model.element.Modifier;
 
+/**
+ * Adds the appropriate modifiers to the type.
+ */
 class ModifiersTypeSpecMutator implements TypeSpecMutator {
 
     @Inject ModifiersTypeSpecMutator() { }

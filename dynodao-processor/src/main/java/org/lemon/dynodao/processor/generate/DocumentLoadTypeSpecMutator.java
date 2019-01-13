@@ -2,6 +2,7 @@ package org.lemon.dynodao.processor.generate;
 
 import static org.lemon.dynodao.processor.util.DynamoDbUtil.dynamoDbMapper;
 
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
 import com.squareup.javapoet.FieldSpec;
 import com.squareup.javapoet.MethodSpec;
 import com.squareup.javapoet.ParameterSpec;
@@ -18,6 +19,10 @@ import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
 import java.util.Iterator;
 
+/**
+ * Implements the {@link org.lemon.dynodao.DocumentLoad#load(DynamoDBMapper)} method. If the type does not implement
+ * {@link org.lemon.dynodao.DocumentLoad}, then nothing is added.
+ */
 class DocumentLoadTypeSpecMutator implements TypeSpecMutator {
 
     @Inject ProcessorContext processorContext;
@@ -32,12 +37,11 @@ class DocumentLoadTypeSpecMutator implements TypeSpecMutator {
 
         TypeElement interfaceType = processorContext.getElementUtils().getTypeElement(InterfaceType.DOCUMENT_LOAD.getInterfaceClass().get().getCanonicalName());
         ExecutableElement method = (ExecutableElement) interfaceType.getEnclosedElements().iterator().next();
-        MethodSpec.Builder load = MethodSpec.methodBuilder(method.getSimpleName().toString())
+        loadWithNoReturnOrBody = MethodSpec.methodBuilder(method.getSimpleName().toString())
                 .addAnnotation(Override.class)
                 .addModifiers(Modifier.PUBLIC)
-                .addParameter(dynamoDbMapperParam);
-
-        loadWithNoReturnOrBody = load.build();
+                .addParameter(dynamoDbMapperParam)
+                .build();
     }
 
     @Override

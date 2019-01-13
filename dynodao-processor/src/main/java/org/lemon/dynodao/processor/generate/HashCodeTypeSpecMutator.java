@@ -11,6 +11,9 @@ import javax.lang.model.element.Modifier;
 import java.util.Objects;
 import java.util.stream.Stream;
 
+/**
+ * Adds a decent implementation of {@link Object#hashCode()}} to the type, delegating to {@link Objects#hash(Object...)}.
+ */
 class HashCodeTypeSpecMutator implements TypeSpecMutator {
 
     private MethodSpec hashCodeWithNoBody;

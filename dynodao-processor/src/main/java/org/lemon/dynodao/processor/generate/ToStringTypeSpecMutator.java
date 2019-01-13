@@ -9,6 +9,10 @@ import javax.inject.Inject;
 import javax.lang.model.element.Modifier;
 import java.util.Iterator;
 
+/**
+ * Adds a decent {@link Object#toString()} to the type. Creates an output similar to
+ * <code>"Pojo(field1=field1sToString, field2=field2Bro)"</code>.
+ */
 class ToStringTypeSpecMutator implements TypeSpecMutator {
 
     private MethodSpec toStringWithNoBody;

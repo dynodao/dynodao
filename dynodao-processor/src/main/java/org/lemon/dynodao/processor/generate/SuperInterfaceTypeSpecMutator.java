@@ -8,6 +8,10 @@ import org.lemon.dynodao.processor.model.PojoClassBuilder;
 
 import javax.inject.Inject;
 
+/**
+ * Adds the appropriate implementing interfaces to the type. These include {@link org.lemon.dynodao.DocumentLoad}
+ * and {@link org.lemon.dynodao.DocumentQuery}.
+ */
 class SuperInterfaceTypeSpecMutator implements TypeSpecMutator {
 
     @Inject SuperInterfaceTypeSpecMutator() { }

@@ -12,6 +12,10 @@ import javax.inject.Inject;
 import javax.lang.model.element.Modifier;
 import java.util.Objects;
 
+/**
+ * Adds a decent implementation of {@link Object#equals(Object)} to the type, delegating
+ * to {@link Objects#equals(Object, Object)}, field by field.
+ */
 class EqualsTypeSpecMutator implements TypeSpecMutator {
 
     @Inject ProcessorContext processorContext;

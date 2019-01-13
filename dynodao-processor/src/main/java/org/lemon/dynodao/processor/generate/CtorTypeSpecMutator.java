@@ -8,6 +8,9 @@ import org.lemon.dynodao.processor.model.PojoClassBuilder;
 
 import javax.inject.Inject;
 
+/**
+ * Adds an all args constructor the type being built. If the type has no fields, nothing is added.
+ */
 class CtorTypeSpecMutator implements TypeSpecMutator {
 
     @Inject CtorTypeSpecMutator() { }
