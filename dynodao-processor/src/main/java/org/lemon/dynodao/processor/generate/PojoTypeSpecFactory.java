@@ -16,6 +16,8 @@ public class PojoTypeSpecFactory {
     @Inject CtorTypeSpecMutator ctorTypeSpecMutator;
     @Inject DocumentLoadTypeSpecMutator documentLoadTypeSpecMutator;
     @Inject DocumentQueryTypeSpecMutator documentQueryTypeSpecMutator;
+    @Inject EqualsTypeSpecMutator equalsTypeSpecMutator;
+    @Inject HashCodeTypeSpecMutator hashCodeTypeSpecMutator;
 
     @Inject PojoTypeSpecFactory() { }
 
@@ -48,5 +50,8 @@ public class PojoTypeSpecFactory {
 
         documentLoadTypeSpecMutator.mutate(typeSpec, pojo);
         documentQueryTypeSpecMutator.mutate(typeSpec, pojo);
+
+        equalsTypeSpecMutator.mutate(typeSpec, pojo);
+        hashCodeTypeSpecMutator.mutate(typeSpec, pojo);
     }
 }
