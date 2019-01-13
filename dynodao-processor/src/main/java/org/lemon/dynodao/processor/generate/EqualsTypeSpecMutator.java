@@ -61,7 +61,7 @@ class EqualsTypeSpecMutator implements TypeSpecMutator {
                 .addStatement("$L rhs = ($L) $N", className, className, objectParam);
 
         String equal = pojo.getFields().stream()
-                .map(field -> String.format("$T.deepEquals(this.%s, rhs.%s)", field.name, field.name))
+                .map(field -> String.format("$T.equals(this.%s, rhs.%s)", field.name, field.name))
                 .collect(joining(" && "));
         Object[] objects = pojo.getFields().stream().map(f -> Objects.class).toArray();
 

@@ -4,7 +4,6 @@ import static java.util.stream.Collectors.joining;
 
 import com.squareup.javapoet.MethodSpec;
 import com.squareup.javapoet.TypeSpec;
-import org.lemon.dynodao.processor.context.ProcessorContext;
 import org.lemon.dynodao.processor.model.PojoClassBuilder;
 
 import javax.inject.Inject;
@@ -13,8 +12,6 @@ import java.util.Objects;
 import java.util.stream.Stream;
 
 class HashCodeTypeSpecMutator implements TypeSpecMutator {
-
-    @Inject ProcessorContext processorContext;
 
     private MethodSpec hashCodeWithNoBody;
 
