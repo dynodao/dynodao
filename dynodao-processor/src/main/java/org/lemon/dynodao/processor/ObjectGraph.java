@@ -6,8 +6,6 @@ import dagger.Provides;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import org.lemon.dynodao.processor.context.ProcessorContext;
-import org.lemon.dynodao.processor.generate.IndexPojoGenerator;
-import org.lemon.dynodao.processor.index.DynamoIndexParser;
 
 @Component(modules = ContextModule.class)
 public interface ObjectGraph {

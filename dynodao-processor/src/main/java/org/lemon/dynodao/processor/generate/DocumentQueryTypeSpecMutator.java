@@ -1,4 +1,4 @@
-package org.lemon.dynodao.processor.generate.type;
+package org.lemon.dynodao.processor.generate;
 
 import static java.util.stream.Collectors.joining;
 import static org.lemon.dynodao.processor.util.DynamoDbUtil.attributeValue;
@@ -14,7 +14,6 @@ import org.lemon.dynodao.processor.context.ProcessorContext;
 import org.lemon.dynodao.processor.index.IndexType;
 import org.lemon.dynodao.processor.model.InterfaceType;
 import org.lemon.dynodao.processor.model.PojoClassBuilder;
-import org.lemon.dynodao.processor.util.DynamoDbUtil;
 
 import javax.inject.Inject;
 import javax.lang.model.element.ExecutableElement;

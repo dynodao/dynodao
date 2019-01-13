@@ -6,12 +6,14 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
+        <module name="dynodao" />
         <module name="dynodao-annotations" />
         <module name="dynodao-playground" />
         <module name="dynodao-processor" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
+      <module name="dynodao" target="1.8" />
       <module name="dynodao-annotations" target="1.8" />
       <module name="dynodao-playground" target="1.8" />
       <module name="dynodao-processor" target="1.8" />

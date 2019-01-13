@@ -1,4 +1,4 @@
-package org.lemon.dynodao.processor.generate.type;
+package org.lemon.dynodao.processor.generate;
 
 import com.squareup.javapoet.TypeSpec;
 import org.lemon.dynodao.processor.model.PojoClassBuilder;

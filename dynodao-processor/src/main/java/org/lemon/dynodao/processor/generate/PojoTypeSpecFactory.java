@@ -1,4 +1,4 @@
-package org.lemon.dynodao.processor.generate.type;
+package org.lemon.dynodao.processor.generate;
 
 import static org.lemon.dynodao.processor.util.StringUtil.capitalize;
 

@@ -1,10 +1,10 @@
 package org.lemon.dynodao.processor.index;
 
-import java.util.Optional;
-import javax.lang.model.element.VariableElement;
-
 import lombok.Builder;
 import lombok.Value;
+
+import javax.lang.model.element.VariableElement;
+import java.util.Optional;
 
 /**
  * A dynamo index present according to a document class.

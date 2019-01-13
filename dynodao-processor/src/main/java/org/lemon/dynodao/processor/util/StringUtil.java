@@ -1,8 +1,8 @@
 package org.lemon.dynodao.processor.util;
 
-import javax.lang.model.element.Element;
-
 import lombok.experimental.UtilityClass;
+
+import javax.lang.model.element.Element;
 
 @UtilityClass
 public class StringUtil {

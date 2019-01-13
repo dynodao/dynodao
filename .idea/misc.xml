@@ -3,7 +3,7 @@
   <component name="MavenProjectsManager">
     <option name="originalFiles">
       <list>
-        <option value="$PROJECT_DIR$/dynodao-annotations/pom.xml" />
+        <option value="$PROJECT_DIR$/dynodao-api/pom.xml" />
         <option value="$PROJECT_DIR$/dynodao-processor/pom.xml" />
         <option value="$PROJECT_DIR$/dynodao-playground/pom.xml" />
       </list>

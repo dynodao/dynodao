@@ -1,11 +1,11 @@
 package org.lemon.dynodao.processor.index;
 
-import java.util.HashSet;
-import java.util.Set;
+import org.lemon.dynodao.processor.context.ProcessorContext;
+
 import javax.inject.Inject;
 import javax.lang.model.element.TypeElement;
-
-import org.lemon.dynodao.processor.context.ProcessorContext;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Parses a dynamo document class and extracts all of the indexes that the table has.
