@@ -4,6 +4,7 @@ import static com.google.common.base.Preconditions.checkState;
 
 import lombok.RequiredArgsConstructor;
 
+import javax.annotation.processing.Filer;
 import javax.annotation.processing.ProcessingEnvironment;
 import javax.annotation.processing.RoundEnvironment;
 import javax.lang.model.util.Elements;
@@ -25,17 +26,24 @@ public class ProcessorContext {
     private final List<ProcessorMessage> messages = new ArrayList<>();
 
     /**
-     * @return the elements utils
+     * @return the {@link Elements} utils
      */
     public Elements getElementUtils() {
         return processingEnvironment.getElementUtils();
     }
 
     /**
-     * @return the types utils
+     * @return the {@link Types} utils
      */
     public Types getTypeUtils() {
         return processingEnvironment.getTypeUtils();
+    }
+
+    /**
+     * @return the {@link Filer}
+     */
+    public Filer getFiler() {
+        return processingEnvironment.getFiler();
     }
 
     /**

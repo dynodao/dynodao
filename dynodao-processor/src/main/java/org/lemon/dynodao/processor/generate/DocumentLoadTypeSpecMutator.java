@@ -58,9 +58,9 @@ class DocumentLoadTypeSpecMutator implements TypeSpecMutator {
 
         Iterator<FieldSpec> fields = pojo.getFields().iterator();
         if (pojo.getIndexLengthType().equals(IndexLengthType.HASH)) {
-            load.addStatement("return $N.load($N)", dynamoDbMapperParam, fields.next());
+            load.addStatement("return $N.load($T.class, $N)", dynamoDbMapperParam, pojo.getDocument().asType(), fields.next());
         } else {
-            load.addStatement("return $N.load($N, $N)", dynamoDbMapperParam, fields.next(), fields.next());
+            load.addStatement("return $N.load($T.class, $N, $N)", dynamoDbMapperParam, pojo.getDocument().asType(), fields.next(), fields.next());
         }
 
         return load.build();

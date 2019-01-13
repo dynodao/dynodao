@@ -3,6 +3,7 @@ package org.lemon.dynodao.processor;
 import static java.util.stream.Collectors.toSet;
 
 import com.google.auto.service.AutoService;
+import com.squareup.javapoet.JavaFile;
 import com.squareup.javapoet.TypeSpec;
 import org.lemon.dynodao.DynoDao;
 import org.lemon.dynodao.processor.context.ProcessorContext;
@@ -22,6 +23,8 @@ import javax.inject.Inject;
 import javax.lang.model.SourceVersion;
 import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.TypeElement;
+import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -78,7 +81,7 @@ public class DynoDaoProcessor extends AbstractProcessor {
                     .map(pojoTypeSpecFactory::build)
                     .collect(toSet());
 
-            processorContext.submitError(types.stream().toArray());
+            types.forEach(type -> write(document, type));
         }
     }
 
@@ -96,6 +99,27 @@ public class DynoDaoProcessor extends AbstractProcessor {
             pojos.add(pojo);
         }
         return pojos;
+    }
+
+    private void write(TypeElement document, TypeSpec type) {
+        JavaFile file = JavaFile.builder(getDynoDaoPackageName(document), type)
+                .indent("    ")
+                .build();
+        try {
+            file.writeTo(processorContext.getFiler());
+        } catch (IOException e) {
+            throw new UncheckedIOException(String.format("got IOException when writing file\n%s", file), e);
+        }
+    }
+
+    private String getDynoDaoPackageName(TypeElement document) {
+        DynoDao dynoDao = document.getAnnotation(DynoDao.class);
+        String packageName = dynoDao.implPackage();
+        if (packageName == null || packageName.isEmpty()) {
+            return processorContext.getElementUtils().getPackageOf(document).toString();
+        } else {
+            return packageName;
+        }
     }
 
 }
