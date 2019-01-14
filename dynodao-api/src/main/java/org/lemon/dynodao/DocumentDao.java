@@ -25,7 +25,7 @@ public class DocumentDao {
      * @param <T> the type of document to get
      * @return the document with the given key
      */
-    public <T> T get(DocumentLoad<T> loader) {
+    public <T> List<T> get(DocumentLoad<T> loader) {
         return loader.load(dynamoDbMapper);
     }
 

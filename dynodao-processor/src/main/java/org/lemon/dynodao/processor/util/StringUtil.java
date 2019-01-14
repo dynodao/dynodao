@@ -1,5 +1,10 @@
 package org.lemon.dynodao.processor.util;
 
+import static java.util.stream.Collectors.joining;
+
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
 import lombok.experimental.UtilityClass;
 
 import javax.lang.model.element.Element;
@@ -50,6 +55,20 @@ public class StringUtil {
 
     private static boolean isLegalIdentifierCharacter(char ch, int index) {
         return Character.isJavaLetter(ch) || (index > 0 && Character.isJavaLetterOrDigit(ch));
+    }
+
+    /**
+     * Repeats the string <tt>n</tt> times, putting the <tt>delimiter</tt> between each repetition.
+     * @param n the number of times to repeat
+     * @param toRepeat the string to repeat
+     * @param delimiter the delimiter to place between each string
+     * @return
+     */
+    public static String repeat(int n, String toRepeat, String delimiter) {
+        return Stream.iterate(0, i -> i + 1)
+                .limit(n)
+                .map(i -> toRepeat)
+                .collect(joining(delimiter));
     }
 
 }

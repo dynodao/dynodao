@@ -2,11 +2,12 @@ package org.lemon.dynodao.processor.generate;
 
 import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.toList;
+import static org.lemon.dynodao.processor.util.StreamUtil.concat;
 import static org.lemon.dynodao.processor.util.StringUtil.capitalize;
+import static org.lemon.dynodao.processor.util.StringUtil.repeat;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Stream;
 
 import javax.inject.Inject;
 import javax.lang.model.element.Modifier;
@@ -39,10 +40,8 @@ class WitherTypeSpecMutator implements TypeSpecMutator {
         List<ParameterSpec> params = getRequiredParameters(pojo, targetWither);
         ClassName type = ClassName.bestGuess(targetWither.name);
 
-        String argsFormat = Stream.concat(pojo.getFields().stream(), params.stream())
-                .map(obj -> "$N")
-                .collect(joining(", "));
-        Object[] args = Stream.concat(Stream.of(type), Stream.concat(pojo.getFields().stream(), params.stream())).toArray();
+        String argsFormat = repeat(pojo.getFields().size() + params.size(), "$N", ", ");
+        Object[] args = concat(type, pojo.getFields(), params).toArray();
 
         return MethodSpec.methodBuilder(getMethodName(params))
                 .addModifiers(Modifier.PUBLIC)

@@ -1,9 +1,9 @@
 package org.lemon.dynodao.processor.generate;
 
-import static java.util.stream.Collectors.joining;
+import static org.lemon.dynodao.processor.util.StreamUtil.concat;
+import static org.lemon.dynodao.processor.util.StringUtil.repeat;
 
 import java.util.Objects;
-import java.util.stream.Stream;
 
 import javax.inject.Inject;
 import javax.lang.model.element.Modifier;
@@ -38,10 +38,8 @@ class HashCodeTypeSpecMutator implements TypeSpecMutator {
 
     private MethodSpec buildHashCode(PojoClassBuilder pojo) {
         MethodSpec.Builder hashCode = hashCodeWithNoBody.toBuilder();
-        String hashCodeParams = pojo.getFields().stream()
-                .map(field -> "$N")
-                .collect(joining(", "));
-        Object[] args = Stream.concat(Stream.of(Objects.class), pojo.getFields().stream()).toArray();
+        String hashCodeParams = repeat(pojo.getFields().size(), "$N", ", ");
+        Object[] args = concat(Objects.class, pojo.getFields()).toArray();
         return hashCode
                 .addStatement("return $T.hash(" + hashCodeParams + ")", args)
                 .build();
