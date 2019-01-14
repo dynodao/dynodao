@@ -5,7 +5,6 @@ import static org.lemon.dynodao.processor.util.StringUtil.toClassCase;
 
 import javax.inject.Inject;
 
-import org.lemon.dynodao.processor.index.IndexType;
 import org.lemon.dynodao.processor.model.IndexLengthType;
 import org.lemon.dynodao.processor.model.PojoClassBuilder;
 import org.lemon.dynodao.processor.model.PojoTypeSpec;
@@ -19,6 +18,7 @@ public class PojoTypeSpecFactory {
     @Inject FieldTypeSpecMutator fieldTypeSpecMutator;
     @Inject CtorTypeSpecMutator ctorTypeSpecMutator;
     @Inject WitherTypeSpecMutator witherTypeSpecMutator;
+    @Inject AgainsterTypeSpecMutator againsterTypeSpecMutator;
     @Inject DocumentLoadTypeSpecMutator documentLoadTypeSpecMutator;
     @Inject DocumentQueryTypeSpecMutator documentQueryTypeSpecMutator;
     @Inject EqualsTypeSpecMutator equalsTypeSpecMutator;
@@ -34,13 +34,17 @@ public class PojoTypeSpecFactory {
     }
 
     private String getClassName(PojoClassBuilder pojo) {
+        if (pojo.getDynamoIndex() == null) {
+            return getStagedBuilderClassName(pojo);
+        } else {
+            return getIndexPojoClassName(pojo);
+        }
+    }
+
+    private String getIndexPojoClassName(PojoClassBuilder pojo) {
         StringBuilder name = new StringBuilder();
 
-        if (pojo.getDynamoIndex().getIndexType().equals(IndexType.TABLE)) {
-            name.append("Table");
-        } else {
-            name.append(toClassCase(pojo.getDynamoIndex().getName()));
-        }
+        name.append(toClassCase(pojo.getDynamoIndex().getName()));
 
         if (pojo.getIndexLengthType().compareTo(IndexLengthType.HASH) >= 0) {
             name.append(capitalize(pojo.getDynamoIndex().getHashKey()));
@@ -51,8 +55,12 @@ public class PojoTypeSpecFactory {
 
         name.append(pojo.getDocument().getSimpleName());
 
-        name.append(pojo.getInterfaceType().getInterfaceClass().getSimpleName());
+        pojo.getInterfaceType().getInterfaceClass().ifPresent(clazz -> name.append(clazz.getSimpleName()));
         return name.toString();
+    }
+
+    private String getStagedBuilderClassName(PojoClassBuilder pojo) {
+        return pojo.getDocument().getSimpleName() + "StagedDynamoBuilder";
     }
 
     private void mutate(TypeSpec.Builder typeSpec, PojoClassBuilder pojo) {
@@ -62,6 +70,7 @@ public class PojoTypeSpecFactory {
         ctorTypeSpecMutator.mutate(typeSpec, pojo);
 
         witherTypeSpecMutator.mutate(typeSpec, pojo);
+        againsterTypeSpecMutator.mutate(typeSpec, pojo);
 
         documentLoadTypeSpecMutator.mutate(typeSpec, pojo);
         documentQueryTypeSpecMutator.mutate(typeSpec, pojo);

@@ -38,7 +38,7 @@ class DocumentQueryTypeSpecMutator implements TypeSpecMutator {
     @Inject void init() {
         dynamoDbMapperParam = ParameterSpec.builder(dynamoDbMapper(), "dynamoDbMapper").build();
 
-        TypeElement interfaceType = processorContext.getElementUtils().getTypeElement(InterfaceType.DOCUMENT_QUERY.getInterfaceClass().getCanonicalName());
+        TypeElement interfaceType = processorContext.getElementUtils().getTypeElement(InterfaceType.DOCUMENT_QUERY.getInterfaceClass().get().getCanonicalName());
         ExecutableElement method = (ExecutableElement) interfaceType.getEnclosedElements().iterator().next();
         queryWithNoReturnOrBody = MethodSpec.methodBuilder(method.getSimpleName().toString())
                 .addAnnotation(Override.class)

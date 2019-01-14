@@ -37,7 +37,7 @@ class DocumentLoadTypeSpecMutator implements TypeSpecMutator {
     @Inject void init() {
         dynamoDbMapperParam = ParameterSpec.builder(dynamoDbMapper(), "dynamoDbMapper").build();
 
-        TypeElement interfaceType = processorContext.getElementUtils().getTypeElement(InterfaceType.DOCUMENT_LOAD.getInterfaceClass().getCanonicalName());
+        TypeElement interfaceType = processorContext.getElementUtils().getTypeElement(InterfaceType.DOCUMENT_LOAD.getInterfaceClass().get().getCanonicalName());
         ExecutableElement method = (ExecutableElement) interfaceType.getEnclosedElements().iterator().next();
         loadWithNoReturnOrBody = MethodSpec.methodBuilder(method.getSimpleName().toString())
                 .addAnnotation(Override.class)

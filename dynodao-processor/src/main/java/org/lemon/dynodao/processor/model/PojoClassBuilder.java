@@ -30,10 +30,11 @@ public class PojoClassBuilder {
     private final List<FieldSpec> fields = new ArrayList<>();
 
     private DynamoIndex dynamoIndex;
-    private IndexLengthType indexLengthType;
-    private InterfaceType interfaceType;
+    private IndexLengthType indexLengthType = IndexLengthType.NONE;
+    private InterfaceType interfaceType = InterfaceType.NONE;
 
     private final List<TypeSpec> targetWithers = new ArrayList<>();
+    private final List<PojoTypeSpec> targetAgainstIndexes = new ArrayList<>();
 
     /**
      * @param index the index to use
@@ -71,6 +72,18 @@ public class PojoClassBuilder {
         if (Objects.equals(dynamoIndex, pojo.getDynamoIndex()) && pojo.getFields().containsAll(fields)) {
             targetWithers.add(targetPojoWither.getTypeSpec());
         }
+    }
+
+    /**
+     * Adds the pojos which <tt>this</tt> pojo should have an <tt>against</tt> method for.
+     * @param pojos the existing pojo types
+     * @return <tt>this</tt>
+     */
+    public PojoClassBuilder addApplicableAgainsters(Collection<PojoTypeSpec> pojos) {
+        pojos.stream()
+                .filter(pojo -> pojo.getPojo().getDynamoIndex() != null)
+                .forEach(targetAgainstIndexes::add);
+        return this;
     }
 
 }

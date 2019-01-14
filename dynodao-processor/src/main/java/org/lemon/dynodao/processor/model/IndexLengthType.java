@@ -1,18 +1,28 @@
 package org.lemon.dynodao.processor.model;
 
+import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonList;
 
-import java.util.Arrays;
-import java.util.List;
+import org.lemon.dynodao.processor.index.DynamoIndex;
 
 import javax.lang.model.element.VariableElement;
-
-import org.lemon.dynodao.processor.index.DynamoIndex;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * The length of a dynamo index.
  */
 public enum IndexLengthType {
+
+    /**
+     * A placeholder length, to specify there is no index.
+     */
+    NONE() {
+        @Override
+        public List<VariableElement> getFields(DynamoIndex index) {
+            return emptyList();
+        }
+    },
 
     /**
      * The index only has a hash key.

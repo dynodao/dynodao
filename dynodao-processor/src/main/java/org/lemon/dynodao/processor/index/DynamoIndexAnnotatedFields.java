@@ -79,7 +79,7 @@ class DynamoIndexAnnotatedFields {
     DynamoIndex getTable() {
         return DynamoIndex.builder()
                 .indexType(IndexType.TABLE)
-                .name("<TABLE>")
+                .name("<table>")
                 .hashKey(getHashKey())
                 .rangeKey(getRangeKey())
                 .build();

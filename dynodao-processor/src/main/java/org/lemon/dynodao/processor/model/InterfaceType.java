@@ -1,25 +1,28 @@
 package org.lemon.dynodao.processor.model;
 
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import org.lemon.dynodao.DocumentLoad;
 import org.lemon.dynodao.DocumentQuery;
 import org.lemon.dynodao.processor.index.DynamoIndex;
 import org.lemon.dynodao.processor.index.IndexType;
 
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import java.util.Optional;
 
 /**
- * Indicates which of {@link DocumentLoad} or {@link DocumentQuery} interfaces a type should implement.
+ * Indicates which of {@link DocumentLoad} or {@link DocumentQuery} interfaces a type
+ * should implement, if any.
  */
 @Getter
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public enum InterfaceType {
 
-    DOCUMENT_LOAD(DocumentLoad.class),
-    DOCUMENT_QUERY(DocumentQuery.class);
+    NONE(Optional.empty()),
+    DOCUMENT_LOAD(Optional.of(DocumentLoad.class)),
+    DOCUMENT_QUERY(Optional.of(DocumentQuery.class));
 
-    private final Class<?> interfaceClass;
+    private final Optional<Class<?>> interfaceClass;
 
     /**
      * Returns the interface for the given index and length type.
@@ -28,10 +31,12 @@ public enum InterfaceType {
      * @return the interface type, either load or query
      */
     public static InterfaceType typeOf(DynamoIndex index, IndexLengthType indexLengthType) {
-        if (IndexLengthType.lengthOf(index).equals(indexLengthType) && index.getIndexType().equals(IndexType.TABLE)) {
+        if (indexLengthType.equals(IndexLengthType.NONE)) {
+            return NONE;
+        } else if (IndexLengthType.lengthOf(index).equals(indexLengthType) && index.getIndexType().equals(IndexType.TABLE)) {
             return DOCUMENT_LOAD;
         } else {
-            return InterfaceType.DOCUMENT_QUERY;
+            return DOCUMENT_QUERY;
         }
     }
 

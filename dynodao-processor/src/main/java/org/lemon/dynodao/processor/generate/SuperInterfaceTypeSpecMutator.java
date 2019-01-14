@@ -19,8 +19,10 @@ class SuperInterfaceTypeSpecMutator implements TypeSpecMutator {
 
     @Override
     public void mutate(TypeSpec.Builder typeSpec, PojoClassBuilder pojo) {
-        TypeName sup = ParameterizedTypeName.get(ClassName.get(pojo.getInterfaceType().getInterfaceClass()), TypeName.get(pojo.getDocument().asType()));
-        typeSpec.addSuperinterface(sup);
+        pojo.getInterfaceType().getInterfaceClass().ifPresent(interfaceClass -> {
+            TypeName sup = ParameterizedTypeName.get(ClassName.get(interfaceClass), TypeName.get(pojo.getDocument().asType()));
+            typeSpec.addSuperinterface(sup);
+        });
     }
 
 }
