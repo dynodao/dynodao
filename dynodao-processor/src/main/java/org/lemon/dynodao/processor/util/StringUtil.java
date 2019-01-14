@@ -2,12 +2,11 @@ package org.lemon.dynodao.processor.util;
 
 import static java.util.stream.Collectors.joining;
 
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import lombok.experimental.UtilityClass;
-
 import javax.lang.model.element.Element;
+
+import lombok.experimental.UtilityClass;
 
 @UtilityClass
 public class StringUtil {

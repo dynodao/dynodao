@@ -1,14 +1,11 @@
 package org.lemon.dynodao.processor.generate;
 
-import static java.util.stream.Collectors.joining;
 import static org.lemon.dynodao.processor.util.DynamoDbUtil.dynamoDbMapper;
 import static org.lemon.dynodao.processor.util.StreamUtil.concat;
 import static org.lemon.dynodao.processor.util.StringUtil.repeat;
 
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
-import java.util.stream.Stream;
 
 import javax.inject.Inject;
 import javax.lang.model.element.ExecutableElement;
@@ -16,14 +13,11 @@ import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
 
 import org.lemon.dynodao.processor.context.ProcessorContext;
-import org.lemon.dynodao.processor.model.IndexLengthType;
 import org.lemon.dynodao.processor.model.InterfaceType;
 import org.lemon.dynodao.processor.model.PojoClassBuilder;
-import org.lemon.dynodao.processor.util.StreamUtil;
 
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
 import com.squareup.javapoet.ClassName;
-import com.squareup.javapoet.FieldSpec;
 import com.squareup.javapoet.MethodSpec;
 import com.squareup.javapoet.ParameterSpec;
 import com.squareup.javapoet.ParameterizedTypeName;

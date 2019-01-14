@@ -2,12 +2,13 @@ package org.lemon.dynodao.processor.context;
 
 import static com.google.common.base.Preconditions.checkState;
 
+import java.util.Optional;
+
 import javax.annotation.processing.Messager;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.AnnotationValue;
 import javax.lang.model.element.Element;
 import javax.tools.Diagnostic;
-import java.util.Optional;
 
 /**
  * A message to display during the compilation phase.

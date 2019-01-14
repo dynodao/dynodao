@@ -3,11 +3,12 @@ package org.lemon.dynodao.processor.model;
 import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonList;
 
-import org.lemon.dynodao.processor.index.DynamoIndex;
-
-import javax.lang.model.element.VariableElement;
 import java.util.Arrays;
 import java.util.List;
+
+import javax.lang.model.element.VariableElement;
+
+import org.lemon.dynodao.processor.index.DynamoIndex;
 
 /**
  * The length of a dynamo index.

@@ -2,7 +2,8 @@ package org.lemon.dynodao.processor.context;
 
 import static com.google.common.base.Preconditions.checkState;
 
-import lombok.RequiredArgsConstructor;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.annotation.processing.Filer;
 import javax.annotation.processing.ProcessingEnvironment;
@@ -10,8 +11,8 @@ import javax.annotation.processing.RoundEnvironment;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
 import javax.tools.Diagnostic;
-import java.util.ArrayList;
-import java.util.List;
+
+import lombok.RequiredArgsConstructor;
 
 /**
  * Keeps contextual data for the application (AP) scope.

@@ -1,12 +1,12 @@
 package org.lemon.dynodao.processor.util;
 
+import javax.lang.model.element.TypeElement;
+
 import com.squareup.javapoet.ClassName;
-import com.squareup.javapoet.ParameterSpec;
 import com.squareup.javapoet.ParameterizedTypeName;
 import com.squareup.javapoet.TypeName;
-import lombok.experimental.UtilityClass;
 
-import javax.lang.model.element.TypeElement;
+import lombok.experimental.UtilityClass;
 
 @UtilityClass
 public class DynamoDbUtil {

@@ -1,11 +1,12 @@
 package org.lemon.dynodao.processor;
 
+import org.lemon.dynodao.processor.context.ProcessorContext;
+
 import dagger.Component;
 import dagger.Module;
 import dagger.Provides;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
-import org.lemon.dynodao.processor.context.ProcessorContext;
 
 /**
  * Dagger component to inject the processor.
