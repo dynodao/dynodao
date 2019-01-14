@@ -15,6 +15,7 @@ public class StreamUtil {
      * @param objs the objects, or collections to be in the stream
      * @return the flattened single stream
      */
+    @SuppressWarnings("unchecked")
     public static Stream<Object> concat(Object... objs) {
         return Arrays.stream(objs)
                 .flatMap(obj -> {

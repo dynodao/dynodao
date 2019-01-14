@@ -53,7 +53,7 @@ public class StringUtil {
     }
 
     private static boolean isLegalIdentifierCharacter(char ch, int index) {
-        return Character.isJavaLetter(ch) || (index > 0 && Character.isJavaLetterOrDigit(ch));
+        return Character.isJavaIdentifierStart(ch) || (index > 0 && Character.isJavaIdentifierPart(ch));
     }
 
     /**
