@@ -1,14 +1,16 @@
 package org.lemon.dynodao.processor;
 
-import com.squareup.javapoet.JavaFile;
-import com.squareup.javapoet.TypeSpec;
-import org.lemon.dynodao.DynoDao;
-import org.lemon.dynodao.processor.context.ProcessorContext;
+import java.io.IOException;
+import java.io.UncheckedIOException;
 
 import javax.inject.Inject;
 import javax.lang.model.element.TypeElement;
-import java.io.IOException;
-import java.io.UncheckedIOException;
+
+import org.lemon.dynodao.DynoDao;
+import org.lemon.dynodao.processor.context.ProcessorContext;
+import org.lemon.dynodao.processor.model.PojoTypeSpec;
+
+import com.squareup.javapoet.JavaFile;
 
 /**
  * Creates files specified by {@link com.squareup.javapoet.TypeSpec}s.
@@ -22,19 +24,19 @@ class TypeSpecWriter {
     /**
      * Writes all of the type specs to file.
      * @param document the type annotated with {@link DynoDao}
-     * @param typeSpecs all of the types the document creates
+     * @param pojoTypeSpecs all of the types the document creates
      */
-    void writeAll(TypeElement document, Iterable<TypeSpec> typeSpecs) {
-        typeSpecs.forEach(typeSpec -> write(document, typeSpec));
+    void writeAll(TypeElement document, Iterable<PojoTypeSpec> pojoTypeSpecs) {
+        pojoTypeSpecs.forEach(typeSpec -> write(document, typeSpec));
     }
 
     /**
      * Writes a single type spec to file.
      * @param document the type annotated with {@link DynoDao}
-     * @param typeSpec a type the annotated class creates
+     * @param pojoTypeSpec a type the annotated class creates
      */
-    void write(TypeElement document, TypeSpec typeSpec) {
-        JavaFile file = JavaFile.builder(getDynoDaoPackageName(document), typeSpec)
+    void write(TypeElement document, PojoTypeSpec pojoTypeSpec) {
+        JavaFile file = JavaFile.builder(getDynoDaoPackageName(document), pojoTypeSpec.getTypeSpec())
                 .indent("    ")
                 .skipJavaLangImports(true)
                 .build();

@@ -1,10 +1,11 @@
 package org.lemon.dynodao.processor.generate;
 
-import com.squareup.javapoet.TypeSpec;
-import org.lemon.dynodao.processor.model.PojoClassBuilder;
-
 import javax.inject.Inject;
 import javax.lang.model.element.Modifier;
+
+import org.lemon.dynodao.processor.model.PojoClassBuilder;
+
+import com.squareup.javapoet.TypeSpec;
 
 /**
  * Adds the appropriate modifiers to the type.

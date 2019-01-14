@@ -10,6 +10,4 @@ public class ModelQueryBuilder {
         return new GsiHashKeyModelQuery(gsiHashKey);
     }
 
-
-
 }

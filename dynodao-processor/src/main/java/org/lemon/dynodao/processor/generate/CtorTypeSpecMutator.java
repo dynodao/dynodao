@@ -1,12 +1,13 @@
 package org.lemon.dynodao.processor.generate;
 
+import javax.inject.Inject;
+
+import org.lemon.dynodao.processor.model.PojoClassBuilder;
+
 import com.squareup.javapoet.FieldSpec;
 import com.squareup.javapoet.MethodSpec;
 import com.squareup.javapoet.ParameterSpec;
 import com.squareup.javapoet.TypeSpec;
-import org.lemon.dynodao.processor.model.PojoClassBuilder;
-
-import javax.inject.Inject;
 
 /**
  * Adds an all args constructor the type being built. If the type has no fields, nothing is added.

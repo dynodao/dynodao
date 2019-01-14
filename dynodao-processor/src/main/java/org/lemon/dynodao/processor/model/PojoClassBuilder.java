@@ -1,19 +1,23 @@
 package org.lemon.dynodao.processor.model;
 
-import com.squareup.javapoet.FieldSpec;
-import com.squareup.javapoet.TypeName;
-import com.squareup.javapoet.TypeSpec;
-import lombok.AccessLevel;
-import lombok.Data;
-import lombok.Setter;
-import org.lemon.dynodao.processor.index.DynamoIndex;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Objects;
 
 import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.element.VariableElement;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+
+import org.lemon.dynodao.processor.index.DynamoIndex;
+
+import com.squareup.javapoet.FieldSpec;
+import com.squareup.javapoet.TypeName;
+import com.squareup.javapoet.TypeSpec;
+
+import lombok.AccessLevel;
+import lombok.Data;
+import lombok.Setter;
 
 /**
  * Data model for a pojo type to generate.
@@ -25,22 +29,24 @@ public class PojoClassBuilder {
     private final TypeElement document;
     private final List<FieldSpec> fields = new ArrayList<>();
 
-    private Optional<DynamoIndex> dynamoIndex;
-    private IndexLengthType indexLengthType = IndexLengthType.NONE;
-    private InterfaceType interfaceType = InterfaceType.NONE;
+    private DynamoIndex dynamoIndex;
+    private IndexLengthType indexLengthType;
+    private InterfaceType interfaceType;
 
     private final List<TypeSpec> targetWithers = new ArrayList<>();
 
     /**
      * @param index the index to use
      * @param indexLengthType the number of fields to use from the index
+     * @return <tt>this</tt>
      */
-    public void setIndex(DynamoIndex index, IndexLengthType indexLengthType) {
-        this.dynamoIndex = Optional.of(index);
+    public PojoClassBuilder withIndex(DynamoIndex index, IndexLengthType indexLengthType) {
+        this.dynamoIndex = index;
         this.indexLengthType = indexLengthType;
 
         indexLengthType.getFields(index).forEach(this::addField);
         this.interfaceType = InterfaceType.typeOf(index, indexLengthType);
+        return this;
     }
 
     private void addField(VariableElement indexField) {
@@ -51,12 +57,20 @@ public class PojoClassBuilder {
     }
 
     /**
-     * Specifies this pojo should have a <tt>with</tt> method to create the given type.
-     * The type is creating using fields of this pojo, plus arguments sent to the wither method.
-     * @param targetWither the type of class to create using a wither
+     * Adds the pojos which <tt>this</tt> pojo should have a <tt>with</tt> method for.
+     * @param pojos the existing pojo types
+     * @return <tt>this</tt>
      */
-    public void addWither(TypeSpec targetWither) {
-        targetWithers.add(targetWither);
+    public PojoClassBuilder addApplicableWithers(Collection<PojoTypeSpec> pojos) {
+        pojos.forEach(this::tryAddWither);
+        return this;
+    }
+
+    private void tryAddWither(PojoTypeSpec targetPojoWither) {
+        PojoClassBuilder pojo = targetPojoWither.getPojo();
+        if (Objects.equals(dynamoIndex, pojo.getDynamoIndex()) && pojo.getFields().containsAll(fields)) {
+            targetWithers.add(targetPojoWither.getTypeSpec());
+        }
     }
 
 }

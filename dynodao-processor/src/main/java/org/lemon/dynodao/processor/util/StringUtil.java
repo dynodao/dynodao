@@ -24,4 +24,32 @@ public class StringUtil {
     public static String capitalize(String str) {
         return str.substring(0, 1).toUpperCase() + str.substring(1);
     }
+
+    /**
+     * Returns the string as a valid class name, removing spaces, dashes, etc. Any time there is an invalid
+     * character, it is removed and the next letter is capitalized.
+     * @param str the string to transform into a class name
+     * @return <tt>str</tt> as a class name
+     */
+    public static String toClassCase(String str) {
+        char[] s = str.toCharArray();
+        StringBuilder builder = new StringBuilder();
+        boolean titleCaseNext = true;
+        for (int i = 0; i < s.length; ++i) {
+            if (!isLegalIdentifierCharacter(s[i], i)) {
+                titleCaseNext = true;
+            } else if (titleCaseNext) {
+                builder.append(Character.toTitleCase(s[i]));
+                titleCaseNext = false;
+            } else {
+                builder.append(s[i]);
+            }
+        }
+        return builder.toString();
+    }
+
+    private static boolean isLegalIdentifierCharacter(char ch, int index) {
+        return Character.isJavaLetter(ch) || (index > 0 && Character.isJavaLetterOrDigit(ch));
+    }
+
 }

@@ -6,20 +6,21 @@ import static org.lemon.dynodao.processor.util.DynamoDbUtil.dynamoDbMapper;
 import static org.lemon.dynodao.processor.util.DynamoDbUtil.dynamoDbQueryExpression;
 import static org.lemon.dynodao.processor.util.DynamoDbUtil.paginatedList;
 
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
-import com.squareup.javapoet.MethodSpec;
-import com.squareup.javapoet.ParameterSpec;
-import com.squareup.javapoet.TypeName;
-import com.squareup.javapoet.TypeSpec;
+import javax.inject.Inject;
+import javax.lang.model.element.ExecutableElement;
+import javax.lang.model.element.Modifier;
+import javax.lang.model.element.TypeElement;
+
 import org.lemon.dynodao.processor.context.ProcessorContext;
 import org.lemon.dynodao.processor.index.IndexType;
 import org.lemon.dynodao.processor.model.InterfaceType;
 import org.lemon.dynodao.processor.model.PojoClassBuilder;
 
-import javax.inject.Inject;
-import javax.lang.model.element.ExecutableElement;
-import javax.lang.model.element.Modifier;
-import javax.lang.model.element.TypeElement;
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
+import com.squareup.javapoet.MethodSpec;
+import com.squareup.javapoet.ParameterSpec;
+import com.squareup.javapoet.TypeName;
+import com.squareup.javapoet.TypeSpec;
 
 /**
  * Implements the {@link org.lemon.dynodao.DocumentQuery#query(DynamoDBMapper)} method. If the type does not implement
@@ -37,7 +38,7 @@ class DocumentQueryTypeSpecMutator implements TypeSpecMutator {
     @Inject void init() {
         dynamoDbMapperParam = ParameterSpec.builder(dynamoDbMapper(), "dynamoDbMapper").build();
 
-        TypeElement interfaceType = processorContext.getElementUtils().getTypeElement(InterfaceType.DOCUMENT_QUERY.getInterfaceClass().get().getCanonicalName());
+        TypeElement interfaceType = processorContext.getElementUtils().getTypeElement(InterfaceType.DOCUMENT_QUERY.getInterfaceClass().getCanonicalName());
         ExecutableElement method = (ExecutableElement) interfaceType.getEnclosedElements().iterator().next();
         queryWithNoReturnOrBody = MethodSpec.methodBuilder(method.getSimpleName().toString())
                 .addAnnotation(Override.class)
@@ -74,8 +75,8 @@ class DocumentQueryTypeSpecMutator implements TypeSpecMutator {
     }
 
     private void appendIndexName(MethodSpec.Builder query, PojoClassBuilder pojo) {
-        if (!pojo.getDynamoIndex().get().getIndexType().equals(IndexType.TABLE)) {
-            query.addStatement("query.setIndexName($S)", pojo.getDynamoIndex().get().getName());
+        if (!pojo.getDynamoIndex().getIndexType().equals(IndexType.TABLE)) {
+            query.addStatement("query.setIndexName($S)", pojo.getDynamoIndex().getName());
         }
     }
 

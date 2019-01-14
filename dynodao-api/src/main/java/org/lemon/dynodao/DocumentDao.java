@@ -7,7 +7,7 @@ import java.util.List;
 /**
  * A simple DynamoDB dao for retrieving documents via indexes.
  */
-public class DocumentDao<T> {
+public class DocumentDao {
 
     private final DynamoDBMapper dynamoDbMapper;
 

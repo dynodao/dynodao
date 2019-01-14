@@ -1,13 +1,15 @@
 package org.lemon.dynodao.processor.generate;
 
-import com.squareup.javapoet.FieldSpec;
-import com.squareup.javapoet.MethodSpec;
-import com.squareup.javapoet.TypeSpec;
-import org.lemon.dynodao.processor.model.PojoClassBuilder;
+import java.util.Iterator;
 
 import javax.inject.Inject;
 import javax.lang.model.element.Modifier;
-import java.util.Iterator;
+
+import org.lemon.dynodao.processor.model.PojoClassBuilder;
+
+import com.squareup.javapoet.FieldSpec;
+import com.squareup.javapoet.MethodSpec;
+import com.squareup.javapoet.TypeSpec;
 
 /**
  * Adds a decent {@link Object#toString()} to the type. Creates an output similar to

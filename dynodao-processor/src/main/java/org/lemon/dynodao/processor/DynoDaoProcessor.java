@@ -3,17 +3,9 @@ package org.lemon.dynodao.processor;
 import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toSet;
 
-import com.google.auto.service.AutoService;
-import com.squareup.javapoet.JavaFile;
-import com.squareup.javapoet.TypeSpec;
-import org.lemon.dynodao.DynoDao;
-import org.lemon.dynodao.processor.context.ProcessorContext;
-import org.lemon.dynodao.processor.generate.PojoTypeSpecFactory;
-import org.lemon.dynodao.processor.index.DynamoIndex;
-import org.lemon.dynodao.processor.index.DynamoIndexParser;
-import org.lemon.dynodao.processor.index.IndexType;
-import org.lemon.dynodao.processor.model.IndexLengthType;
-import org.lemon.dynodao.processor.model.PojoClassBuilder;
+import java.util.Collection;
+import java.util.List;
+import java.util.Set;
 
 import javax.annotation.processing.AbstractProcessor;
 import javax.annotation.processing.ProcessingEnvironment;
@@ -25,14 +17,17 @@ import javax.inject.Inject;
 import javax.lang.model.SourceVersion;
 import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.TypeElement;
-import javax.lang.model.element.VariableElement;
-import java.io.IOException;
-import java.io.UncheckedIOException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Set;
-import java.util.stream.Stream;
+
+import org.lemon.dynodao.DynoDao;
+import org.lemon.dynodao.processor.context.ProcessorContext;
+import org.lemon.dynodao.processor.generate.PojoTypeSpecFactory;
+import org.lemon.dynodao.processor.index.DynamoIndex;
+import org.lemon.dynodao.processor.index.DynamoIndexParser;
+import org.lemon.dynodao.processor.model.IndexLengthType;
+import org.lemon.dynodao.processor.model.PojoClassBuilder;
+import org.lemon.dynodao.processor.model.PojoTypeSpec;
+
+import com.google.auto.service.AutoService;
 
 /**
  * The annotation processor for {@link org.lemon.dynodao.DynoDao}.
@@ -79,61 +74,37 @@ public class DynoDaoProcessor extends AbstractProcessor {
         for (TypeElement document : elements) {
             Set<DynamoIndex> indexes = dynamoIndexParser.getIndexes(document);
 
-            List<PojoClassBuilder> leafPojos = getLeafPojos(document, indexes);
-            Set<TypeSpec> leafPojoTypes = toTypeSpecs(leafPojos);
+            List<PojoClassBuilder> twoFieldIndexPojos = getTwoFieldIndexPojos(document, indexes);
+            Set<PojoTypeSpec> twoFieldIndexPojoTypes = toTypeSpecs(twoFieldIndexPojos);
 
-            List<PojoClassBuilder> certainIndexTrunkPojos = getCertainIndexTrunkPojos(document, indexes, leafPojoTypes);
-            Set<TypeSpec> certainIndexTrunkPojoTypes = toTypeSpecs(certainIndexTrunkPojos);
+            List<PojoClassBuilder> oneFieldIndexPojos = getOneFieldIndexPojos(document, indexes, twoFieldIndexPojoTypes);
+            Set<PojoTypeSpec> oneFieldIndexPojoTypes = toTypeSpecs(oneFieldIndexPojos);
 
-            typeSpecWriter.writeAll(document, leafPojoTypes);
-            typeSpecWriter.writeAll(document, certainIndexTrunkPojoTypes);
+            typeSpecWriter.writeAll(document, twoFieldIndexPojoTypes);
+            typeSpecWriter.writeAll(document, oneFieldIndexPojoTypes);
         }
     }
 
-    private Set<TypeSpec> toTypeSpecs(Collection<PojoClassBuilder> pojos) {
-        return pojos.stream()
-                .map(pojoTypeSpecFactory::build)
-                .collect(toSet());
-    }
-
-    private List<PojoClassBuilder> getLeafPojos(TypeElement document, Set<DynamoIndex> indexes) {
-        List<PojoClassBuilder> pojos = new ArrayList<>();
-        for (DynamoIndex index : indexes) {
-            PojoClassBuilder pojo = new PojoClassBuilder(document);
-            pojo.setIndex(index, IndexLengthType.lengthOf(index));
-            pojos.add(pojo);
-        }
-        return pojos;
-    }
-
-    private List<PojoClassBuilder> getCertainIndexTrunkPojos(TypeElement document, Set<DynamoIndex> indexes, Set<TypeSpec> leafPojoTypes) {
+    private List<PojoClassBuilder> getTwoFieldIndexPojos(TypeElement document, Set<DynamoIndex> indexes) {
         return indexes.stream()
-                .filter(index -> !index.getIndexType().equals(IndexType.LOCAL_SECONDARY_INDEX))
                 .filter(index -> IndexLengthType.lengthOf(index).equals(IndexLengthType.RANGE))
-                .filter(index -> !isAmbiguousIndexHashKey(index, indexes))
-                .map(index -> {
-                    PojoClassBuilder pojo = new PojoClassBuilder(document);
-                    pojo.setIndex(index, IndexLengthType.HASH);
-                    leafPojoTypes.stream()
-                            .filter(leaf -> leaf.fieldSpecs.containsAll(pojo.getFields()))
-                            .forEach(pojo::addWither);
-                    return pojo;
-                })
+                .map(index -> new PojoClassBuilder(document).withIndex(index, IndexLengthType.lengthOf(index)))
                 .collect(toList());
     }
 
-    private Set<DynamoIndex> getAmbiguousHashKeyIndexes(DynamoIndex index, Set<DynamoIndex> indexes) {
-        Stream<DynamoIndex> stream = indexes.stream()
-                .filter(i -> !i.equals(index))
-                .filter(i -> i.getHashKey().equals(index.getHashKey()));
-        if (!index.getIndexType().equals(IndexType.GLOBAL_SECONDARY_INDEX)) {
-            stream = stream.filter(i -> i.getIndexType().equals(IndexType.GLOBAL_SECONDARY_INDEX));
-        }
-        return stream.collect(toSet());
+    private List<PojoClassBuilder> getOneFieldIndexPojos(TypeElement document, Set<DynamoIndex> indexes, Set<PojoTypeSpec> twoFieldIndexPojoTypes) {
+        return indexes.stream()
+                .filter(index -> IndexLengthType.lengthOf(index).compareTo(IndexLengthType.HASH) >= 0)
+                .map(index -> new PojoClassBuilder(document)
+                        .withIndex(index, IndexLengthType.HASH)
+                        .addApplicableWithers(twoFieldIndexPojoTypes))
+                .collect(toList());
     }
 
-    private boolean isAmbiguousIndexHashKey(DynamoIndex index, Set<DynamoIndex> indexes) {
-        return !getAmbiguousHashKeyIndexes(index, indexes).isEmpty();
+    private Set<PojoTypeSpec> toTypeSpecs(Collection<PojoClassBuilder> pojos) {
+        return pojos.stream()
+                .map(pojoTypeSpecFactory::build)
+                .collect(toSet());
     }
 
 }

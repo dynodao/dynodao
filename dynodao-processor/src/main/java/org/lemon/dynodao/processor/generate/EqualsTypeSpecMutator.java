@@ -2,15 +2,17 @@ package org.lemon.dynodao.processor.generate;
 
 import static java.util.stream.Collectors.joining;
 
-import com.squareup.javapoet.MethodSpec;
-import com.squareup.javapoet.ParameterSpec;
-import com.squareup.javapoet.TypeSpec;
-import org.lemon.dynodao.processor.context.ProcessorContext;
-import org.lemon.dynodao.processor.model.PojoClassBuilder;
+import java.util.Objects;
 
 import javax.inject.Inject;
 import javax.lang.model.element.Modifier;
-import java.util.Objects;
+
+import org.lemon.dynodao.processor.context.ProcessorContext;
+import org.lemon.dynodao.processor.model.PojoClassBuilder;
+
+import com.squareup.javapoet.MethodSpec;
+import com.squareup.javapoet.ParameterSpec;
+import com.squareup.javapoet.TypeSpec;
 
 /**
  * Adds a decent implementation of {@link Object#equals(Object)} to the type, delegating

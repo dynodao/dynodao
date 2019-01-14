@@ -1,12 +1,16 @@
 package org.lemon.dynodao.processor.generate;
 
 import static org.lemon.dynodao.processor.util.StringUtil.capitalize;
-
-import com.squareup.javapoet.TypeSpec;
-import org.lemon.dynodao.processor.model.IndexLengthType;
-import org.lemon.dynodao.processor.model.PojoClassBuilder;
+import static org.lemon.dynodao.processor.util.StringUtil.toClassCase;
 
 import javax.inject.Inject;
+
+import org.lemon.dynodao.processor.index.IndexType;
+import org.lemon.dynodao.processor.model.IndexLengthType;
+import org.lemon.dynodao.processor.model.PojoClassBuilder;
+import org.lemon.dynodao.processor.model.PojoTypeSpec;
+
+import com.squareup.javapoet.TypeSpec;
 
 public class PojoTypeSpecFactory {
 
@@ -23,24 +27,31 @@ public class PojoTypeSpecFactory {
 
     @Inject PojoTypeSpecFactory() { }
 
-    public TypeSpec build(PojoClassBuilder pojo) {
+    public PojoTypeSpec build(PojoClassBuilder pojo) {
         TypeSpec.Builder typeSpec = TypeSpec.classBuilder(getClassName(pojo));
         mutate(typeSpec, pojo);
-        return typeSpec.build();
+        return new PojoTypeSpec(pojo, typeSpec.build());
     }
 
     private String getClassName(PojoClassBuilder pojo) {
         StringBuilder name = new StringBuilder();
+
+        if (pojo.getDynamoIndex().getIndexType().equals(IndexType.TABLE)) {
+            name.append("Table");
+        } else {
+            name.append(toClassCase(pojo.getDynamoIndex().getName()));
+        }
+
         if (pojo.getIndexLengthType().compareTo(IndexLengthType.HASH) >= 0) {
-            name.append(capitalize(pojo.getDynamoIndex().get().getHashKey()));
+            name.append(capitalize(pojo.getDynamoIndex().getHashKey()));
         }
         if (pojo.getIndexLengthType().compareTo(IndexLengthType.RANGE) >= 0) {
-            name.append(capitalize(pojo.getDynamoIndex().get().getRangeKey().get()));
+            name.append(capitalize(pojo.getDynamoIndex().getRangeKey().get()));
         }
 
         name.append(pojo.getDocument().getSimpleName());
 
-        pojo.getInterfaceType().getInterfaceClass().ifPresent(clazz -> name.append(clazz.getSimpleName()));
+        name.append(pojo.getInterfaceType().getInterfaceClass().getSimpleName());
         return name.toString();
     }
 

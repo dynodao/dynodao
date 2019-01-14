@@ -1,9 +1,10 @@
 package org.lemon.dynodao.processor.generate;
 
-import com.squareup.javapoet.TypeSpec;
+import javax.inject.Inject;
+
 import org.lemon.dynodao.processor.model.PojoClassBuilder;
 
-import javax.inject.Inject;
+import com.squareup.javapoet.TypeSpec;
 
 /**
  * Adds the fields from the pojo model to the type. They are added verbatim.
