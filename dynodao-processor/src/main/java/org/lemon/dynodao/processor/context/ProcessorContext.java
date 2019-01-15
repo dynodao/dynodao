@@ -10,7 +10,6 @@ import javax.annotation.processing.RoundEnvironment;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
 import javax.tools.Diagnostic;
-import javax.tools.DiagnosticCollector;
 
 import lombok.RequiredArgsConstructor;
 
