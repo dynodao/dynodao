@@ -20,9 +20,9 @@ import javax.lang.model.element.TypeElement;
 
 import org.lemon.dynodao.DynoDao;
 import org.lemon.dynodao.processor.context.ProcessorContext;
+import org.lemon.dynodao.processor.dynamo.DynamoIndex;
 import org.lemon.dynodao.processor.dynamo.DynamoSchemaParser;
 import org.lemon.dynodao.processor.generate.PojoTypeSpecFactory;
-import org.lemon.dynodao.processor.dynamo.DynamoIndex;
 import org.lemon.dynodao.processor.model.IndexLengthType;
 import org.lemon.dynodao.processor.model.PojoClassBuilder;
 import org.lemon.dynodao.processor.model.PojoTypeSpec;
@@ -64,7 +64,9 @@ public class DynoDaoProcessor extends AbstractProcessor {
     }
 
     private Set<TypeElement> findElementsToProcess(Set<? extends TypeElement> annotations) {
-        return processorContext.getRoundEnvironment().getElementsAnnotatedWith(DynoDao.class).stream()
+        return annotations.stream()
+                .map(processorContext.getRoundEnvironment()::getElementsAnnotatedWith)
+                .flatMap(Set::stream)
                 .filter(element -> element.getKind().equals(ElementKind.CLASS))
                 .map(element -> (TypeElement) element)
                 .collect(toSet());
