@@ -23,21 +23,19 @@ class TypeSpecWriter {
 
     /**
      * Writes all of the type specs to file.
-     * @param document the type annotated with {@link DynoDao}
      * @param pojoTypeSpecs all of the types the document creates
      */
-    void writeAll(TypeElement document, Iterable<PojoTypeSpec> pojoTypeSpecs) {
-        pojoTypeSpecs.forEach(typeSpec -> write(document, typeSpec));
+    void writeAll(Iterable<PojoTypeSpec> pojoTypeSpecs) {
+        pojoTypeSpecs.forEach(typeSpec -> write(typeSpec));
     }
 
     /**
      * Writes a single type spec to file.
-     * @param document the type annotated with {@link DynoDao}
      * @param pojoTypeSpec a type the annotated class creates
      */
-    void write(TypeElement document, PojoTypeSpec pojoTypeSpec) {
+    void write(PojoTypeSpec pojoTypeSpec) {
         if (!processorContext.hasErrors()) {
-            JavaFile file = JavaFile.builder(getDynoDaoPackageName(document), pojoTypeSpec.getTypeSpec())
+            JavaFile file = JavaFile.builder(getDynoDaoPackageName(pojoTypeSpec.getPojo().getDocument()), pojoTypeSpec.getTypeSpec())
                     .indent("    ")
                     .skipJavaLangImports(true)
                     .build();

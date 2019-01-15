@@ -1,9 +1,7 @@
 package org.lemon.dynodao.processor.model;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
-import java.util.Objects;
 
 import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
@@ -13,7 +11,6 @@ import org.lemon.dynodao.processor.index.DynamoIndex;
 
 import com.squareup.javapoet.FieldSpec;
 import com.squareup.javapoet.TypeName;
-import com.squareup.javapoet.TypeSpec;
 
 import lombok.AccessLevel;
 import lombok.Data;
@@ -33,7 +30,7 @@ public class PojoClassBuilder {
     private IndexLengthType indexLengthType = IndexLengthType.NONE;
     private InterfaceType interfaceType = InterfaceType.NONE;
 
-    private final List<TypeSpec> targetWithers = new ArrayList<>();
+    private final List<PojoTypeSpec> targetWithers = new ArrayList<>();
     private final List<PojoTypeSpec> targetUsingIndexes = new ArrayList<>();
 
     /**
@@ -58,31 +55,22 @@ public class PojoClassBuilder {
     }
 
     /**
-     * Adds the pojos which <tt>this</tt> pojo should have a <tt>with</tt> method for.
-     * @param pojos the existing pojo types
+     * Adds the pojo which <tt>this</tt> pojo should have a <tt>with</tt> method for.
+     * @param pojo the existing pojo type this class should have a <tt>with</tt> method for
      * @return <tt>this</tt>
      */
-    public PojoClassBuilder addApplicableWithers(Collection<PojoTypeSpec> pojos) {
-        pojos.forEach(this::tryAddWither);
+    public PojoClassBuilder addWither(PojoTypeSpec pojo) {
+        targetWithers.add(pojo);
         return this;
     }
 
-    private void tryAddWither(PojoTypeSpec targetPojoWither) {
-        PojoClassBuilder pojo = targetPojoWither.getPojo();
-        if (Objects.equals(dynamoIndex, pojo.getDynamoIndex()) && pojo.getFields().containsAll(fields)) {
-            targetWithers.add(targetPojoWither.getTypeSpec());
-        }
-    }
-
     /**
-     * Adds the pojos which <tt>this</tt> pojo should have an <tt>against</tt> method for.
-     * @param pojos the existing pojo types
+     * Adds the pojo which <tt>this</tt> pojo should have an <tt>using</tt> method for.
+     * @param pojo the existing pojo type this class should have a <tt>using</tt> method for
      * @return <tt>this</tt>
      */
-    public PojoClassBuilder addApplicableUsers(Collection<PojoTypeSpec> pojos) {
-        pojos.stream()
-                .filter(pojo -> pojo.getPojo().getDynamoIndex() != null)
-                .forEach(targetUsingIndexes::add);
+    public PojoClassBuilder addUser(PojoTypeSpec pojo) {
+        targetUsingIndexes.add(pojo);
         return this;
     }
 

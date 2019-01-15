@@ -13,6 +13,7 @@ import javax.inject.Inject;
 import javax.lang.model.element.Modifier;
 
 import org.lemon.dynodao.processor.model.PojoClassBuilder;
+import org.lemon.dynodao.processor.model.PojoTypeSpec;
 
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.FieldSpec;
@@ -30,15 +31,15 @@ class WitherTypeSpecMutator implements TypeSpecMutator {
 
     @Override
     public void mutate(TypeSpec.Builder typeSpec, PojoClassBuilder pojo) {
-        for (TypeSpec targetWither : pojo.getTargetWithers()) {
+        for (PojoTypeSpec targetWither : pojo.getTargetWithers()) {
             MethodSpec wither = buildWither(pojo, targetWither);
             typeSpec.addMethod(wither);
         }
     }
 
-    private MethodSpec buildWither(PojoClassBuilder pojo, TypeSpec targetWither) {
+    private MethodSpec buildWither(PojoClassBuilder pojo, PojoTypeSpec targetWither) {
         List<ParameterSpec> params = getRequiredParameters(pojo, targetWither);
-        ClassName type = ClassName.bestGuess(targetWither.name);
+        ClassName type = ClassName.bestGuess(targetWither.getTypeSpec().name);
 
         String argsFormat = repeat(pojo.getFields().size() + params.size(), "$N", ", ");
         Object[] args = concat(type, pojo.getFields(), params).toArray();
@@ -51,8 +52,8 @@ class WitherTypeSpecMutator implements TypeSpecMutator {
                 .build();
     }
 
-    private List<ParameterSpec> getRequiredParameters(PojoClassBuilder pojo, TypeSpec targetWither) {
-        List<FieldSpec> fields = new ArrayList<>(targetWither.fieldSpecs);
+    private List<ParameterSpec> getRequiredParameters(PojoClassBuilder pojo, PojoTypeSpec targetWither) {
+        List<FieldSpec> fields = new ArrayList<>(targetWither.getTypeSpec().fieldSpecs);
         fields.removeAll(pojo.getFields());
         return fields.stream()
                 .map(field -> ParameterSpec.builder(field.type, field.name).build())

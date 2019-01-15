@@ -1,11 +1,10 @@
 package org.lemon.dynodao.processor;
 
-import static java.util.Collections.singletonList;
-import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toSet;
 
-import java.util.Collection;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 import javax.annotation.processing.AbstractProcessor;
@@ -73,58 +72,50 @@ public class DynoDaoProcessor extends AbstractProcessor {
 
     private void processElements(Set<TypeElement> elements) {
         for (TypeElement document : elements) {
-            Set<DynamoIndex> indexes = dynamoIndexParser.getIndexes(document);
+            List<PojoTypeSpec> pojos = new ArrayList<>();
+            PojoClassBuilder stagedBuilder = new PojoClassBuilder(document);
+            for (DynamoIndex index : dynamoIndexParser.getIndexes(document)) {
+                IndexLengthType indexLengthType = IndexLengthType.lengthOf(index);
 
-            List<PojoClassBuilder> twoFieldIndexPojos = getTwoFieldIndexPojos(document, indexes);
-            Set<PojoTypeSpec> twoFieldIndexPojoTypes = toTypeSpecs(twoFieldIndexPojos);
+                Optional<PojoTypeSpec> indexRangeKeyPojo = getIndexRangeKeyPojo(document, index, indexLengthType);
+                PojoTypeSpec indexHashKeyPojo = getIndexHashKeyPojo(document, index, indexRangeKeyPojo);
+                PojoTypeSpec indexPojo = getIndexPojo(document, index, indexHashKeyPojo);
 
-            List<PojoClassBuilder> oneFieldIndexPojos = getOneFieldIndexPojos(document, indexes, twoFieldIndexPojoTypes);
-            Set<PojoTypeSpec> oneFieldIndexPojoTypes = toTypeSpecs(oneFieldIndexPojos);
+                stagedBuilder.addUser(indexPojo);
 
-            List<PojoClassBuilder> zeroFieldIndexPojos = getZeroFieldIndexPojos(document, indexes, oneFieldIndexPojoTypes);
-            Set<PojoTypeSpec> zeroFieldIndexPojoTypes = toTypeSpecs(zeroFieldIndexPojos);
-
-            List<PojoClassBuilder> stagedBuilderPojos = getStagedBuilderPojos(document, indexes, zeroFieldIndexPojoTypes);
-            Set<PojoTypeSpec> stagedBuilderPojoTypes = toTypeSpecs(stagedBuilderPojos);
-
-            typeSpecWriter.writeAll(document, twoFieldIndexPojoTypes);
-            typeSpecWriter.writeAll(document, oneFieldIndexPojoTypes);
-            typeSpecWriter.writeAll(document, zeroFieldIndexPojoTypes);
-            typeSpecWriter.writeAll(document, stagedBuilderPojoTypes);
+                indexRangeKeyPojo.ifPresent(pojos::add);
+                pojos.add(indexHashKeyPojo);
+                pojos.add(indexPojo);
+            }
+            pojos.add(toTypeSpec(stagedBuilder));
+            typeSpecWriter.writeAll(pojos);
         }
     }
 
-    private List<PojoClassBuilder> getTwoFieldIndexPojos(TypeElement document, Set<DynamoIndex> indexes) {
-        return indexes.stream()
-                .filter(index -> IndexLengthType.lengthOf(index).equals(IndexLengthType.RANGE))
-                .map(index -> new PojoClassBuilder(document).withIndex(index, IndexLengthType.lengthOf(index)))
-                .collect(toList());
+    private Optional<PojoTypeSpec> getIndexRangeKeyPojo(TypeElement document, DynamoIndex index, IndexLengthType indexLengthType) {
+        if (indexLengthType.equals(IndexLengthType.RANGE)) {
+            PojoClassBuilder pojo = new PojoClassBuilder(document).withIndex(index, indexLengthType);
+            return Optional.of(toTypeSpec(pojo));
+        } else {
+            return Optional.empty();
+        }
     }
 
-    private List<PojoClassBuilder> getOneFieldIndexPojos(TypeElement document, Set<DynamoIndex> indexes, Set<PojoTypeSpec> twoFieldIndexPojoTypes) {
-        return indexes.stream()
-                .map(index -> new PojoClassBuilder(document)
-                        .withIndex(index, IndexLengthType.HASH)
-                        .addApplicableWithers(twoFieldIndexPojoTypes))
-                .collect(toList());
+    private PojoTypeSpec getIndexHashKeyPojo(TypeElement document, DynamoIndex index, Optional<PojoTypeSpec> indexRangeKeyPojo) {
+        PojoClassBuilder pojo = new PojoClassBuilder(document).withIndex(index, IndexLengthType.HASH);
+        indexRangeKeyPojo.ifPresent(pojo::addWither);
+        return toTypeSpec(pojo);
     }
 
-    private List<PojoClassBuilder> getZeroFieldIndexPojos(TypeElement document, Set<DynamoIndex> indexes, Set<PojoTypeSpec> oneFieldIndexPojoTypes) {
-        return indexes.stream()
-                .map(index -> new PojoClassBuilder(document)
-                        .withIndex(index, IndexLengthType.NONE)
-                        .addApplicableWithers(oneFieldIndexPojoTypes))
-                .collect(toList());
+    private PojoTypeSpec getIndexPojo(TypeElement document, DynamoIndex index, PojoTypeSpec indexHashKeyPojo) {
+        PojoClassBuilder pojo = new PojoClassBuilder(document)
+                .withIndex(index, IndexLengthType.NONE)
+                .addWither(indexHashKeyPojo);
+        return toTypeSpec(pojo);
     }
 
-    private List<PojoClassBuilder> getStagedBuilderPojos(TypeElement document, Set<DynamoIndex> indexes, Set<PojoTypeSpec> zeroFieldIndexPojoTypes) {
-        return singletonList(new PojoClassBuilder(document).addApplicableUsers(zeroFieldIndexPojoTypes));
-    }
-
-    private Set<PojoTypeSpec> toTypeSpecs(Collection<PojoClassBuilder> pojos) {
-        return pojos.stream()
-                .map(pojoTypeSpecFactory::build)
-                .collect(toSet());
+    private PojoTypeSpec toTypeSpec(PojoClassBuilder pojo) {
+        return pojoTypeSpecFactory.build(pojo);
     }
 
 }
