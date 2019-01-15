@@ -1,6 +1,7 @@
 # dynodao
 
 ```
+taras@me:~$ dynodao
  ________________________________________
 / An annotation processor for generating \
 | fluent, type-safe DynamoDB             |
