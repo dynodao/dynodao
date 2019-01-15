@@ -97,7 +97,7 @@ public class ProcessorContext {
     /**
      * Displays all of the messages.
      */
-    public void processMessages() {
+    public void emitMessages() {
         messages.forEach(message -> message.submit(processingEnvironment.getMessager()));
         messages.clear();
     }

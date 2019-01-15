@@ -58,7 +58,7 @@ public class DynoDaoProcessor extends AbstractProcessor {
             if (!elementsToProcess.isEmpty()) {
                 processElements(elementsToProcess);
             }
-            processorContext.processMessages();
+            processorContext.emitMessages();
         }
         return false;
     }
