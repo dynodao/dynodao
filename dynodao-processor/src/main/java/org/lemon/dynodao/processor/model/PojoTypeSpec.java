@@ -4,6 +4,9 @@ import com.squareup.javapoet.TypeSpec;
 
 import lombok.Value;
 
+/**
+ * A built pojo type.
+ */
 @Value
 public class PojoTypeSpec {
 

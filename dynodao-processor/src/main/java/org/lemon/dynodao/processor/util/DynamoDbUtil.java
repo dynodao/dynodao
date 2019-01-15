@@ -8,6 +8,9 @@ import com.squareup.javapoet.TypeName;
 
 import lombok.experimental.UtilityClass;
 
+/**
+ * Utility methods related to dynamoDb itself.
+ */
 @UtilityClass
 public class DynamoDbUtil {
 

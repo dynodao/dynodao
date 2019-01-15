@@ -8,12 +8,15 @@ import javax.lang.model.element.AnnotationValue;
 import javax.lang.model.element.Element;
 import javax.tools.Diagnostic;
 
+import lombok.AccessLevel;
 import lombok.Data;
+import lombok.RequiredArgsConstructor;
 
 /**
  * A message to display during the compilation phase.
  */
 @Data
+@RequiredArgsConstructor(access = AccessLevel.NONE)
 public class ProcessorMessage {
 
     private final Diagnostic.Kind kind;

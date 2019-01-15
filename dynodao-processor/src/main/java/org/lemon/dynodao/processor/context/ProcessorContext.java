@@ -95,7 +95,7 @@ public class ProcessorContext {
     }
 
     /**
-     * Displays all of the messages.
+     * Displays all of the messages accrued in this round.
      */
     public void emitMessages() {
         messages.forEach(message -> message.submit(processingEnvironment.getMessager()));

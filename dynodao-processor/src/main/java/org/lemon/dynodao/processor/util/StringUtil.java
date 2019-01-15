@@ -8,6 +8,9 @@ import javax.lang.model.element.Element;
 
 import lombok.experimental.UtilityClass;
 
+/**
+ * Utility methods for manipulating strings.
+ */
 @UtilityClass
 public class StringUtil {
 

@@ -6,6 +6,9 @@ import java.util.stream.Stream;
 
 import lombok.experimental.UtilityClass;
 
+/**
+ * Utility methods for basic stream operations.
+ */
 @UtilityClass
 public class StreamUtil {
 

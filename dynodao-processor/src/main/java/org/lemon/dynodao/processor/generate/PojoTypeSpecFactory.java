@@ -11,6 +11,9 @@ import org.lemon.dynodao.processor.model.PojoTypeSpec;
 
 import com.squareup.javapoet.TypeSpec;
 
+/**
+ * Produces {@link PojoTypeSpec} types from their {@link PojoClassBuilder} specifications.
+ */
 public class PojoTypeSpecFactory {
 
     @Inject ModifiersTypeSpecMutator modifiersTypeSpecMutator;
@@ -27,6 +30,10 @@ public class PojoTypeSpecFactory {
 
     @Inject PojoTypeSpecFactory() { }
 
+    /**
+     * @param pojo the pojo to build
+     * @return the built pojo
+     */
     public PojoTypeSpec build(PojoClassBuilder pojo) {
         TypeSpec.Builder typeSpec = TypeSpec.classBuilder(getClassName(pojo));
         mutate(typeSpec, pojo);
@@ -39,6 +46,10 @@ public class PojoTypeSpecFactory {
         } else {
             return getIndexPojoClassName(pojo);
         }
+    }
+
+    private String getStagedBuilderClassName(PojoClassBuilder pojo) {
+        return pojo.getDocument().getSimpleName() + "StagedDynamoBuilder";
     }
 
     private String getIndexPojoClassName(PojoClassBuilder pojo) {
@@ -59,10 +70,6 @@ public class PojoTypeSpecFactory {
         return name.toString();
     }
 
-    private String getStagedBuilderClassName(PojoClassBuilder pojo) {
-        return pojo.getDocument().getSimpleName() + "StagedDynamoBuilder";
-    }
-
     private void mutate(TypeSpec.Builder typeSpec, PojoClassBuilder pojo) {
         modifiersTypeSpecMutator.mutate(typeSpec, pojo);
         superInterfaceTypeSpecMutator.mutate(typeSpec, pojo);
@@ -79,4 +86,5 @@ public class PojoTypeSpecFactory {
         hashCodeTypeSpecMutator.mutate(typeSpec, pojo);
         toStringTypeSpecMutator.mutate(typeSpec, pojo);
     }
+
 }

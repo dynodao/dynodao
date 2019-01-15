@@ -11,7 +11,7 @@ import javax.lang.model.element.VariableElement;
 import org.lemon.dynodao.processor.index.DynamoIndex;
 
 /**
- * The length of a dynamo index.
+ * The length of a dynamo index, or length of a query against an index.
  */
 public enum IndexLengthType {
 
