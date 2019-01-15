@@ -54,7 +54,7 @@ class DocumentFieldParseBuilder {
     }
 
     private boolean isField(Element element) {
-        return element.getKind().equals( ElementKind.FIELD);
+        return element.getKind().equals(ElementKind.FIELD);
     }
 
     private boolean isHashKey(VariableElement field) {
@@ -92,10 +92,10 @@ class DocumentFieldParseBuilder {
         Set<DynamoIndex> indexes = new HashSet<>();
         for (VariableElement indexRangeKey : getIndexRangeKeys()) {
             DynamoDBIndexRangeKey annotation = indexRangeKey.getAnnotation(DynamoDBIndexRangeKey.class);
-            for (String name : indexNames(annotation.localSecondaryIndexName(), annotation.localSecondaryIndexNames())) {
+            for (String indexName : indexNames(annotation.localSecondaryIndexName(), annotation.localSecondaryIndexNames())) {
                 indexes.add(DynamoIndex.builder()
                         .indexType(IndexType.LOCAL_SECONDARY_INDEX)
-                        .name(name)
+                        .name(indexName)
                         .hashKey(getHashKey())
                         .rangeKey(Optional.of(indexRangeKey))
                         .build());
