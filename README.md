@@ -1,11 +1,11 @@
 # dynodao
 
 ```
- _______________________________________
-/ An annotation processor for generated \
-| fluent, type-safe DynamoDB            |
-\ interactions.                         /
- ---------------------------------------
+ ________________________________________
+/ An annotation processor for generating \
+| fluent, type-safe DynamoDB             |
+\ interactions.                          /
+ ----------------------------------------
 \                             .       .
  \                           / `.   .' " 
   \                  .---.  <    > <    >  .---.
