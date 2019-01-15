@@ -12,7 +12,7 @@ import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
 
 import org.lemon.dynodao.processor.context.ProcessorContext;
-import org.lemon.dynodao.processor.index.IndexType;
+import org.lemon.dynodao.processor.dynamo.IndexType;
 import org.lemon.dynodao.processor.model.InterfaceType;
 import org.lemon.dynodao.processor.model.PojoClassBuilder;
 

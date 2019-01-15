@@ -1,4 +1,4 @@
-package org.lemon.dynodao.processor.index;
+package org.lemon.dynodao.processor.dynamo;
 
 import java.util.HashSet;
 import java.util.Set;

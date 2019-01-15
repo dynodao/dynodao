@@ -1,4 +1,4 @@
-package org.lemon.dynodao.processor.index;
+package org.lemon.dynodao.processor.dynamo;
 
 /**
  * The types of indexes possible on a dynamo table.

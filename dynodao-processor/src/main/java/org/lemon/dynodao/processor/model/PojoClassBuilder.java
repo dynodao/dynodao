@@ -7,7 +7,7 @@ import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.element.VariableElement;
 
-import org.lemon.dynodao.processor.index.DynamoIndex;
+import org.lemon.dynodao.processor.dynamo.DynamoIndex;
 
 import com.squareup.javapoet.FieldSpec;
 import com.squareup.javapoet.TypeName;

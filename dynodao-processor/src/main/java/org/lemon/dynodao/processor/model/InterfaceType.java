@@ -4,8 +4,8 @@ import java.util.Optional;
 
 import org.lemon.dynodao.DocumentLoad;
 import org.lemon.dynodao.DocumentQuery;
-import org.lemon.dynodao.processor.index.DynamoIndex;
-import org.lemon.dynodao.processor.index.IndexType;
+import org.lemon.dynodao.processor.dynamo.DynamoIndex;
+import org.lemon.dynodao.processor.dynamo.IndexType;
 
 import lombok.AccessLevel;
 import lombok.Getter;

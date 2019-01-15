@@ -8,7 +8,7 @@ import java.util.List;
 
 import javax.lang.model.element.VariableElement;
 
-import org.lemon.dynodao.processor.index.DynamoIndex;
+import org.lemon.dynodao.processor.dynamo.DynamoIndex;
 
 /**
  * The length of a dynamo index, or length of a query against an index.
