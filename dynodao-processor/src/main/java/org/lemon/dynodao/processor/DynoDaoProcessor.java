@@ -20,9 +20,9 @@ import javax.lang.model.element.TypeElement;
 
 import org.lemon.dynodao.DynoDao;
 import org.lemon.dynodao.processor.context.ProcessorContext;
+import org.lemon.dynodao.processor.dynamo.DynamoSchemaParser;
 import org.lemon.dynodao.processor.generate.PojoTypeSpecFactory;
 import org.lemon.dynodao.processor.dynamo.DynamoIndex;
-import org.lemon.dynodao.processor.dynamo.DynamoIndexParser;
 import org.lemon.dynodao.processor.model.IndexLengthType;
 import org.lemon.dynodao.processor.model.PojoClassBuilder;
 import org.lemon.dynodao.processor.model.PojoTypeSpec;
@@ -38,7 +38,7 @@ import com.google.auto.service.AutoService;
 public class DynoDaoProcessor extends AbstractProcessor {
 
     @Inject ProcessorContext processorContext;
-    @Inject DynamoIndexParser dynamoIndexParser;
+    @Inject DynamoSchemaParser dynamoSchemaParser;
     @Inject PojoTypeSpecFactory pojoTypeSpecFactory;
     @Inject TypeSpecWriter typeSpecWriter;
 
@@ -74,7 +74,7 @@ public class DynoDaoProcessor extends AbstractProcessor {
         for (TypeElement document : elements) {
             List<PojoTypeSpec> pojos = new ArrayList<>();
             PojoClassBuilder stagedBuilder = new PojoClassBuilder(document);
-            for (DynamoIndex index : dynamoIndexParser.getIndexes(document)) {
+            for (DynamoIndex index : dynamoSchemaParser.getSchema(document).getIndexes()) {
                 IndexLengthType indexLengthType = IndexLengthType.lengthOf(index);
 
                 Optional<PojoTypeSpec> indexRangeKeyPojo = getIndexRangeKeyPojo(document, index, indexLengthType);

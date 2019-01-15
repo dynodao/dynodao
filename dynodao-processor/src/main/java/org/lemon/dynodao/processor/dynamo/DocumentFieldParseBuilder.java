@@ -24,7 +24,7 @@ import lombok.Data;
  * Builder for parsing a DynamoDB annotated class.
  */
 @Data
-class DynamoIndexAnnotatedFields {
+class DocumentFieldParseBuilder {
 
     private VariableElement hashKey;
     private Optional<VariableElement> rangeKey = Optional.empty();
