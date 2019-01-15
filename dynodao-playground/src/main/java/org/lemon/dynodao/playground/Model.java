@@ -6,6 +6,8 @@ import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBHashKey;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBIndexHashKey;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBIndexRangeKey;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBRangeKey;
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBTypeConverted;
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBTypeConverter;
 
 import lombok.Builder;
 import lombok.Data;
@@ -35,6 +37,7 @@ public class Model {
     @DynamoDBIndexHashKey(globalSecondaryIndexName = "global-solo-index")
     private String soloGsiHashKey;
 
+    @DynamoDBTypeConverted(converter = DynamoDBTypeConverter.class)
     private String attribute;
 
 }

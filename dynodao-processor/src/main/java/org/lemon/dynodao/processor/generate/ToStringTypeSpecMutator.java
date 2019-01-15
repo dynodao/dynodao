@@ -60,9 +60,9 @@ class ToStringTypeSpecMutator implements TypeSpecMutator {
         while (fields.hasNext()) {
             FieldSpec field = fields.next();
             if (fields.hasNext()) {
-                toString.addStatement("sb.append($N).append($S)", field, ", ");
+                toString.addStatement("sb.append($S).append($N).append($S)", field.name + "=", field, ", ");
             } else {
-                toString.addStatement("sb.append($N)", field);
+                toString.addStatement("sb.append($S).append($N)", field.name + "=", field);
             }
         }
 
