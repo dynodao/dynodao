@@ -1,9 +1,8 @@
 package org.lemon.dynodao.processor.context;
 
-import static com.google.common.base.Preconditions.checkState;
-
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import javax.annotation.processing.Filer;
 import javax.annotation.processing.ProcessingEnvironment;
@@ -11,6 +10,7 @@ import javax.annotation.processing.RoundEnvironment;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
 import javax.tools.Diagnostic;
+import javax.tools.DiagnosticCollector;
 
 import lombok.RequiredArgsConstructor;
 
@@ -59,7 +59,7 @@ public class ProcessorContext {
      * @return the current count environment
      */
     public RoundEnvironment getRoundEnvironment() {
-        checkState(roundEnvironment != null, "ProcessContext#roundEnvironment is null; ensure newRound is called");
+        Objects.requireNonNull(roundEnvironment, "ProcessContext#roundEnvironment is null; ensure newRound is called");
         return roundEnvironment;
     }
 
@@ -86,6 +86,13 @@ public class ProcessorContext {
         ProcessorMessage message = new ProcessorMessage(kind, format, args);
         messages.add(message);
         return message;
+    }
+
+    /**
+     * @return <tt>true</tt> if any error messages have been submitted, <tt>false</tt> otherwise
+     */
+    public boolean hasErrors() {
+        return messages.stream().anyMatch(message -> message.getKind().equals(Diagnostic.Kind.ERROR));
     }
 
     /**

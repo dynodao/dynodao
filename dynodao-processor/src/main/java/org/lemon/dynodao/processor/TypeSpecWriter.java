@@ -36,14 +36,16 @@ class TypeSpecWriter {
      * @param pojoTypeSpec a type the annotated class creates
      */
     void write(TypeElement document, PojoTypeSpec pojoTypeSpec) {
-        JavaFile file = JavaFile.builder(getDynoDaoPackageName(document), pojoTypeSpec.getTypeSpec())
-                .indent("    ")
-                .skipJavaLangImports(true)
-                .build();
-        try {
-            file.writeTo(processorContext.getFiler());
-        } catch (IOException e) {
-            throw new UncheckedIOException(String.format("got IOException when writing file\n%s", file), e);
+        if (!processorContext.hasErrors()) {
+            JavaFile file = JavaFile.builder(getDynoDaoPackageName(document), pojoTypeSpec.getTypeSpec())
+                    .indent("    ")
+                    .skipJavaLangImports(true)
+                    .build();
+            try {
+                file.writeTo(processorContext.getFiler());
+            } catch (IOException e) {
+                throw new UncheckedIOException(String.format("got IOException when writing file\n%s", file), e);
+            }
         }
     }
 

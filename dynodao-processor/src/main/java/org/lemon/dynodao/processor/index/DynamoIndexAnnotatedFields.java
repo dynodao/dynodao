@@ -4,6 +4,7 @@ import static java.util.stream.Collectors.toSet;
 
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Stream;
@@ -16,7 +17,6 @@ import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBHashKey;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBIndexHashKey;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBIndexRangeKey;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBRangeKey;
-import com.google.common.base.Strings;
 
 import lombok.Data;
 
@@ -106,7 +106,8 @@ class DynamoIndexAnnotatedFields {
 
     private Set<String> indexNames(String name, String[] names) {
         return Stream.concat(Stream.of(name), Arrays.stream(names))
-                .filter(str -> !Strings.isNullOrEmpty(str))
+                .filter(Objects::nonNull)
+                .filter(str -> !str.isEmpty())
                 .collect(toSet());
     }
 

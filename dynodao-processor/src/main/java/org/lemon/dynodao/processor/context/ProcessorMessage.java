@@ -1,7 +1,5 @@
 package org.lemon.dynodao.processor.context;
 
-import static com.google.common.base.Preconditions.checkState;
-
 import java.util.Optional;
 
 import javax.annotation.processing.Messager;
@@ -10,9 +8,12 @@ import javax.lang.model.element.AnnotationValue;
 import javax.lang.model.element.Element;
 import javax.tools.Diagnostic;
 
+import lombok.Data;
+
 /**
  * A message to display during the compilation phase.
  */
+@Data
 public class ProcessorMessage {
 
     private final Diagnostic.Kind kind;
@@ -47,7 +48,7 @@ public class ProcessorMessage {
      * @return <tt>this</tt>
      */
     public ProcessorMessage withAnnotation(AnnotationMirror annotationMirror) {
-        checkState(element.isPresent(), "ProcessorMessage#element must be set in order to set an annotation");
+        element.orElseThrow(() -> new IllegalStateException("ProcessorMessage#element must be set in order to set an annotation"));
         this.annotationMirror = Optional.of(annotationMirror);
         return this;
     }
@@ -57,8 +58,8 @@ public class ProcessorMessage {
      * @return <tt>this</tt>
      */
     public ProcessorMessage withAnnotationValue(AnnotationValue annotationValue) {
-        checkState(element.isPresent(), "ProcessorMessage#element must be set in order to set an annotation value");
-        checkState(annotationMirror.isPresent(), "ProcessorMessage#annotationMirror must be set in order to set an annotation value");
+        element.orElseThrow(() -> new IllegalStateException("ProcessorMessage#element must be set in order to set an annotation"));
+        annotationMirror.orElseThrow(() -> new IllegalStateException("ProcessorMessage#annotationMirror must be set in order to set an annotation value"));
         this.annotationValue = Optional.of(annotationValue);
         return this;
     }
