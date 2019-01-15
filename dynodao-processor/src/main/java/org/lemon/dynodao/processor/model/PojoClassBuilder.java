@@ -34,7 +34,7 @@ public class PojoClassBuilder {
     private InterfaceType interfaceType = InterfaceType.NONE;
 
     private final List<TypeSpec> targetWithers = new ArrayList<>();
-    private final List<PojoTypeSpec> targetAgainstIndexes = new ArrayList<>();
+    private final List<PojoTypeSpec> targetUsingIndexes = new ArrayList<>();
 
     /**
      * @param index the index to use
@@ -79,10 +79,10 @@ public class PojoClassBuilder {
      * @param pojos the existing pojo types
      * @return <tt>this</tt>
      */
-    public PojoClassBuilder addApplicableAgainsters(Collection<PojoTypeSpec> pojos) {
+    public PojoClassBuilder addApplicableUsers(Collection<PojoTypeSpec> pojos) {
         pojos.stream()
                 .filter(pojo -> pojo.getPojo().getDynamoIndex() != null)
-                .forEach(targetAgainstIndexes::add);
+                .forEach(targetUsingIndexes::add);
         return this;
     }
 

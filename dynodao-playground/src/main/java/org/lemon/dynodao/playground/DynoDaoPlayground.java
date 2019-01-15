@@ -8,7 +8,7 @@ public class DynoDaoPlayground {
 
     public static void main(String[] args) {
         List<Model> models = new DocumentDao(null).get(new ModelStagedDynamoBuilder()
-                .againstLocalIndexName()
+                .usingLocalIndexName()
                 .withHashKey("hashKey")
                 .withLsiRangeKey("lsiRangeKey"));
     }

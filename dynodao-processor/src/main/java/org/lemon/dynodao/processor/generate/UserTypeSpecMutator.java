@@ -21,22 +21,23 @@ import com.squareup.javapoet.ParameterSpec;
 import com.squareup.javapoet.TypeSpec;
 
 /**
- * Adds an againster to type being built. The againster is a factory which forwards the parameters to the construct
- * of a new type, which is returned.
+ * Adds an user to type being built. The user (<tt>using*</tt>) is a factory which forwards the parameters to the
+ * construct of a new type, which is returned.
  */
-class AgainsterTypeSpecMutator implements TypeSpecMutator {
+class UserTypeSpecMutator implements TypeSpecMutator {
 
-    @Inject AgainsterTypeSpecMutator() { }
+    @Inject
+    UserTypeSpecMutator() { }
 
     @Override
     public void mutate(TypeSpec.Builder typeSpec, PojoClassBuilder pojo) {
-        for (PojoTypeSpec targetAgainster : pojo.getTargetAgainstIndexes()) {
-            MethodSpec wither = buildAgainster(pojo, targetAgainster);
-            typeSpec.addMethod(wither);
+        for (PojoTypeSpec targetUsers : pojo.getTargetUsingIndexes()) {
+            MethodSpec user = buildUser(pojo, targetUsers);
+            typeSpec.addMethod(user);
         }
     }
 
-    private MethodSpec buildAgainster(PojoClassBuilder pojo, PojoTypeSpec targetAgainster) {
+    private MethodSpec buildUser(PojoClassBuilder pojo, PojoTypeSpec targetAgainster) {
         List<ParameterSpec> params = getRequiredParameters(pojo, targetAgainster);
         ClassName type = ClassName.bestGuess(targetAgainster.getTypeSpec().name);
 
@@ -60,7 +61,7 @@ class AgainsterTypeSpecMutator implements TypeSpecMutator {
     }
 
     private String getMethodName(PojoTypeSpec targetAgainster) {
-        return "against" + toClassCase(targetAgainster.getPojo().getDynamoIndex().getName());
+        return "using" + toClassCase(targetAgainster.getPojo().getDynamoIndex().getName());
     }
 
 }

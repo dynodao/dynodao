@@ -118,7 +118,7 @@ public class DynoDaoProcessor extends AbstractProcessor {
     }
 
     private List<PojoClassBuilder> getStagedBuilderPojos(TypeElement document, Set<DynamoIndex> indexes, Set<PojoTypeSpec> zeroFieldIndexPojoTypes) {
-        return singletonList(new PojoClassBuilder(document).addApplicableAgainsters(zeroFieldIndexPojoTypes));
+        return singletonList(new PojoClassBuilder(document).addApplicableUsers(zeroFieldIndexPojoTypes));
     }
 
     private Set<PojoTypeSpec> toTypeSpecs(Collection<PojoClassBuilder> pojos) {
