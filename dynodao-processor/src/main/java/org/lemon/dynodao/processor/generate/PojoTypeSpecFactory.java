@@ -16,6 +16,7 @@ import com.squareup.javapoet.TypeSpec;
  */
 public class PojoTypeSpecFactory {
 
+    @Inject GeneratedAnnotationTypeSpecMutator generatedAnnotationTypeSpecMutator;
     @Inject ModifiersTypeSpecMutator modifiersTypeSpecMutator;
     @Inject SuperInterfaceTypeSpecMutator superInterfaceTypeSpecMutator;
     @Inject FieldTypeSpecMutator fieldTypeSpecMutator;
@@ -71,6 +72,7 @@ public class PojoTypeSpecFactory {
     }
 
     private void mutate(TypeSpec.Builder typeSpec, PojoClassBuilder pojo) {
+        generatedAnnotationTypeSpecMutator.mutate(typeSpec, pojo);
         modifiersTypeSpecMutator.mutate(typeSpec, pojo);
         superInterfaceTypeSpecMutator.mutate(typeSpec, pojo);
         fieldTypeSpecMutator.mutate(typeSpec, pojo);
