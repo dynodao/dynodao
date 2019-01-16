@@ -26,7 +26,7 @@ class TypeSpecWriter {
      * @param pojoTypeSpecs all of the types the document creates
      */
     void writeAll(Iterable<PojoTypeSpec> pojoTypeSpecs) {
-        pojoTypeSpecs.forEach(typeSpec -> write(typeSpec));
+        pojoTypeSpecs.forEach(this::write);
     }
 
     /**
@@ -48,9 +48,8 @@ class TypeSpecWriter {
     }
 
     private String getDynoDaoPackageName(TypeElement document) {
-        DynoDao dynoDao = document.getAnnotation(DynoDao.class);
-        String packageName = dynoDao.implPackage();
-        if (packageName == null || packageName.isEmpty()) {
+        String packageName = document.getAnnotation(DynoDao.class).implPackage();
+        if (packageName.isEmpty()) {
             return processorContext.getElementUtils().getPackageOf(document).toString();
         } else {
             return packageName;

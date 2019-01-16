@@ -18,7 +18,6 @@ import javax.lang.model.SourceVersion;
 import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.TypeElement;
 
-import org.lemon.dynodao.DynoDao;
 import org.lemon.dynodao.processor.context.ProcessorContext;
 import org.lemon.dynodao.processor.dynamo.DynamoIndex;
 import org.lemon.dynodao.processor.dynamo.DynamoSchemaParser;

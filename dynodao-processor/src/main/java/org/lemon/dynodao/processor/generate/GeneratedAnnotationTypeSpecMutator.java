@@ -1,12 +1,14 @@
 package org.lemon.dynodao.processor.generate;
 
-import com.squareup.javapoet.AnnotationSpec;
-import com.squareup.javapoet.TypeSpec;
-import org.lemon.dynodao.processor.model.PojoClassBuilder;
+import java.time.ZonedDateTime;
 
 import javax.annotation.Generated;
 import javax.inject.Inject;
-import java.time.ZonedDateTime;
+
+import org.lemon.dynodao.processor.model.PojoClassBuilder;
+
+import com.squareup.javapoet.AnnotationSpec;
+import com.squareup.javapoet.TypeSpec;
 
 /**
  * Adds the {@link Generated} annotation to the type.
