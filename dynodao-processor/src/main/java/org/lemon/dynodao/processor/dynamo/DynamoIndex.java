@@ -1,10 +1,12 @@
 package org.lemon.dynodao.processor.dynamo;
 
 import java.util.Optional;
+import java.util.Set;
 
 import javax.lang.model.element.VariableElement;
 
 import lombok.Builder;
+import lombok.Singular;
 import lombok.Value;
 
 /**
@@ -17,7 +19,16 @@ public class DynamoIndex {
     private final IndexType indexType;
     private final String name;
 
-    private final VariableElement hashKey;
-    private final Optional<VariableElement> rangeKey;
+    private final DynamoAttribute hashKeyAttribute;
+    private final Optional<DynamoAttribute> rangeKeyAttribute;
+    @Singular private final Set<DynamoAttribute> projectedAttributes;
+
+    public VariableElement getHashKey() {
+        return hashKeyAttribute.getField();
+    }
+
+    public Optional<VariableElement> getRangeKey() {
+        return rangeKeyAttribute.map(DynamoAttribute::getField);
+    }
 
 }

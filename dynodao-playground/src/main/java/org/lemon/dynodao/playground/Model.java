@@ -2,6 +2,7 @@ package org.lemon.dynodao.playground;
 
 import org.lemon.dynodao.DynoDao;
 
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBAttribute;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBHashKey;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBIndexHashKey;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBIndexRangeKey;
@@ -37,7 +38,7 @@ public class Model {
     @DynamoDBIndexHashKey(globalSecondaryIndexName = "global-solo-index")
     private String soloGsiHashKey;
 
-    @DynamoDBTypeConverted(converter = DynamoDBTypeConverter.class)
+    @DynamoDBAttribute(attributeName = "ATTRIBUTE")
     private String attribute;
 
 }

@@ -1,8 +1,8 @@
 package org.lemon.dynodao.processor.context;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.LinkedHashSet;
 import java.util.Objects;
+import java.util.Set;
 
 import javax.annotation.processing.Filer;
 import javax.annotation.processing.ProcessingEnvironment;
@@ -23,7 +23,7 @@ public class ProcessorContext {
 
     private RoundEnvironment roundEnvironment;
 
-    private final List<ProcessorMessage> messages = new ArrayList<>();
+    private final Set<ProcessorMessage> messages = new LinkedHashSet<>();
 
     /**
      * @return the {@link Elements} utils

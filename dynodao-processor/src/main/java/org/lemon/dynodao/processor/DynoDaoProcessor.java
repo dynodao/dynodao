@@ -53,9 +53,14 @@ public class DynoDaoProcessor extends AbstractProcessor {
     public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
         processorContext.newRound(roundEnv);
         if (!roundEnv.processingOver()) {
-            Set<TypeElement> elementsToProcess = findElementsToProcess(annotations);
-            if (!elementsToProcess.isEmpty()) {
-                processElements(elementsToProcess);
+            try {
+                Set<TypeElement> elementsToProcess = findElementsToProcess(annotations);
+                if (!elementsToProcess.isEmpty()) {
+                    processElements(elementsToProcess);
+                }
+            } catch (RuntimeException e) {
+                processorContext.emitMessages();
+                throw e;
             }
             processorContext.emitMessages();
         }

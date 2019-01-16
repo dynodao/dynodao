@@ -8,6 +8,10 @@ import javax.lang.model.element.TypeElement;
  */
 public class DynamoSchemaParser {
 
+    @Inject TableIndexParser tableIndexParser;
+    @Inject LocalSecondaryIndexParser localSecondaryIndexParser;
+    @Inject GlobalSecondaryIndexParser globalSecondaryIndexParser;
+
     @Inject DynamoSchemaParser() { }
 
     /**
@@ -15,19 +19,11 @@ public class DynamoSchemaParser {
      * @param document the document representing the schema
      */
     public DynamoStructuredSchema getSchema(TypeElement document) {
-        DocumentFieldParseBuilder fields = getKeyFields(document);
-
         return DynamoStructuredSchema.builder()
-                .index(fields.getTable())
-                .indexes(fields.getLocalSecondaryIndexes())
-                .indexes(fields.getGlobalSecondaryIndexes())
+                .indexes(tableIndexParser.getIndexesFrom(document))
+                .indexes(localSecondaryIndexParser.getIndexesFrom(document))
+                .indexes(globalSecondaryIndexParser.getIndexesFrom(document))
                 .build();
-    }
-
-    private DocumentFieldParseBuilder getKeyFields(TypeElement document) {
-        DocumentFieldParseBuilder fields = new DocumentFieldParseBuilder();
-        document.getEnclosedElements().forEach(fields::append);
-        return fields;
     }
 
 }
