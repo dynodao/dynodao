@@ -8,6 +8,7 @@
         <outputRelativeToContentRoot value="true" />
         <module name="dynodao" />
         <module name="dynodao-annotations" />
+        <module name="dynodao-api" />
         <module name="dynodao-playground" />
         <module name="dynodao-processor" />
       </profile>
@@ -15,6 +16,8 @@
     <bytecodeTargetLevel>
       <module name="dynodao" target="1.8" />
       <module name="dynodao-annotations" target="1.8" />
+      <module name="dynodao-api" target="1.8" />
+      <module name="dynodao-parent" target="1.8" />
       <module name="dynodao-playground" target="1.8" />
       <module name="dynodao-processor" target="1.8" />
     </bytecodeTargetLevel>

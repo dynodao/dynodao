@@ -3,11 +3,13 @@ package org.lemon.dynodao.processor.itest.table;
 import static com.google.testing.compile.CompilationSubject.assertThat;
 
 import com.google.testing.compile.Compilation;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.lemon.dynodao.processor.itest.AbstractIntegrationTest;
 
 import javax.tools.JavaFileObject;
 
+@Ignore
 public class HashKeyOnlyTest extends AbstractIntegrationTest {
 
     @Test
