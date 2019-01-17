@@ -57,8 +57,7 @@ public class DynoDaoProcessor extends AbstractProcessor {
                     processElements(elementsToProcess);
                 }
             } catch (RuntimeException e) {
-                processorContext.emitMessages();
-                throw e;
+                processorContext.submitErrorMessage("DynoDaoProcessor had uncaught exception: %s\nCheck for other errors!", e.getMessage());
             }
             processorContext.emitMessages();
         }

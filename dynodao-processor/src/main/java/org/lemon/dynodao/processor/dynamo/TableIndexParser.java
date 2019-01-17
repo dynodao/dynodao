@@ -1,9 +1,11 @@
 package org.lemon.dynodao.processor.dynamo;
 
 import static java.util.Collections.singleton;
+import static org.lemon.dynodao.processor.util.ElementUtil.getAnnotationMirrorOfType;
 
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBHashKey;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBRangeKey;
+import org.lemon.dynodao.DynoDao;
 import org.lemon.dynodao.processor.context.ProcessorContext;
 
 import javax.inject.Inject;
@@ -36,17 +38,24 @@ class TableIndexParser implements DynamoIndexParser {
             attributes.add(attribute);
         }
 
-        validate(hashKeys, rangeKeys, attributes);
+        validate(document, hashKeys, rangeKeys);
 
         return singleton(toIndex(hashKeys, rangeKeys, attributes));
     }
 
-    private void validate(Set<DynamoAttribute> hashKeys, Set<DynamoAttribute> rangeKeys, Set<DynamoAttribute> attributes) {
+    private void validate(TypeElement document, Set<DynamoAttribute> hashKeys, Set<DynamoAttribute> rangeKeys) {
         if (hashKeys.size() != 1) {
-            processorContext.submitErrorMessage("@%s must exist on exactly one field, but found %s", DynamoDBHashKey.class.getSimpleName(), hashKeys);
+            if (hashKeys.isEmpty()) {
+                processorContext.submitErrorMessage("@%s must exist on exactly one scalar attribute, but none found.", DynamoDBHashKey.class.getSimpleName())
+                        .atElement(document)
+                        .atAnnotation(DynoDao.class);
+            }
+            hashKeys.forEach(hashKey -> processorContext.submitErrorMessage("@%s must exist on exactly one attribute.", DynamoDBHashKey.class.getSimpleName())
+                    .atElement(hashKey.getField())
+                    .atAnnotation(DynamoDBHashKey.class));
         }
         if (rangeKeys.size() > 1) {
-            processorContext.submitErrorMessage("@%s must exist on at most one field, but found %s", DynamoDBRangeKey.class.getSimpleName(), rangeKeys);
+            processorContext.submitErrorMessage("@%s must exist on at most one attribute, but found %s", DynamoDBRangeKey.class.getSimpleName(), rangeKeys);
         }
     }
 

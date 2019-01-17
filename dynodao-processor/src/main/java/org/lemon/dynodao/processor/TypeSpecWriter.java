@@ -48,7 +48,7 @@ class TypeSpecWriter {
     private String getDynoDaoPackageName(TypeElement document) {
         String packageName = document.getAnnotation(DynoDao.class).implPackage();
         if (packageName.isEmpty()) {
-            return processorContext.getElementUtils().getPackageOf(document).toString();
+            return processorContext.getElementUtils().getPackageOf(document).getQualifiedName().toString();
         } else {
             return packageName;
         }

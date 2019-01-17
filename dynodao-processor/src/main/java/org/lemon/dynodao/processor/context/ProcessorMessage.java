@@ -1,20 +1,26 @@
 package org.lemon.dynodao.processor.context;
 
+import static org.lemon.dynodao.processor.util.ElementUtil.getAnnotationMirrorOfType;
+
 import lombok.AccessLevel;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 
 import javax.annotation.processing.Messager;
+import javax.annotation.processing.Processor;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.AnnotationValue;
 import javax.lang.model.element.Element;
 import javax.tools.Diagnostic;
+import java.lang.annotation.Annotation;
 import java.util.Optional;
 
 /**
  * A message to display during the compilation phase.
  */
 @Data
+@Setter(AccessLevel.NONE)
 @RequiredArgsConstructor(access = AccessLevel.NONE)
 public class ProcessorMessage {
 
@@ -40,7 +46,7 @@ public class ProcessorMessage {
      * @param element the element this message occurs at
      * @return <tt>this</tt>
      */
-    public ProcessorMessage withElement(Element element) {
+    public ProcessorMessage atElement(Element element) {
         this.element = Optional.of(element);
         return this;
     }
@@ -49,17 +55,26 @@ public class ProcessorMessage {
      * @param annotationMirror the annotation this message occurs at
      * @return <tt>this</tt>
      */
-    public ProcessorMessage withAnnotation(AnnotationMirror annotationMirror) {
+    public ProcessorMessage atAnnotation(AnnotationMirror annotationMirror) {
         element.orElseThrow(() -> new IllegalStateException("ProcessorMessage#element must be set in order to set an annotation"));
         this.annotationMirror = Optional.of(annotationMirror);
         return this;
     }
 
     /**
+     * @param annotation the annotation this message occurs at
+     * @return <tt>this</tt>
+     */
+    public ProcessorMessage atAnnotation(Class<? extends Annotation> annotation) {
+        element.orElseThrow(() -> new IllegalStateException("ProcessorMessage#element must be set in order to set an annotation"));
+        return atAnnotation(getAnnotationMirrorOfType(element.get(), annotation));
+    }
+
+    /**
      * @param annotationValue the annotation value this message occurs at
      * @return <tt>this</tt>
      */
-    public ProcessorMessage withAnnotationValue(AnnotationValue annotationValue) {
+    public ProcessorMessage atAnnotationValue(AnnotationValue annotationValue) {
         element.orElseThrow(() -> new IllegalStateException("ProcessorMessage#element must be set in order to set an annotation"));
         annotationMirror.orElseThrow(() -> new IllegalStateException("ProcessorMessage#annotationMirror must be set in order to set an annotation value"));
         this.annotationValue = Optional.of(annotationValue);

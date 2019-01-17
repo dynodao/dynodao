@@ -6,6 +6,7 @@ import java.util.Set;
 /**
  * Parses a document class to pull out dynamo indexes. Implementations should also be responsible for validating
  * the schema document.
+ * FIXME implementations of this class duplicate validation code
  */
 interface DynamoIndexParser {
 

@@ -4,6 +4,7 @@ import static java.util.stream.Collectors.toSet;
 
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBHashKey;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBIndexRangeKey;
+import org.lemon.dynodao.DynoDao;
 import org.lemon.dynodao.processor.context.ProcessorContext;
 
 import javax.inject.Inject;
@@ -43,14 +44,21 @@ class LocalSecondaryIndexParser implements DynamoIndexParser {
             attributes.add(attribute);
         }
 
-        validate(hashKeys, rangeKeys, attributes);
+        validate(document, hashKeys, rangeKeys);
 
         return toIndexes(hashKeys, rangeKeys, attributes);
     }
 
-    private void validate(Set<DynamoAttribute> hashKeys, Set<DynamoAttribute> rangeKeys, Set<DynamoAttribute> attributes) {
+    private void validate(TypeElement document, Set<DynamoAttribute> hashKeys, Set<DynamoAttribute> rangeKeys) {
         if (hashKeys.size() != 1) {
-            processorContext.submitErrorMessage("@%s must exist on exactly one field, but found %s", DynamoDBHashKey.class.getSimpleName(), hashKeys);
+            if (hashKeys.isEmpty()) {
+                processorContext.submitErrorMessage("@%s must exist on exactly one scalar attribute, but none found.", DynamoDBHashKey.class.getSimpleName())
+                        .atElement(document)
+                        .atAnnotation(DynoDao.class);
+            }
+            hashKeys.forEach(hashKey -> processorContext.submitErrorMessage("@%s must exist on exactly one attribute.", DynamoDBHashKey.class.getSimpleName())
+                    .atElement(hashKey.getField())
+                    .atAnnotation(DynamoDBHashKey.class));
         }
 
         Map<String, Set<DynamoAttribute>> rangeKeyByIndex = new HashMap<>();
