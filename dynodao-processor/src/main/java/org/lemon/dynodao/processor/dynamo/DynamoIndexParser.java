@@ -1,8 +1,7 @@
 package org.lemon.dynodao.processor.dynamo;
 
-import java.util.Set;
-
 import javax.lang.model.element.TypeElement;
+import java.util.Set;
 
 /**
  * Parses a document class to pull out dynamo indexes. Implementations should also be responsible for validating

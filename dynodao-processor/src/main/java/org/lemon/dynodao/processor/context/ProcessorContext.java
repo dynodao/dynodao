@@ -1,8 +1,6 @@
 package org.lemon.dynodao.processor.context;
 
-import java.util.LinkedHashSet;
-import java.util.Objects;
-import java.util.Set;
+import lombok.RequiredArgsConstructor;
 
 import javax.annotation.processing.Filer;
 import javax.annotation.processing.ProcessingEnvironment;
@@ -10,8 +8,9 @@ import javax.annotation.processing.RoundEnvironment;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
 import javax.tools.Diagnostic;
-
-import lombok.RequiredArgsConstructor;
+import java.util.LinkedHashSet;
+import java.util.Objects;
+import java.util.Set;
 
 /**
  * Keeps contextual data for the application (AP) scope.

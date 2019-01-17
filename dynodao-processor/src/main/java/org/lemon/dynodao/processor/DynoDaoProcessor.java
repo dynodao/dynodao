@@ -2,10 +2,14 @@ package org.lemon.dynodao.processor;
 
 import static java.util.stream.Collectors.toSet;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import com.google.auto.service.AutoService;
+import org.lemon.dynodao.processor.context.ProcessorContext;
+import org.lemon.dynodao.processor.dynamo.DynamoIndex;
+import org.lemon.dynodao.processor.dynamo.DynamoSchemaParser;
+import org.lemon.dynodao.processor.generate.PojoTypeSpecFactory;
+import org.lemon.dynodao.processor.model.IndexLengthType;
+import org.lemon.dynodao.processor.model.PojoClassBuilder;
+import org.lemon.dynodao.processor.model.PojoTypeSpec;
 
 import javax.annotation.processing.AbstractProcessor;
 import javax.annotation.processing.ProcessingEnvironment;
@@ -17,16 +21,10 @@ import javax.inject.Inject;
 import javax.lang.model.SourceVersion;
 import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.TypeElement;
-
-import org.lemon.dynodao.processor.context.ProcessorContext;
-import org.lemon.dynodao.processor.dynamo.DynamoIndex;
-import org.lemon.dynodao.processor.dynamo.DynamoSchemaParser;
-import org.lemon.dynodao.processor.generate.PojoTypeSpecFactory;
-import org.lemon.dynodao.processor.model.IndexLengthType;
-import org.lemon.dynodao.processor.model.PojoClassBuilder;
-import org.lemon.dynodao.processor.model.PojoTypeSpec;
-
-import com.google.auto.service.AutoService;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 
 /**
  * The annotation processor for {@link org.lemon.dynodao.DynoDao}.

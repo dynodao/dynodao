@@ -1,8 +1,8 @@
 package org.lemon.dynodao;
 
-import java.util.List;
-
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
+
+import java.util.List;
 
 /**
  * A simple DynamoDB dao for retrieving documents via indexes.

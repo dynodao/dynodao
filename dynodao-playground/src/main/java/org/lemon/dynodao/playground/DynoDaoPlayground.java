@@ -1,10 +1,9 @@
 package org.lemon.dynodao.playground;
 
-import java.util.List;
-
+import com.amazonaws.services.dynamodbv2.model.AttributeValue;
 import org.lemon.dynodao.DocumentDao;
 
-import com.amazonaws.services.dynamodbv2.model.AttributeValue;
+import java.util.List;
 
 public class DynoDaoPlayground {
 

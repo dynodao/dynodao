@@ -2,6 +2,12 @@ package org.lemon.dynodao.processor.dynamo;
 
 import static java.util.stream.Collectors.toSet;
 
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBIndexHashKey;
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBIndexRangeKey;
+import org.lemon.dynodao.processor.context.ProcessorContext;
+
+import javax.inject.Inject;
+import javax.lang.model.element.TypeElement;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -13,15 +19,9 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Stream;
 
-import javax.inject.Inject;
-import javax.lang.model.element.TypeElement;
-import javax.lang.model.element.VariableElement;
-
-import org.lemon.dynodao.processor.context.ProcessorContext;
-
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBIndexHashKey;
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBIndexRangeKey;
-
+/**
+ * Extracts global secondary indexes from the schema document.
+ */
 class GlobalSecondaryIndexParser implements DynamoIndexParser {
 
     @Inject SchemaFieldsProvider schemaFieldsProvider;
@@ -34,12 +34,11 @@ class GlobalSecondaryIndexParser implements DynamoIndexParser {
         Set<DynamoAttribute> hashKeys = new LinkedHashSet<>();
         Set<DynamoAttribute> rangeKeys = new LinkedHashSet<>();
         Set<DynamoAttribute> attributes = new LinkedHashSet<>();
-        for (VariableElement field : schemaFieldsProvider.getDynamoDbFields(document)) {
-            DynamoAttribute attribute = DynamoAttribute.of(field);
-            if (field.getAnnotation(DynamoDBIndexHashKey.class) != null) {
+        for (DynamoAttribute attribute : schemaFieldsProvider.getDynamoAttributes(document)) {
+            if (attribute.getField().getAnnotation(DynamoDBIndexHashKey.class) != null) {
                 hashKeys.add(attribute);
             }
-            if (field.getAnnotation(DynamoDBIndexRangeKey.class) != null) {
+            if (attribute.getField().getAnnotation(DynamoDBIndexRangeKey.class) != null) {
                 rangeKeys.add(attribute);
             }
             attributes.add(attribute);
@@ -61,7 +60,7 @@ class GlobalSecondaryIndexParser implements DynamoIndexParser {
             getIndexNames.apply(key).forEach(index -> keysByIndex.computeIfAbsent(index, k -> new HashSet<>()).add(key));
         }
         keysByIndex.forEach((index, indexKeys) -> {
-            if (indexKeys.size() != 1) {
+            if (indexKeys.size() != 1) { // for range key, no entry would be created, it is sufficient to check size=1
                 processorContext.submitErrorMessage("@%s must exist on exactly one field for GSI[%s], but found %s", annotation.getSimpleName(), index, indexKeys);
             }
         });
@@ -77,7 +76,7 @@ class GlobalSecondaryIndexParser implements DynamoIndexParser {
 
     private Set<String> getRangeKeyIndexNames(DynamoAttribute rangeKey) {
         DynamoDBIndexRangeKey key = rangeKey.getField().getAnnotation(DynamoDBIndexRangeKey.class);
-        return Stream.concat(Stream.of(key.globalSecondaryIndexNames()), Arrays.stream(key.globalSecondaryIndexNames()))
+        return Stream.concat(Stream.of(key.globalSecondaryIndexName()), Arrays.stream(key.globalSecondaryIndexNames()))
                 .filter(Objects::nonNull)
                 .filter(str -> !str.isEmpty())
                 .collect(toSet());

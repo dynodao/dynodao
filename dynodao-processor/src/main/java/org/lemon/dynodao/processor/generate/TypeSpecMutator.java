@@ -1,8 +1,7 @@
 package org.lemon.dynodao.processor.generate;
 
-import org.lemon.dynodao.processor.model.PojoClassBuilder;
-
 import com.squareup.javapoet.TypeSpec;
+import org.lemon.dynodao.processor.model.PojoClassBuilder;
 
 /**
  * Builds a component of the pojo.

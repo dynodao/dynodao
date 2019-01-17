@@ -1,15 +1,14 @@
 package org.lemon.dynodao.processor.generate;
 
-import java.util.Iterator;
-
-import javax.inject.Inject;
-import javax.lang.model.element.Modifier;
-
-import org.lemon.dynodao.processor.model.PojoClassBuilder;
-
 import com.squareup.javapoet.FieldSpec;
 import com.squareup.javapoet.MethodSpec;
 import com.squareup.javapoet.TypeSpec;
+import org.lemon.dynodao.processor.dynamo.DynamoAttribute;
+import org.lemon.dynodao.processor.model.PojoClassBuilder;
+
+import javax.inject.Inject;
+import javax.lang.model.element.Modifier;
+import java.util.Iterator;
 
 /**
  * Adds a decent {@link Object#toString()} to the type. Creates an output similar to
@@ -38,7 +37,7 @@ class ToStringTypeSpecMutator implements TypeSpecMutator {
     }
 
     private MethodSpec buildToString(String className, PojoClassBuilder pojo) {
-        if (pojo.getFields().isEmpty()) {
+        if (pojo.getAttributes().isEmpty()) {
             return buildNoFieldsToString(className);
         } else {
             return buildPojoToString(className, pojo);
@@ -56,10 +55,10 @@ class ToStringTypeSpecMutator implements TypeSpecMutator {
                 .addStatement("$T sb = new $T()", StringBuilder.class, StringBuilder.class)
                 .addStatement("sb.append($S)", className + "(");
 
-        Iterator<FieldSpec> fields = pojo.getFields().iterator();
-        while (fields.hasNext()) {
-            FieldSpec field = fields.next();
-            if (fields.hasNext()) {
+        Iterator<DynamoAttribute> attributes = pojo.getAttributes().iterator();
+        while (attributes.hasNext()) {
+            FieldSpec field = attributes.next().asFieldSpec();
+            if (attributes.hasNext()) {
                 toString.addStatement("sb.append($S).append($N).append($S)", field.name + "=", field, ", ");
             } else {
                 toString.addStatement("sb.append($S).append($N)", field.name + "=", field);

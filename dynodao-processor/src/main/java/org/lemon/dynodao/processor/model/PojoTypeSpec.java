@@ -1,7 +1,6 @@
 package org.lemon.dynodao.processor.model;
 
 import com.squareup.javapoet.TypeSpec;
-
 import lombok.Value;
 
 /**

@@ -3,15 +3,15 @@ package org.lemon.dynodao.processor.generate;
 import static org.lemon.dynodao.processor.util.StreamUtil.concat;
 import static org.lemon.dynodao.processor.util.StringUtil.repeat;
 
-import java.util.Objects;
+import com.squareup.javapoet.FieldSpec;
+import com.squareup.javapoet.MethodSpec;
+import com.squareup.javapoet.TypeSpec;
+import org.lemon.dynodao.processor.model.PojoClassBuilder;
 
 import javax.inject.Inject;
 import javax.lang.model.element.Modifier;
-
-import org.lemon.dynodao.processor.model.PojoClassBuilder;
-
-import com.squareup.javapoet.MethodSpec;
-import com.squareup.javapoet.TypeSpec;
+import java.util.List;
+import java.util.Objects;
 
 /**
  * Adds a decent implementation of {@link Object#hashCode()}} to the type, delegating to {@link Objects#hash(Object...)}.
@@ -37,10 +37,10 @@ class HashCodeTypeSpecMutator implements TypeSpecMutator {
     }
 
     private MethodSpec buildHashCode(PojoClassBuilder pojo) {
-        MethodSpec.Builder hashCode = hashCodeWithNoBody.toBuilder();
-        String hashCodeParams = repeat(pojo.getFields().size(), "$N", ", ");
-        Object[] args = concat(Objects.class, pojo.getFields()).toArray();
-        return hashCode
+        List<FieldSpec> fields = pojo.getAttributesAsFields();
+        String hashCodeParams = repeat(fields.size(), "$N", ", ");
+        Object[] args = concat(Objects.class, fields).toArray();
+        return hashCodeWithNoBody.toBuilder()
                 .addStatement("return $T.hash(" + hashCodeParams + ")", args)
                 .build();
     }

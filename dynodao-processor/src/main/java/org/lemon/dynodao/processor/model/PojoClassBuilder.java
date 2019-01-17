@@ -1,30 +1,27 @@
 package org.lemon.dynodao.processor.model;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.lang.model.element.Modifier;
-import javax.lang.model.element.TypeElement;
-import javax.lang.model.element.VariableElement;
-
-import org.lemon.dynodao.processor.dynamo.DynamoIndex;
+import static java.util.stream.Collectors.toList;
 
 import com.squareup.javapoet.FieldSpec;
-import com.squareup.javapoet.TypeName;
-
 import lombok.AccessLevel;
 import lombok.Data;
 import lombok.Setter;
+import org.lemon.dynodao.processor.dynamo.DynamoAttribute;
+import org.lemon.dynodao.processor.dynamo.DynamoIndex;
+
+import javax.lang.model.element.TypeElement;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
- * Data model for a pojo type to generate.
+ * Data model for a pojo type to generate. Each pojo models a portion of a single dynamo index.
  */
 @Data
 @Setter(AccessLevel.NONE)
 public class PojoClassBuilder {
 
     private final TypeElement document;
-    private final List<FieldSpec> fields = new ArrayList<>();
+    private final List<DynamoAttribute> attributes = new ArrayList<>();
 
     private DynamoIndex dynamoIndex;
     private IndexLengthType indexLengthType = IndexLengthType.NONE;
@@ -42,16 +39,9 @@ public class PojoClassBuilder {
         this.dynamoIndex = index;
         this.indexLengthType = indexLengthType;
 
-        indexLengthType.getFields(index).forEach(this::addField);
+        this.attributes.addAll(indexLengthType.getKeyAttributes(index));
         this.interfaceType = InterfaceType.typeOf(index, indexLengthType);
         return this;
-    }
-
-    private void addField(VariableElement indexField) {
-        FieldSpec field = FieldSpec.builder(TypeName.get(indexField.asType()), indexField.getSimpleName().toString())
-                .addModifiers(Modifier.PRIVATE, Modifier.FINAL)
-                .build();
-        fields.add(field);
     }
 
     /**
@@ -72,6 +62,15 @@ public class PojoClassBuilder {
     public PojoClassBuilder addUser(PojoTypeSpec pojo) {
         targetUsingIndexes.add(pojo);
         return this;
+    }
+
+    /**
+     * @return the attributes of this pojo as {@link FieldSpec} as per {@link DynamoAttribute#asFieldSpec()}
+     */
+    public List<FieldSpec> getAttributesAsFields() {
+        return attributes.stream()
+                .map(DynamoAttribute::asFieldSpec)
+                .collect(toList());
     }
 
 }

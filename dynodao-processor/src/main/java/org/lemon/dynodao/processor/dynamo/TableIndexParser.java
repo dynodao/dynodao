@@ -2,18 +2,18 @@ package org.lemon.dynodao.processor.dynamo;
 
 import static java.util.Collections.singleton;
 
-import java.util.LinkedHashSet;
-import java.util.Set;
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBHashKey;
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBRangeKey;
+import org.lemon.dynodao.processor.context.ProcessorContext;
 
 import javax.inject.Inject;
 import javax.lang.model.element.TypeElement;
-import javax.lang.model.element.VariableElement;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
-import org.lemon.dynodao.processor.context.ProcessorContext;
-
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBHashKey;
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBRangeKey;
-
+/**
+ * Extracts the overall table "index" from the schema document.
+ */
 class TableIndexParser implements DynamoIndexParser {
 
     @Inject SchemaFieldsProvider schemaFieldsProvider;
@@ -26,12 +26,11 @@ class TableIndexParser implements DynamoIndexParser {
         Set<DynamoAttribute> hashKeys = new LinkedHashSet<>();
         Set<DynamoAttribute> rangeKeys = new LinkedHashSet<>();
         Set<DynamoAttribute> attributes = new LinkedHashSet<>();
-        for (VariableElement field : schemaFieldsProvider.getDynamoDbFields(document)) {
-            DynamoAttribute attribute = DynamoAttribute.of(field);
-            if (field.getAnnotation(DynamoDBHashKey.class) != null) {
+        for (DynamoAttribute attribute : schemaFieldsProvider.getDynamoAttributes(document)) {
+            if (attribute.getField().getAnnotation(DynamoDBHashKey.class) != null) {
                 hashKeys.add(attribute);
             }
-            if (field.getAnnotation(DynamoDBRangeKey.class) != null) {
+            if (attribute.getField().getAnnotation(DynamoDBRangeKey.class) != null) {
                 rangeKeys.add(attribute);
             }
             attributes.add(attribute);
@@ -60,6 +59,5 @@ class TableIndexParser implements DynamoIndexParser {
                 .projectedAttributes(attributes)
                 .build();
     }
-
 
 }

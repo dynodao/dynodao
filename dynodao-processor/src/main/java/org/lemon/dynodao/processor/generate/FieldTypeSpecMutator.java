@@ -1,10 +1,9 @@
 package org.lemon.dynodao.processor.generate;
 
-import javax.inject.Inject;
-
+import com.squareup.javapoet.TypeSpec;
 import org.lemon.dynodao.processor.model.PojoClassBuilder;
 
-import com.squareup.javapoet.TypeSpec;
+import javax.inject.Inject;
 
 /**
  * Adds the fields from the pojo model to the type. They are added verbatim.
@@ -15,7 +14,7 @@ class FieldTypeSpecMutator implements TypeSpecMutator {
 
     @Override
     public void mutate(TypeSpec.Builder typeSpec, PojoClassBuilder pojo) {
-        typeSpec.addFields(pojo.getFields());
+        typeSpec.addFields(pojo.getAttributesAsFields());
     }
 
 }

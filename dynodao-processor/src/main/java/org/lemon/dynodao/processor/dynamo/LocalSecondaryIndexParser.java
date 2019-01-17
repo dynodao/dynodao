@@ -2,6 +2,12 @@ package org.lemon.dynodao.processor.dynamo;
 
 import static java.util.stream.Collectors.toSet;
 
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBHashKey;
+import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBIndexRangeKey;
+import org.lemon.dynodao.processor.context.ProcessorContext;
+
+import javax.inject.Inject;
+import javax.lang.model.element.TypeElement;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -12,15 +18,9 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Stream;
 
-import javax.inject.Inject;
-import javax.lang.model.element.TypeElement;
-import javax.lang.model.element.VariableElement;
-
-import org.lemon.dynodao.processor.context.ProcessorContext;
-
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBHashKey;
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBIndexRangeKey;
-
+/**
+ * Extracts local secondary indexes from the schema document.
+ */
 class LocalSecondaryIndexParser implements DynamoIndexParser {
 
     @Inject SchemaFieldsProvider schemaFieldsProvider;
@@ -33,12 +33,11 @@ class LocalSecondaryIndexParser implements DynamoIndexParser {
         Set<DynamoAttribute> hashKeys = new LinkedHashSet<>();
         Set<DynamoAttribute> rangeKeys = new LinkedHashSet<>();
         Set<DynamoAttribute> attributes = new LinkedHashSet<>();
-        for (VariableElement field : schemaFieldsProvider.getDynamoDbFields(document)) {
-            DynamoAttribute attribute = DynamoAttribute.of(field);
-            if (field.getAnnotation(DynamoDBHashKey.class) != null) {
+        for (DynamoAttribute attribute : schemaFieldsProvider.getDynamoAttributes(document)) {
+            if (attribute.getField().getAnnotation(DynamoDBHashKey.class) != null) {
                 hashKeys.add(attribute);
             }
-            if (field.getAnnotation(DynamoDBIndexRangeKey.class) != null) {
+            if (attribute.getField().getAnnotation(DynamoDBIndexRangeKey.class) != null) {
                 rangeKeys.add(attribute);
             }
             attributes.add(attribute);

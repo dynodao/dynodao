@@ -6,21 +6,20 @@ import static org.lemon.dynodao.processor.util.DynamoDbUtil.dynamoDbMapper;
 import static org.lemon.dynodao.processor.util.DynamoDbUtil.dynamoDbQueryExpression;
 import static org.lemon.dynodao.processor.util.DynamoDbUtil.paginatedList;
 
-import javax.inject.Inject;
-import javax.lang.model.element.ExecutableElement;
-import javax.lang.model.element.Modifier;
-import javax.lang.model.element.TypeElement;
-
-import org.lemon.dynodao.processor.context.ProcessorContext;
-import org.lemon.dynodao.processor.dynamo.IndexType;
-import org.lemon.dynodao.processor.model.InterfaceType;
-import org.lemon.dynodao.processor.model.PojoClassBuilder;
-
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
 import com.squareup.javapoet.MethodSpec;
 import com.squareup.javapoet.ParameterSpec;
 import com.squareup.javapoet.TypeName;
 import com.squareup.javapoet.TypeSpec;
+import org.lemon.dynodao.processor.context.ProcessorContext;
+import org.lemon.dynodao.processor.dynamo.IndexType;
+import org.lemon.dynodao.processor.model.InterfaceType;
+import org.lemon.dynodao.processor.model.PojoClassBuilder;
+
+import javax.inject.Inject;
+import javax.lang.model.element.ExecutableElement;
+import javax.lang.model.element.Modifier;
+import javax.lang.model.element.TypeElement;
 
 /**
  * Implements the {@link org.lemon.dynodao.DocumentQuery#query(DynamoDBMapper)} method. If the type does not implement
@@ -81,20 +80,20 @@ class DocumentQueryTypeSpecMutator implements TypeSpecMutator {
     }
 
     private void appendKeyConditionExpression(MethodSpec.Builder query, PojoClassBuilder pojo) {
-        String expression = pojo.getFields().stream()
+        String expression = pojo.getAttributesAsFields().stream()
                 .map(field -> String.format("#%s = :%s", field.name, field.name))
                 .collect(joining(" AND "));
         query.addStatement("query.setKeyConditionExpression($S)", expression);
     }
 
     private void appendExpressionAttributeNames(MethodSpec.Builder query, PojoClassBuilder pojo) {
-        pojo.getFields().forEach(field -> query.addStatement("query.addExpressionAttributeNamesEntry($S, $S)", "#" + field.name, field.name));
+        pojo.getAttributesAsFields().forEach(field -> query.addStatement("query.addExpressionAttributeNamesEntry($S, $S)", "#" + field.name, field.name));
     }
 
     private void appendExpressionAttributeValues(MethodSpec.Builder query, PojoClassBuilder pojo) {
         // TODO need to select the proper withX method here
         // https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/HowItWorks.CoreComponents.html#HowItWorks.CoreComponents.TablesItemsAttributes
         // The only data types allowed for primary key attributes are string, number, or binary.
-        pojo.getFields().forEach(field -> query.addStatement("query.addExpressionAttributeValuesEntry($S, new $T().withS($N))", ":" + field.name, attributeValue(), field));
+        pojo.getAttributesAsFields().forEach(field -> query.addStatement("query.addExpressionAttributeValuesEntry($S, new $T().withS($N))", ":" + field.name, attributeValue(), field));
     }
 }

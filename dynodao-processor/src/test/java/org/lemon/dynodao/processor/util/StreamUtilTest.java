@@ -2,11 +2,11 @@ package org.lemon.dynodao.processor.util;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-import java.util.Arrays;
-import java.util.stream.Stream;
-
 import org.junit.Test;
 import org.lemon.dynodao.processor.test.AbstractUnitTest;
+
+import java.util.Arrays;
+import java.util.stream.Stream;
 
 public class StreamUtilTest extends AbstractUnitTest {
 

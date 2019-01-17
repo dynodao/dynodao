@@ -1,15 +1,14 @@
 package org.lemon.dynodao.processor.model;
 
-import java.util.Optional;
-
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 import org.lemon.dynodao.DocumentLoad;
 import org.lemon.dynodao.DocumentQuery;
 import org.lemon.dynodao.processor.dynamo.DynamoIndex;
 import org.lemon.dynodao.processor.dynamo.IndexType;
 
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import java.util.Optional;
 
 /**
  * Indicates which of {@link DocumentLoad} or {@link DocumentQuery} interfaces a type

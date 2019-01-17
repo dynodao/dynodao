@@ -2,17 +2,15 @@ package org.lemon.dynodao.processor.generate;
 
 import static java.util.stream.Collectors.joining;
 
-import java.util.Objects;
-
-import javax.inject.Inject;
-import javax.lang.model.element.Modifier;
-
-import org.lemon.dynodao.processor.context.ProcessorContext;
-import org.lemon.dynodao.processor.model.PojoClassBuilder;
-
 import com.squareup.javapoet.MethodSpec;
 import com.squareup.javapoet.ParameterSpec;
 import com.squareup.javapoet.TypeSpec;
+import org.lemon.dynodao.processor.context.ProcessorContext;
+import org.lemon.dynodao.processor.model.PojoClassBuilder;
+
+import javax.inject.Inject;
+import javax.lang.model.element.Modifier;
+import java.util.Objects;
 
 /**
  * Adds a decent implementation of {@link Object#equals(Object)} to the type, delegating
@@ -46,7 +44,7 @@ class EqualsTypeSpecMutator implements TypeSpecMutator {
     }
 
     private MethodSpec buildEquals(String className, PojoClassBuilder pojo) {
-        if (pojo.getFields().isEmpty()) {
+        if (pojo.getAttributes().isEmpty()) {
             return buildNoFieldsEquals(className);
         } else {
             return buildPojoEquals(className, pojo);
@@ -66,10 +64,10 @@ class EqualsTypeSpecMutator implements TypeSpecMutator {
                 .nextControlFlow("else if ($N instanceof $L)", objectParam, className)
                 .addStatement("$L rhs = ($L) $N", className, className, objectParam);
 
-        String equal = pojo.getFields().stream()
+        String equal = pojo.getAttributesAsFields().stream()
                 .map(field -> String.format("$T.equals(this.%s, rhs.%s)", field.name, field.name))
                 .collect(joining(" && "));
-        Object[] objects = pojo.getFields().stream().map(f -> Objects.class).toArray();
+        Object[] objects = pojo.getAttributes().stream().map(f -> Objects.class).toArray();
 
         return equals
                 .addStatement("return " + equal, objects)

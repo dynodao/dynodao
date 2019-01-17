@@ -5,20 +5,18 @@ import static org.lemon.dynodao.processor.util.StreamUtil.concat;
 import static org.lemon.dynodao.processor.util.StringUtil.repeat;
 import static org.lemon.dynodao.processor.util.StringUtil.toClassCase;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.inject.Inject;
-import javax.lang.model.element.Modifier;
-
-import org.lemon.dynodao.processor.model.PojoClassBuilder;
-import org.lemon.dynodao.processor.model.PojoTypeSpec;
-
 import com.squareup.javapoet.ClassName;
-import com.squareup.javapoet.FieldSpec;
 import com.squareup.javapoet.MethodSpec;
 import com.squareup.javapoet.ParameterSpec;
 import com.squareup.javapoet.TypeSpec;
+import org.lemon.dynodao.processor.dynamo.DynamoAttribute;
+import org.lemon.dynodao.processor.model.PojoClassBuilder;
+import org.lemon.dynodao.processor.model.PojoTypeSpec;
+
+import javax.inject.Inject;
+import javax.lang.model.element.Modifier;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Adds an user to type being built. The user (<tt>using*</tt>) is a factory which forwards the parameters to the
@@ -41,8 +39,8 @@ class UserTypeSpecMutator implements TypeSpecMutator {
         List<ParameterSpec> params = getRequiredParameters(pojo, targetAgainster);
         ClassName type = ClassName.bestGuess(targetAgainster.getTypeSpec().name);
 
-        String argsFormat = repeat(pojo.getFields().size() + params.size(), "$N", ", ");
-        Object[] args = concat(type, pojo.getFields(), params).toArray();
+        String argsFormat = repeat(pojo.getAttributes().size() + params.size(), "$N", ", ");
+        Object[] args = concat(type, pojo.getAttributes(), params).toArray();
 
         return MethodSpec.methodBuilder(getMethodName(targetAgainster))
                 .addModifiers(Modifier.PUBLIC)
@@ -52,11 +50,11 @@ class UserTypeSpecMutator implements TypeSpecMutator {
                 .build();
     }
 
-    private List<ParameterSpec> getRequiredParameters(PojoClassBuilder pojo, PojoTypeSpec targetAgainster) {
-        List<FieldSpec> fields = new ArrayList<>(targetAgainster.getTypeSpec().fieldSpecs);
-        fields.removeAll(pojo.getFields());
-        return fields.stream()
-                .map(field -> ParameterSpec.builder(field.type, field.name).build())
+    private List<ParameterSpec> getRequiredParameters(PojoClassBuilder pojo, PojoTypeSpec targetUser) {
+        List<DynamoAttribute> attributes = new ArrayList<>(targetUser.getPojo().getAttributes());
+        attributes.removeAll(pojo.getAttributes());
+        return attributes.stream()
+                .map(DynamoAttribute::asParameterSpec)
                 .collect(toList());
     }
 

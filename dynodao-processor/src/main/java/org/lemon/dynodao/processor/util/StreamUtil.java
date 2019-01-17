@@ -1,10 +1,10 @@
 package org.lemon.dynodao.processor.util;
 
+import lombok.experimental.UtilityClass;
+
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.stream.Stream;
-
-import lombok.experimental.UtilityClass;
 
 /**
  * Utility methods for basic stream operations.

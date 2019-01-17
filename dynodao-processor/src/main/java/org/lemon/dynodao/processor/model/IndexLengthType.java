@@ -3,12 +3,11 @@ package org.lemon.dynodao.processor.model;
 import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonList;
 
+import org.lemon.dynodao.processor.dynamo.DynamoAttribute;
+import org.lemon.dynodao.processor.dynamo.DynamoIndex;
+
 import java.util.Arrays;
 import java.util.List;
-
-import javax.lang.model.element.VariableElement;
-
-import org.lemon.dynodao.processor.dynamo.DynamoIndex;
 
 /**
  * The length of a dynamo index, or length of a query against an index.
@@ -20,7 +19,7 @@ public enum IndexLengthType {
      */
     NONE() {
         @Override
-        public List<VariableElement> getFields(DynamoIndex index) {
+        public List<DynamoAttribute> getKeyAttributes(DynamoIndex index) {
             return emptyList();
         }
     },
@@ -30,8 +29,8 @@ public enum IndexLengthType {
      */
     HASH() {
         @Override
-        public List<VariableElement> getFields(DynamoIndex index) {
-            return singletonList(index.getHashKey());
+        public List<DynamoAttribute> getKeyAttributes(DynamoIndex index) {
+            return singletonList(index.getHashKeyAttribute());
         }
     },
 
@@ -40,17 +39,17 @@ public enum IndexLengthType {
      */
     RANGE() {
         @Override
-        public List<VariableElement> getFields(DynamoIndex index) {
-            return Arrays.asList(index.getHashKey(), index.getRangeKey().get());
+        public List<DynamoAttribute> getKeyAttributes(DynamoIndex index) {
+            return Arrays.asList(index.getHashKeyAttribute(), index.getRangeKeyAttribute().get());
         }
     };
 
     /**
-     * Returns the key fields from the index according to the length of <tt>this</tt>.
-     * @param index the index to extract fields from
-     * @return the key fields from the index
+     * Returns the key attributes from the index according to the length of <tt>this</tt>.
+     * @param index the index to extract attributes from
+     * @return the key attributes from the index
      */
-    public abstract List<VariableElement> getFields(DynamoIndex index);
+    public abstract List<DynamoAttribute> getKeyAttributes(DynamoIndex index);
 
     /**
      * Returns the full index length of <tt>index</tt>.
@@ -58,6 +57,6 @@ public enum IndexLengthType {
      * @return the length of <tt>index</tt>
      */
     public static IndexLengthType lengthOf(DynamoIndex index) {
-        return index.getRangeKey().isPresent() ? RANGE : HASH;
+        return index.getRangeKeyAttribute().isPresent() ? RANGE : HASH;
     }
 }

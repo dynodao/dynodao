@@ -1,16 +1,14 @@
 package org.lemon.dynodao.processor;
 
-import java.io.IOException;
-import java.io.UncheckedIOException;
-
-import javax.inject.Inject;
-import javax.lang.model.element.TypeElement;
-
+import com.squareup.javapoet.JavaFile;
 import org.lemon.dynodao.DynoDao;
 import org.lemon.dynodao.processor.context.ProcessorContext;
 import org.lemon.dynodao.processor.model.PojoTypeSpec;
 
-import com.squareup.javapoet.JavaFile;
+import javax.inject.Inject;
+import javax.lang.model.element.TypeElement;
+import java.io.IOException;
+import java.io.UncheckedIOException;
 
 /**
  * Creates files specified by {@link com.squareup.javapoet.TypeSpec}s.

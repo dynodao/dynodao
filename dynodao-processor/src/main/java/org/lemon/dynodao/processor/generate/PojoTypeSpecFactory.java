@@ -3,13 +3,12 @@ package org.lemon.dynodao.processor.generate;
 import static org.lemon.dynodao.processor.util.StringUtil.capitalize;
 import static org.lemon.dynodao.processor.util.StringUtil.toClassCase;
 
-import javax.inject.Inject;
-
+import com.squareup.javapoet.TypeSpec;
 import org.lemon.dynodao.processor.model.IndexLengthType;
 import org.lemon.dynodao.processor.model.PojoClassBuilder;
 import org.lemon.dynodao.processor.model.PojoTypeSpec;
 
-import com.squareup.javapoet.TypeSpec;
+import javax.inject.Inject;
 
 /**
  * Produces {@link PojoTypeSpec} types from their {@link PojoClassBuilder} specifications.
@@ -59,10 +58,10 @@ public class PojoTypeSpecFactory {
         name.append(toClassCase(pojo.getDynamoIndex().getName()));
 
         if (pojo.getIndexLengthType().compareTo(IndexLengthType.HASH) >= 0) {
-            name.append(capitalize(pojo.getDynamoIndex().getHashKey()));
+            name.append(capitalize(pojo.getDynamoIndex().getHashKeyAttribute().getField()));
         }
         if (pojo.getIndexLengthType().compareTo(IndexLengthType.RANGE) >= 0) {
-            name.append(capitalize(pojo.getDynamoIndex().getRangeKey().get()));
+            name.append(capitalize(pojo.getDynamoIndex().getRangeKeyAttribute().get().getField()));
         }
 
         name.append(pojo.getDocument().getSimpleName());
