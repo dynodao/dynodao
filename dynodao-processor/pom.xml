@@ -55,7 +55,7 @@
 
     <dependencies>
         <dependency>
-            <groupId>org.lemon</groupId>
+            <groupId>${project.groupId}</groupId>
             <artifactId>dynodao-api</artifactId>
         </dependency>
 

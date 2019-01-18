@@ -51,14 +51,8 @@ public class DynoDaoProcessor extends AbstractProcessor {
     public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
         processorContext.newRound(roundEnv);
         if (!roundEnv.processingOver()) {
-            try {
-                Set<TypeElement> elementsToProcess = findElementsToProcess(annotations);
-                if (!elementsToProcess.isEmpty()) {
-                    processElements(elementsToProcess);
-                }
-            } catch (RuntimeException e) {
-                processorContext.submitErrorMessage("DynoDaoProcessor had uncaught exception: %s\nCheck for other errors!", e.getMessage());
-            }
+            Set<TypeElement> elementsToProcess = findElementsToProcess(annotations);
+            processElements(elementsToProcess);
             processorContext.emitMessages();
         }
         return false;
@@ -75,24 +69,32 @@ public class DynoDaoProcessor extends AbstractProcessor {
 
     private void processElements(Set<TypeElement> elements) {
         for (TypeElement document : elements) {
-            List<PojoTypeSpec> pojos = new ArrayList<>();
-            PojoClassBuilder stagedBuilder = new PojoClassBuilder(document);
-            for (DynamoIndex index : dynamoSchemaParser.getSchema(document).getIndexes()) {
-                IndexLengthType indexLengthType = IndexLengthType.lengthOf(index);
-
-                Optional<PojoTypeSpec> indexRangeKeyPojo = getIndexRangeKeyPojo(document, index, indexLengthType);
-                PojoTypeSpec indexHashKeyPojo = getIndexHashKeyPojo(document, index, indexRangeKeyPojo);
-                PojoTypeSpec indexPojo = getIndexPojo(document, index, indexHashKeyPojo);
-
-                stagedBuilder.addUser(indexPojo);
-
-                indexRangeKeyPojo.ifPresent(pojos::add);
-                pojos.add(indexHashKeyPojo);
-                pojos.add(indexPojo);
+            try {
+                processSchema(document);
+            } catch (RuntimeException e) {
+                processorContext.submitErrorMessage("DynoDaoProcessor had uncaught exception: %s\nCheck for other errors!", e.getMessage());
             }
-            pojos.add(toTypeSpec(stagedBuilder));
-            typeSpecWriter.writeAll(pojos);
         }
+    }
+
+    private void processSchema(TypeElement schema) {
+        List<PojoTypeSpec> pojos = new ArrayList<>();
+        PojoClassBuilder stagedBuilder = new PojoClassBuilder(schema);
+        for (DynamoIndex index : dynamoSchemaParser.getSchema(schema).getIndexes()) {
+            IndexLengthType indexLengthType = IndexLengthType.lengthOf(index);
+
+            Optional<PojoTypeSpec> indexRangeKeyPojo = getIndexRangeKeyPojo(schema, index, indexLengthType);
+            PojoTypeSpec indexHashKeyPojo = getIndexHashKeyPojo(schema, index, indexRangeKeyPojo);
+            PojoTypeSpec indexPojo = getIndexPojo(schema, index, indexHashKeyPojo);
+
+            stagedBuilder.addUser(indexPojo);
+
+            indexRangeKeyPojo.ifPresent(pojos::add);
+            pojos.add(indexHashKeyPojo);
+            pojos.add(indexPojo);
+        }
+        pojos.add(toTypeSpec(stagedBuilder));
+        typeSpecWriter.writeAll(pojos);
     }
 
     private Optional<PojoTypeSpec> getIndexRangeKeyPojo(TypeElement document, DynamoIndex index, IndexLengthType indexLengthType) {

@@ -3,6 +3,7 @@
   <component name="Encoding">
     <file url="file://$PROJECT_DIR$/dynodao-api" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/dynodao-parent" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/dynodao-playground" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/dynodao-processor" charset="UTF-8" />
   </component>
 </project>

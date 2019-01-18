@@ -41,11 +41,11 @@
 
     <dependencies>
         <dependency>
-            <groupId>org.lemon</groupId>
+            <groupId>${project.groupId}</groupId>
             <artifactId>dynodao-api</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.lemon</groupId>
+            <groupId>${project.groupId}</groupId>
             <artifactId>dynodao-processor</artifactId>
             <scope>compile</scope>
         </dependency>
