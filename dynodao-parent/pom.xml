@@ -7,6 +7,11 @@
     <groupId>org.lemon</groupId>
     <artifactId>dynodao-parent</artifactId>
     <version>1.0</version>
+    <modules>
+        <module>../dynodao-api</module>
+        <module>../dynodao-processor</module>
+        <module>../dynodao-integration-test</module>
+    </modules>
     <packaging>pom</packaging>
 
     <name>DynoDao</name>
@@ -25,6 +30,7 @@
         <mockito.version>2.0.2-beta</mockito.version>
         <assertj.version>3.8.0</assertj.version>
         <compile.testing.version>0.15</compile.testing.version>
+        <equals.verifier.version>3.1.4</equals.verifier.version>
     </properties>
 
     <licenses>
@@ -79,6 +85,11 @@
                 <groupId>com.google.testing.compile</groupId>
                 <artifactId>compile-testing</artifactId>
                 <version>${compile.testing.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>nl.jqno.equalsverifier</groupId>
+                <artifactId>equalsverifier</artifactId>
+                <version>${equals.verifier.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>

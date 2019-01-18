@@ -1,7 +1,6 @@
 package org.lemon.dynodao.processor.itest;
 
 import static java.util.stream.Collectors.joining;
-import static java.util.stream.Collectors.toList;
 import static java.util.stream.Collectors.toMap;
 
 import com.google.testing.compile.Compilation;
@@ -24,7 +23,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 @Ignore
 public abstract class AbstractIntegrationTest extends AbstractUnitTest {

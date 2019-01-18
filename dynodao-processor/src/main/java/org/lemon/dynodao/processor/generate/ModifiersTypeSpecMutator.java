@@ -15,7 +15,11 @@ class ModifiersTypeSpecMutator implements TypeSpecMutator {
 
     @Override
     public void mutate(TypeSpec.Builder typeSpec, PojoClassBuilder pojo) {
-        typeSpec.addModifiers(Modifier.PUBLIC);
+        if (pojo.getDocument().getModifiers().contains(Modifier.PUBLIC)) {
+            typeSpec.addModifiers(Modifier.PUBLIC, Modifier.FINAL);
+        } else {
+            typeSpec.addModifiers(Modifier.FINAL);
+        }
     }
 
 }

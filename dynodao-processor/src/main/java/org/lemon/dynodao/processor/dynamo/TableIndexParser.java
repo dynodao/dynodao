@@ -1,7 +1,6 @@
 package org.lemon.dynodao.processor.dynamo;
 
 import static java.util.Collections.singleton;
-import static org.lemon.dynodao.processor.util.ElementUtil.getAnnotationMirrorOfType;
 
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBHashKey;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBRangeKey;

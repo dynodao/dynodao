@@ -15,7 +15,7 @@ class GeneratedAnnotationTypeSpecMutator implements TypeSpecMutator {
 
     private static final AnnotationSpec GENERATED = AnnotationSpec.builder(Generated.class)
             .addMember("value", "$S", "org.lemon.dynodao.processor")
-//            .addMember("date", "$S", ZonedDateTime.now())
+            .addMember("date", "$S", ZonedDateTime.now())
             .addMember("comments", "$S", "https://github.com/twentylemon/dynodao")
             .build();
 
