@@ -2,8 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/dynodao-api/dynodao.iml" filepath="$PROJECT_DIR$/dynodao-api/dynodao.iml" />
-      <module fileurl="file://$PROJECT_DIR$/dynodao-annotations/dynodao-api.iml" filepath="$PROJECT_DIR$/dynodao-annotations/dynodao-api.iml" />
+      <module fileurl="file://$PROJECT_DIR$/dynodao-api/dynodao-api.iml" filepath="$PROJECT_DIR$/dynodao-api/dynodao-api.iml" />
       <module fileurl="file://$PROJECT_DIR$/dynodao-integration-test/dynodao-integration-test.iml" filepath="$PROJECT_DIR$/dynodao-integration-test/dynodao-integration-test.iml" />
       <module fileurl="file://$PROJECT_DIR$/dynodao-parent/dynodao-parent.iml" filepath="$PROJECT_DIR$/dynodao-parent/dynodao-parent.iml" />
       <module fileurl="file://$PROJECT_DIR$/dynodao-playground/dynodao-playground.iml" filepath="$PROJECT_DIR$/dynodao-playground/dynodao-playground.iml" />
