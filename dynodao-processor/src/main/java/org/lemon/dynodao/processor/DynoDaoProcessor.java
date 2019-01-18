@@ -70,22 +70,22 @@ public class DynoDaoProcessor extends AbstractProcessor {
     private void processElements(Set<TypeElement> elements) {
         for (TypeElement document : elements) {
             try {
-                processSchema(document);
+                processDocument(document);
             } catch (RuntimeException e) {
                 processorContext.submitErrorMessage("DynoDaoProcessor had uncaught exception: %s\nCheck for other errors!", e.getMessage());
             }
         }
     }
 
-    private void processSchema(TypeElement schema) {
+    private void processDocument(TypeElement document) {
         List<PojoTypeSpec> pojos = new ArrayList<>();
-        PojoClassBuilder stagedBuilder = new PojoClassBuilder(schema);
-        for (DynamoIndex index : dynamoSchemaParser.getSchema(schema).getIndexes()) {
+        PojoClassBuilder stagedBuilder = new PojoClassBuilder(document);
+        for (DynamoIndex index : dynamoSchemaParser.getSchema(document).getIndexes()) {
             IndexLengthType indexLengthType = IndexLengthType.lengthOf(index);
 
-            Optional<PojoTypeSpec> indexRangeKeyPojo = getIndexRangeKeyPojo(schema, index, indexLengthType);
-            PojoTypeSpec indexHashKeyPojo = getIndexHashKeyPojo(schema, index, indexRangeKeyPojo);
-            PojoTypeSpec indexPojo = getIndexPojo(schema, index, indexHashKeyPojo);
+            Optional<PojoTypeSpec> indexRangeKeyPojo = getIndexRangeKeyPojo(document, index, indexLengthType);
+            PojoTypeSpec indexHashKeyPojo = getIndexHashKeyPojo(document, index, indexRangeKeyPojo);
+            PojoTypeSpec indexPojo = getIndexPojo(document, index, indexHashKeyPojo);
 
             stagedBuilder.addUser(indexPojo);
 
