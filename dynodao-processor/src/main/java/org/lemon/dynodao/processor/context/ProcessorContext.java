@@ -8,9 +8,9 @@ import javax.annotation.processing.RoundEnvironment;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
 import javax.tools.Diagnostic;
-import java.util.LinkedHashSet;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
-import java.util.Set;
 
 /**
  * Keeps contextual data for the application (AP) scope.
@@ -22,7 +22,7 @@ public class ProcessorContext {
 
     private RoundEnvironment roundEnvironment;
 
-    private final Set<ProcessorMessage> messages = new LinkedHashSet<>();
+    private final List<ProcessorMessage> messages = new ArrayList<>();
 
     /**
      * @return the {@link Elements} utils
@@ -97,7 +97,9 @@ public class ProcessorContext {
      * Displays all of the messages accrued in this round.
      */
     public void emitMessages() {
-        messages.forEach(message -> message.submit(processingEnvironment.getMessager()));
+        messages.stream()
+                .distinct()
+                .forEach(message -> message.submit(processingEnvironment.getMessager()));
         messages.clear();
     }
 
