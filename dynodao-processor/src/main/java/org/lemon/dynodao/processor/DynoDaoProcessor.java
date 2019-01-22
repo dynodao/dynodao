@@ -4,6 +4,7 @@ import static java.util.stream.Collectors.toSet;
 
 import com.google.auto.service.AutoService;
 import org.lemon.dynodao.processor.context.ProcessorContext;
+import org.lemon.dynodao.processor.context.ProcessorMessager;
 import org.lemon.dynodao.processor.dynamo.DynamoIndex;
 import org.lemon.dynodao.processor.dynamo.DynamoSchemaParser;
 import org.lemon.dynodao.processor.generate.PojoTypeSpecFactory;
@@ -35,6 +36,7 @@ import java.util.Set;
 public class DynoDaoProcessor extends AbstractProcessor {
 
     @Inject ProcessorContext processorContext;
+    @Inject ProcessorMessager processorMessager;
     @Inject DynamoSchemaParser dynamoSchemaParser;
     @Inject PojoTypeSpecFactory pojoTypeSpecFactory;
     @Inject TypeSpecWriter typeSpecWriter;
@@ -53,7 +55,7 @@ public class DynoDaoProcessor extends AbstractProcessor {
         if (!roundEnv.processingOver()) {
             Set<TypeElement> elementsToProcess = findElementsToProcess(annotations);
             processElements(elementsToProcess);
-            processorContext.emitMessages();
+            processorMessager.emitMessages();
         }
         return false;
     }
@@ -72,7 +74,7 @@ public class DynoDaoProcessor extends AbstractProcessor {
             try {
                 processDocument(document);
             } catch (RuntimeException e) {
-                processorContext.submitErrorMessage("DynoDaoProcessor had uncaught exception: %s\nCheck for other errors!", e.getMessage());
+                processorMessager.submitError("DynoDaoProcessor had uncaught exception: %s\nCheck for other errors!", e.getMessage());
             }
         }
     }

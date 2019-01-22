@@ -1,31 +1,24 @@
 package org.lemon.dynodao.processor.dynamo;
 
-import static java.util.stream.Collectors.toSet;
-
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBHashKey;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBIndexRangeKey;
 import org.lemon.dynodao.DynoDao;
-import org.lemon.dynodao.processor.context.ProcessorContext;
+import org.lemon.dynodao.processor.context.ProcessorMessager;
 
 import javax.inject.Inject;
 import javax.lang.model.element.TypeElement;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedHashSet;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Stream;
+
+import static java.util.stream.Collectors.toSet;
 
 /**
  * Extracts local secondary indexes from the schema document.
  */
 class LocalSecondaryIndexParser implements DynamoIndexParser {
 
+    @Inject ProcessorMessager processorMessager;
     @Inject SchemaFieldsProvider schemaFieldsProvider;
-    @Inject ProcessorContext processorContext;
 
     @Inject LocalSecondaryIndexParser() { }
 
@@ -52,11 +45,11 @@ class LocalSecondaryIndexParser implements DynamoIndexParser {
     private void validate(TypeElement document, Set<DynamoAttribute> hashKeys, Set<DynamoAttribute> rangeKeys) {
         if (hashKeys.size() != 1) {
             if (hashKeys.isEmpty()) {
-                processorContext.submitErrorMessage("@%s must exist on exactly one scalar attribute, but none found.", DynamoDBHashKey.class.getSimpleName())
+                processorMessager.submitError("@%s must exist on exactly one scalar attribute, but none found.", DynamoDBHashKey.class.getSimpleName())
                         .atElement(document)
                         .atAnnotation(DynoDao.class);
             }
-            hashKeys.forEach(hashKey -> processorContext.submitErrorMessage("@%s must exist on exactly one attribute.", DynamoDBHashKey.class.getSimpleName())
+            hashKeys.forEach(hashKey -> processorMessager.submitError("@%s must exist on exactly one attribute.", DynamoDBHashKey.class.getSimpleName())
                     .atElement(hashKey.getField())
                     .atAnnotation(DynamoDBHashKey.class));
         }
@@ -67,7 +60,7 @@ class LocalSecondaryIndexParser implements DynamoIndexParser {
         }
         rangeKeyByIndex.forEach((index, keys) -> {
             if (keys.size() != 1) {
-                processorContext.submitErrorMessage("@%s must exist on exactly one field for LSI[%s], but found %s", DynamoDBIndexRangeKey.class.getSimpleName(), index, keys);
+                processorMessager.submitError("@%s must exist on exactly one field for LSI[%s], but found %s", DynamoDBIndexRangeKey.class.getSimpleName(), index, keys);
             }
         });
     }

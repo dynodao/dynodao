@@ -1,24 +1,21 @@
 package org.lemon.dynodao.processor.generate;
 
-import static java.util.stream.Collectors.joining;
-
 import com.squareup.javapoet.MethodSpec;
 import com.squareup.javapoet.ParameterSpec;
 import com.squareup.javapoet.TypeSpec;
-import org.lemon.dynodao.processor.context.ProcessorContext;
 import org.lemon.dynodao.processor.model.PojoClassBuilder;
 
 import javax.inject.Inject;
 import javax.lang.model.element.Modifier;
 import java.util.Objects;
 
+import static java.util.stream.Collectors.joining;
+
 /**
  * Adds a decent implementation of {@link Object#equals(Object)} to the type, delegating
  * to {@link Objects#equals(Object, Object)}, field by field.
  */
 class EqualsTypeSpecMutator implements TypeSpecMutator {
-
-    @Inject ProcessorContext processorContext;
 
     private MethodSpec equalsWithNoBody;
     private ParameterSpec objectParam;

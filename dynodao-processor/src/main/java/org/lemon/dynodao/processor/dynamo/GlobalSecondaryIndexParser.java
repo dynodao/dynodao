@@ -1,31 +1,24 @@
 package org.lemon.dynodao.processor.dynamo;
 
-import static java.util.stream.Collectors.toSet;
-
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBIndexHashKey;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBIndexRangeKey;
-import org.lemon.dynodao.processor.context.ProcessorContext;
+import org.lemon.dynodao.processor.context.ProcessorMessager;
 
 import javax.inject.Inject;
 import javax.lang.model.element.TypeElement;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedHashSet;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Stream;
+
+import static java.util.stream.Collectors.toSet;
 
 /**
  * Extracts global secondary indexes from the schema document.
  */
 class GlobalSecondaryIndexParser implements DynamoIndexParser {
 
+    @Inject ProcessorMessager processorMessager;
     @Inject SchemaFieldsProvider schemaFieldsProvider;
-    @Inject ProcessorContext processorContext;
 
     @Inject GlobalSecondaryIndexParser() { }
 
@@ -61,7 +54,7 @@ class GlobalSecondaryIndexParser implements DynamoIndexParser {
         }
         keysByIndex.forEach((index, indexKeys) -> {
             if (indexKeys.size() != 1) { // for range key, no entry would be created, it is sufficient to check size=1
-                processorContext.submitErrorMessage("@%s must exist on exactly one field for GSI[%s], but found %s", annotation.getSimpleName(), index, indexKeys);
+                processorMessager.submitError("@%s must exist on exactly one field for GSI[%s], but found %s", annotation.getSimpleName(), index, indexKeys);
             }
         });
     }

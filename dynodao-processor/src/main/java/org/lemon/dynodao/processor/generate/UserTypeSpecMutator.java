@@ -24,8 +24,7 @@ import java.util.List;
  */
 class UserTypeSpecMutator implements TypeSpecMutator {
 
-    @Inject
-    UserTypeSpecMutator() { }
+    @Inject UserTypeSpecMutator() { }
 
     @Override
     public void mutate(TypeSpec.Builder typeSpec, PojoClassBuilder pojo) {

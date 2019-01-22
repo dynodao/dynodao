@@ -7,11 +7,14 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import org.lemon.dynodao.processor.context.ProcessorContext;
 
+import javax.inject.Singleton;
+
 /**
  * Dagger component to inject the processor.
  */
+@Singleton
 @Component(modules = ContextModule.class)
-public interface ObjectGraph {
+interface ObjectGraph {
 
     void inject(DynoDaoProcessor processor);
 

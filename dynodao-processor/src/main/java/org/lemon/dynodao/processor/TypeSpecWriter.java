@@ -3,6 +3,9 @@ package org.lemon.dynodao.processor;
 import com.squareup.javapoet.JavaFile;
 import org.lemon.dynodao.DynoDao;
 import org.lemon.dynodao.processor.context.ProcessorContext;
+import org.lemon.dynodao.processor.context.ProcessorMessage;
+import org.lemon.dynodao.processor.context.ProcessorMessager;
+import org.lemon.dynodao.processor.context.Processors;
 import org.lemon.dynodao.processor.model.PojoTypeSpec;
 
 import javax.inject.Inject;
@@ -15,6 +18,8 @@ import java.io.UncheckedIOException;
  */
 class TypeSpecWriter {
 
+    @Inject Processors processors;
+    @Inject ProcessorMessager processorMessager;
     @Inject ProcessorContext processorContext;
 
     @Inject TypeSpecWriter() { }
@@ -32,13 +37,13 @@ class TypeSpecWriter {
      * @param pojoTypeSpec a type the annotated class creates
      */
     void write(PojoTypeSpec pojoTypeSpec) {
-        if (!processorContext.hasErrors()) {
+        if (!processorMessager.hasErrors()) {
             JavaFile file = JavaFile.builder(getDynoDaoPackageName(pojoTypeSpec.getPojo().getDocument()), pojoTypeSpec.getTypeSpec())
                     .indent("    ")
                     .skipJavaLangImports(true)
                     .build();
             try {
-                file.writeTo(processorContext.getFiler());
+                file.writeTo(processorContext.getProcessingEnvironment().getFiler());
             } catch (IOException e) {
                 throw new UncheckedIOException(String.format("got IOException when writing file\n%s", file), e);
             }
@@ -48,7 +53,7 @@ class TypeSpecWriter {
     private String getDynoDaoPackageName(TypeElement document) {
         String packageName = document.getAnnotation(DynoDao.class).implPackage();
         if (packageName.isEmpty()) {
-            return processorContext.getElementUtils().getPackageOf(document).getQualifiedName().toString();
+            return processors.getPackageOf(document).getQualifiedName().toString();
         } else {
             return packageName;
         }
