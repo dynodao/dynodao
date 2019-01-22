@@ -1,7 +1,5 @@
 package org.lemon.dynodao.processor.dynamo;
 
-import static java.util.Collections.singleton;
-
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBHashKey;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBRangeKey;
 import org.lemon.dynodao.DynoDao;
@@ -11,6 +9,8 @@ import javax.inject.Inject;
 import javax.lang.model.element.TypeElement;
 import java.util.LinkedHashSet;
 import java.util.Set;
+
+import static java.util.Collections.singleton;
 
 /**
  * Extracts the overall table "index" from the schema document.

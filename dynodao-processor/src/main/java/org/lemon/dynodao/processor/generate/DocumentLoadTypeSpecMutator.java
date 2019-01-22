@@ -1,7 +1,13 @@
 package org.lemon.dynodao.processor.generate;
 
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
-import com.squareup.javapoet.*;
+import com.squareup.javapoet.ClassName;
+import com.squareup.javapoet.FieldSpec;
+import com.squareup.javapoet.MethodSpec;
+import com.squareup.javapoet.ParameterSpec;
+import com.squareup.javapoet.ParameterizedTypeName;
+import com.squareup.javapoet.TypeName;
+import com.squareup.javapoet.TypeSpec;
 import org.lemon.dynodao.processor.context.Processors;
 import org.lemon.dynodao.processor.model.InterfaceType;
 import org.lemon.dynodao.processor.model.PojoClassBuilder;

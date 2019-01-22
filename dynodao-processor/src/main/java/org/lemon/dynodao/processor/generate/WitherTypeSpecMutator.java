@@ -1,11 +1,5 @@
 package org.lemon.dynodao.processor.generate;
 
-import static java.util.stream.Collectors.joining;
-import static java.util.stream.Collectors.toList;
-import static org.lemon.dynodao.processor.util.StreamUtil.concat;
-import static org.lemon.dynodao.processor.util.StringUtil.capitalize;
-import static org.lemon.dynodao.processor.util.StringUtil.repeat;
-
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.MethodSpec;
 import com.squareup.javapoet.ParameterSpec;
@@ -18,6 +12,12 @@ import javax.inject.Inject;
 import javax.lang.model.element.Modifier;
 import java.util.ArrayList;
 import java.util.List;
+
+import static java.util.stream.Collectors.joining;
+import static java.util.stream.Collectors.toList;
+import static org.lemon.dynodao.processor.util.StreamUtil.concat;
+import static org.lemon.dynodao.processor.util.StringUtil.capitalize;
+import static org.lemon.dynodao.processor.util.StringUtil.repeat;
 
 /**
  * Adds a wither to type being built. The wither is a factory which forwards the fields in this type

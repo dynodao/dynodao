@@ -1,14 +1,14 @@
 package org.lemon.dynodao.processor.util;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.when;
-
 import org.junit.Test;
 import org.lemon.dynodao.processor.test.AbstractUnitTest;
 import org.mockito.Answers;
 import org.mockito.Mock;
 
 import javax.lang.model.element.Element;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.when;
 
 public class StringUtilTest extends AbstractUnitTest {
 

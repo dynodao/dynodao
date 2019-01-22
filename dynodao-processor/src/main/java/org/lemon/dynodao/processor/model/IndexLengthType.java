@@ -1,13 +1,13 @@
 package org.lemon.dynodao.processor.model;
 
-import static java.util.Collections.emptyList;
-import static java.util.Collections.singletonList;
-
 import org.lemon.dynodao.processor.dynamo.DynamoAttribute;
 import org.lemon.dynodao.processor.dynamo.DynamoIndex;
 
 import java.util.Arrays;
 import java.util.List;
+
+import static java.util.Collections.emptyList;
+import static java.util.Collections.singletonList;
 
 /**
  * The length of a dynamo index, or length of a query against an index.

@@ -1,10 +1,5 @@
 package org.lemon.dynodao.processor.generate;
 
-import static java.util.stream.Collectors.toList;
-import static org.lemon.dynodao.processor.util.StreamUtil.concat;
-import static org.lemon.dynodao.processor.util.StringUtil.repeat;
-import static org.lemon.dynodao.processor.util.StringUtil.toClassCase;
-
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.MethodSpec;
 import com.squareup.javapoet.ParameterSpec;
@@ -17,6 +12,11 @@ import javax.inject.Inject;
 import javax.lang.model.element.Modifier;
 import java.util.ArrayList;
 import java.util.List;
+
+import static java.util.stream.Collectors.toList;
+import static org.lemon.dynodao.processor.util.StreamUtil.concat;
+import static org.lemon.dynodao.processor.util.StringUtil.repeat;
+import static org.lemon.dynodao.processor.util.StringUtil.toClassCase;
 
 /**
  * Adds an user to type being built. The user (<tt>using*</tt>) is a factory which forwards the parameters to the

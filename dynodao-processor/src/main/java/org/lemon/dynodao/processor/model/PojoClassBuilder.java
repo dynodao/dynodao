@@ -1,7 +1,5 @@
 package org.lemon.dynodao.processor.model;
 
-import static java.util.stream.Collectors.toList;
-
 import com.squareup.javapoet.FieldSpec;
 import lombok.AccessLevel;
 import lombok.Data;
@@ -12,6 +10,8 @@ import org.lemon.dynodao.processor.dynamo.DynamoIndex;
 import javax.lang.model.element.TypeElement;
 import java.util.ArrayList;
 import java.util.List;
+
+import static java.util.stream.Collectors.toList;
 
 /**
  * Data model for a pojo type to generate. Each pojo models a portion of a single dynamo index.

@@ -16,7 +16,10 @@ import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
 
 import static java.util.stream.Collectors.joining;
-import static org.lemon.dynodao.processor.util.DynamoDbUtil.*;
+import static org.lemon.dynodao.processor.util.DynamoDbUtil.attributeValue;
+import static org.lemon.dynodao.processor.util.DynamoDbUtil.dynamoDbMapper;
+import static org.lemon.dynodao.processor.util.DynamoDbUtil.dynamoDbQueryExpression;
+import static org.lemon.dynodao.processor.util.DynamoDbUtil.paginatedList;
 
 /**
  * Implements the {@link org.lemon.dynodao.DocumentQuery#query(DynamoDBMapper)} method. If the type does not implement

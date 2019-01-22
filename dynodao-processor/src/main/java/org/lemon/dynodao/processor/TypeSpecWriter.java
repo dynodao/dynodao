@@ -3,7 +3,6 @@ package org.lemon.dynodao.processor;
 import com.squareup.javapoet.JavaFile;
 import org.lemon.dynodao.DynoDao;
 import org.lemon.dynodao.processor.context.ProcessorContext;
-import org.lemon.dynodao.processor.context.ProcessorMessage;
 import org.lemon.dynodao.processor.context.ProcessorMessager;
 import org.lemon.dynodao.processor.context.Processors;
 import org.lemon.dynodao.processor.model.PojoTypeSpec;

@@ -1,8 +1,5 @@
 package org.lemon.dynodao.processor.generate;
 
-import static org.lemon.dynodao.processor.util.StreamUtil.concat;
-import static org.lemon.dynodao.processor.util.StringUtil.repeat;
-
 import com.squareup.javapoet.FieldSpec;
 import com.squareup.javapoet.MethodSpec;
 import com.squareup.javapoet.TypeSpec;
@@ -12,6 +9,9 @@ import javax.inject.Inject;
 import javax.lang.model.element.Modifier;
 import java.util.List;
 import java.util.Objects;
+
+import static org.lemon.dynodao.processor.util.StreamUtil.concat;
+import static org.lemon.dynodao.processor.util.StringUtil.repeat;
 
 /**
  * Adds a decent implementation of {@link Object#hashCode()}} to the type, delegating to {@link Objects#hash(Object...)}.

@@ -1,7 +1,5 @@
 package org.lemon.dynodao.processor.dynamo;
 
-import static java.util.stream.Collectors.toSet;
-
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBIgnore;
 
 import javax.inject.Inject;
@@ -9,6 +7,8 @@ import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.element.VariableElement;
 import java.util.Set;
+
+import static java.util.stream.Collectors.toSet;
 
 /**
  * Returns the fields from the document class. This ignores fields that otherwise would not apply.

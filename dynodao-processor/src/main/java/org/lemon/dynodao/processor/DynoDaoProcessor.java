@@ -1,7 +1,5 @@
 package org.lemon.dynodao.processor;
 
-import static java.util.stream.Collectors.toSet;
-
 import com.google.auto.service.AutoService;
 import org.lemon.dynodao.processor.context.ProcessorContext;
 import org.lemon.dynodao.processor.context.ProcessorMessager;
@@ -26,6 +24,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
+
+import static java.util.stream.Collectors.toSet;
 
 /**
  * The annotation processor for {@link org.lemon.dynodao.DynoDao}.

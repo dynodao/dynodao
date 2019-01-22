@@ -1,18 +1,18 @@
 package org.lemon.dynodao.test;
 
-import static org.mockito.MockitoAnnotations.initMocks;
-
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.runner.RunWith;
 import org.mockito.runners.MockitoJUnitRunner;
+
+import static org.mockito.MockitoAnnotations.initMocks;
 
 /**
  * Base class for tests. Good docs are good.
  */
 @Ignore
 @RunWith(MockitoJUnitRunner.class)
-public class AbstractIntegrationTest {
+public abstract class AbstractIntegrationTest {
 
     /**
      * Initials any mockito mock annotations in this class.

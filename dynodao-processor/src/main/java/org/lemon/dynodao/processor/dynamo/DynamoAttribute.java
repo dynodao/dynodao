@@ -1,7 +1,5 @@
 package org.lemon.dynodao.processor.dynamo;
 
-import static org.lemon.dynodao.processor.util.DynamoDbUtil.attributeValue;
-
 import com.squareup.javapoet.CodeBlock;
 import com.squareup.javapoet.FieldSpec;
 import com.squareup.javapoet.ParameterSpec;
@@ -12,6 +10,8 @@ import lombok.Value;
 
 import javax.lang.model.element.Modifier;
 import javax.lang.model.element.VariableElement;
+
+import static org.lemon.dynodao.processor.util.DynamoDbUtil.attributeValue;
 
 /**
  * Represents a single attribute in a structured dynamo db schema.

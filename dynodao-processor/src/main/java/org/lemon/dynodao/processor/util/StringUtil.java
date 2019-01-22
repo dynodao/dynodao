@@ -1,11 +1,11 @@
 package org.lemon.dynodao.processor.util;
 
-import static java.util.stream.Collectors.joining;
-
 import lombok.experimental.UtilityClass;
 
 import javax.lang.model.element.Element;
 import java.util.stream.Stream;
+
+import static java.util.stream.Collectors.joining;
 
 /**
  * Utility methods for manipulating strings.

@@ -1,10 +1,10 @@
 package org.lemon.dynodao.processor.itest.nil;
 
-import static com.google.testing.compile.CompilationSubject.assertThat;
-
 import com.google.testing.compile.Compilation;
 import org.junit.Test;
 import org.lemon.dynodao.processor.itest.AbstractIntegrationTest;
+
+import static com.google.testing.compile.CompilationSubject.assertThat;
 
 public class NoDynoDaoAnnotationsTest extends AbstractIntegrationTest {
 

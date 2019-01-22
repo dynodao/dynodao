@@ -1,11 +1,11 @@
 package org.lemon.dynodao.processor.test;
 
-import static org.mockito.MockitoAnnotations.initMocks;
-
 import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.runner.RunWith;
 import org.mockito.runners.MockitoJUnitRunner;
+
+import static org.mockito.MockitoAnnotations.initMocks;
 
 @Ignore
 @RunWith(MockitoJUnitRunner.class)

@@ -1,12 +1,12 @@
 package org.lemon.dynodao.processor.itest.validation;
 
-import static com.google.testing.compile.CompilationSubject.assertThat;
-
 import com.google.testing.compile.Compilation;
 import org.junit.Test;
 import org.lemon.dynodao.processor.itest.AbstractIntegrationTest;
 
 import javax.tools.JavaFileObject;
+
+import static com.google.testing.compile.CompilationSubject.assertThat;
 
 public class MultipleTableHashKeysTest extends AbstractIntegrationTest {
 

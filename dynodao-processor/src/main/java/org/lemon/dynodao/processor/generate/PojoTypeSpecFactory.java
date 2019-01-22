@@ -1,14 +1,14 @@
 package org.lemon.dynodao.processor.generate;
 
-import static org.lemon.dynodao.processor.util.StringUtil.capitalize;
-import static org.lemon.dynodao.processor.util.StringUtil.toClassCase;
-
 import com.squareup.javapoet.TypeSpec;
 import org.lemon.dynodao.processor.model.IndexLengthType;
 import org.lemon.dynodao.processor.model.PojoClassBuilder;
 import org.lemon.dynodao.processor.model.PojoTypeSpec;
 
 import javax.inject.Inject;
+
+import static org.lemon.dynodao.processor.util.StringUtil.capitalize;
+import static org.lemon.dynodao.processor.util.StringUtil.toClassCase;
 
 /**
  * Produces {@link PojoTypeSpec} types from their {@link PojoClassBuilder} specifications.
