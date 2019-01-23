@@ -6,8 +6,6 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
-        <module name="dynodao" />
-        <module name="dynodao-annotations" />
         <module name="dynodao-api" />
         <module name="dynodao-integration-test" />
         <module name="dynodao-playground" />
