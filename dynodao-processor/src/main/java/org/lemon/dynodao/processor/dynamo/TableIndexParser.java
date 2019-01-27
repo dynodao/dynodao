@@ -45,6 +45,9 @@ class TableIndexParser implements DynamoIndexParser {
         return singleton(toIndex(hashKeys, rangeKeys, attributes));
     }
 
+    /**
+     * TODO validate scalar hash and range keys
+     */
     private void validate(TypeElement document, Set<DynamoAttribute> hashKeys, Set<DynamoAttribute> rangeKeys) {
         if (hashKeys.size() != 1) {
             if (hashKeys.isEmpty()) {
