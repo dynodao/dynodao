@@ -1,5 +1,6 @@
 package org.lemon.dynodao.processor.serialize.generate;
 
+import com.squareup.javapoet.FieldSpec;
 import com.squareup.javapoet.MethodSpec;
 import com.squareup.javapoet.ParameterSpec;
 import com.squareup.javapoet.TypeSpec;
@@ -19,10 +20,16 @@ import static org.lemon.dynodao.processor.util.DynamoDbUtil.attributeValue;
  */
 class SerializeMethodsSerializerTypeSpecMutator implements SerializerTypeSpecMutator {
 
+    private static final FieldSpec NULL_ATTRIBUTE_VALUE = FieldSpec.builder(attributeValue(), "NULL_ATTRIBUTE_VALUE", Modifier.PRIVATE, Modifier.STATIC, Modifier.FINAL)
+            .initializer("new $T().withNULL(true)", attributeValue())
+            .build();
+
     @Inject SerializeMethodsSerializerTypeSpecMutator() { }
 
     @Override
     public void mutate(TypeSpec.Builder typeSpec, SerializerClassData serializerClassData) {
+        typeSpec.addField(NULL_ATTRIBUTE_VALUE);
+
         Iterable<Modifier> modifiers = getModifiers(serializerClassData.getDocument());
         for (SerializeMethod method : serializerClassData.getAllSerializationMethods()) {
             MethodSpec serializeMethod = toMethodSpec(method, modifiers);
@@ -51,7 +58,7 @@ class SerializeMethodsSerializerTypeSpecMutator implements SerializerTypeSpecMut
         if (!parameter.type.isPrimitive()) {
             serialize
                     .beginControlFlow("if ($N == null)", parameter)
-                    .addStatement("return null")
+                    .addStatement("return $N", NULL_ATTRIBUTE_VALUE)
                     .endControlFlow();
         }
 

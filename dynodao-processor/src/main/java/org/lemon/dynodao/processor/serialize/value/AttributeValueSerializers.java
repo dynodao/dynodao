@@ -10,6 +10,14 @@ import java.util.List;
 
 /**
  * Stores all of the implementations of {@link AttributeValueSerializer} in the appropriate order.
+ * TODO BooleanSerializer for boolean, Boolean
+ * TODO BinarySerializer for ByteBuffer, byte[]
+ * TODO LegacyDateSerializer for Date, Calendar
+ * TODO JavaTimeSerializer(s) for LocalDateTime, ZonedDateTime, Duration, Instant, ZoneId, etc
+ * TODO CurrencySerializer for Currency
+ * TODO BinarySetSerializer for BS
+ * TODO NumericSetSerializer for NS
+ * TODO StringSetSerializer for SS
  */
 public class AttributeValueSerializers implements Streamable<AttributeValueSerializer> {
 

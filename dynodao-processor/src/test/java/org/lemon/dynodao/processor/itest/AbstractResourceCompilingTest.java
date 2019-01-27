@@ -42,7 +42,7 @@ public abstract class AbstractResourceCompilingTest extends AbstractCompilingTes
     }
 
     /**
-     * FIXME ?
+     * FIXME should this exist?
      * @return
      */
     protected final Map<String, JavaFileObject> getAdditionalFiles() {

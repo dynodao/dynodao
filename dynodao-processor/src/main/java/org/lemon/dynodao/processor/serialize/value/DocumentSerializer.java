@@ -33,6 +33,7 @@ import static org.lemon.dynodao.processor.util.StringUtil.capitalize;
 /**
  * Handles serialization of objects annotated with either {@link org.lemon.dynodao.annotation.DynoDaoSchema}
  * or {@link org.lemon.dynodao.annotation.DynoDaoDocument}.
+ * FIXME this implementation requires knowledge of the dynodao annotations present, it should be possible to model those instead of accessing them here
  */
 class DocumentSerializer implements AttributeValueSerializer {
 
@@ -114,6 +115,9 @@ class DocumentSerializer implements AttributeValueSerializer {
         }
     }
 
+    /**
+     * TODO validate the method exists
+     */
     private String accessField(Element field) {
         if (isPackageAccessible(field)) {
             return field.getSimpleName().toString();
