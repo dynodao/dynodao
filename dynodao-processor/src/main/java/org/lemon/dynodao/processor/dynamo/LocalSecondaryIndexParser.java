@@ -1,8 +1,8 @@
 package org.lemon.dynodao.processor.dynamo;
 
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBHashKey;
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBIndexRangeKey;
-import org.lemon.dynodao.DynoDao;
+import org.lemon.dynodao.annotation.DynoDaoHashKey;
+import org.lemon.dynodao.annotation.DynoDaoIndexRangeKey;
+import org.lemon.dynodao.annotation.DynoDaoSchema;
 import org.lemon.dynodao.processor.context.ProcessorMessager;
 
 import javax.inject.Inject;
@@ -12,12 +12,8 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
-import java.util.stream.Stream;
-
-import static java.util.stream.Collectors.toSet;
 
 /**
  * Extracts local secondary indexes from the schema document.
@@ -38,10 +34,10 @@ class LocalSecondaryIndexParser implements DynamoIndexParser {
         Set<DynamoAttribute> rangeKeys = new LinkedHashSet<>();
         Set<DynamoAttribute> attributes = new LinkedHashSet<>();
         for (DynamoAttribute attribute : schemaFieldsProvider.getDynamoAttributes(document)) {
-            if (attribute.getField().getAnnotation(DynamoDBHashKey.class) != null) {
+            if (attribute.getField().getAnnotation(DynoDaoHashKey.class) != null) {
                 hashKeys.add(attribute);
             }
-            if (attribute.getField().getAnnotation(DynamoDBIndexRangeKey.class) != null) {
+            if (attribute.getField().getAnnotation(DynoDaoIndexRangeKey.class) != null) {
                 rangeKeys.add(attribute);
             }
             attributes.add(attribute);
@@ -55,13 +51,13 @@ class LocalSecondaryIndexParser implements DynamoIndexParser {
     private void validate(TypeElement document, Set<DynamoAttribute> hashKeys, Set<DynamoAttribute> rangeKeys) {
         if (hashKeys.size() != 1) {
             if (hashKeys.isEmpty()) {
-                processorMessager.submitError("@%s must exist on exactly one scalar attribute, but none found.", DynamoDBHashKey.class.getSimpleName())
+                processorMessager.submitError("@%s must exist on exactly one scalar attribute, but none found.", DynoDaoHashKey.class.getSimpleName())
                         .atElement(document)
-                        .atAnnotation(DynoDao.class);
+                        .atAnnotation(DynoDaoSchema.class);
             }
-            hashKeys.forEach(hashKey -> processorMessager.submitError("@%s must exist on exactly one attribute.", DynamoDBHashKey.class.getSimpleName())
+            hashKeys.forEach(hashKey -> processorMessager.submitError("@%s must exist on exactly one attribute.", DynoDaoHashKey.class.getSimpleName())
                     .atElement(hashKey.getField())
-                    .atAnnotation(DynamoDBHashKey.class));
+                    .atAnnotation(DynoDaoHashKey.class));
         }
 
         Map<String, Set<DynamoAttribute>> rangeKeyByIndex = new HashMap<>();
@@ -70,22 +66,18 @@ class LocalSecondaryIndexParser implements DynamoIndexParser {
         }
         rangeKeyByIndex.forEach((index, keys) -> {
             if (keys.size() != 1) {
-                processorMessager.submitError("@%s must exist on exactly one field for LSI[%s], but found %s", DynamoDBIndexRangeKey.class.getSimpleName(), index, keys);
+                processorMessager.submitError("@%s must exist on exactly one field for LSI[%s], but found %s", DynoDaoIndexRangeKey.class.getSimpleName(), index, keys);
             }
         });
     }
 
     private Set<String> getIndexNames(DynamoAttribute rangeKey) {
-        DynamoDBIndexRangeKey key = rangeKey.getField().getAnnotation(DynamoDBIndexRangeKey.class);
-        return Stream.concat(Stream.of(key.localSecondaryIndexName()), Arrays.stream(key.localSecondaryIndexNames()))
-                .filter(Objects::nonNull)
-                .filter(str -> !str.isEmpty())
-                .collect(toSet());
+        DynoDaoIndexRangeKey key = rangeKey.getField().getAnnotation(DynoDaoIndexRangeKey.class);
+        return new HashSet<>(Arrays.asList(key.lsiNames()));
     }
 
-
     private Set<DynamoIndex> toIndexes(Set<DynamoAttribute> hashKeys, Set<DynamoAttribute> rangeKeys, Set<DynamoAttribute> attributes) {
-        Set<DynamoIndex> indexes = new HashSet<>();
+        Set<DynamoIndex> indexes = new LinkedHashSet<>();
         for (DynamoAttribute rangeKey : rangeKeys) {
             for (String indexName : getIndexNames(rangeKey)) {
                 indexes.add(DynamoIndex.builder()

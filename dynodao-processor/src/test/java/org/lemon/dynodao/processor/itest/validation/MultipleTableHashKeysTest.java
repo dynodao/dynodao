@@ -17,12 +17,12 @@ public class MultipleTableHashKeysTest extends AbstractResourceCompilingTest {
         assertThat(compilation).failed();
         assertThat(compilation).hadErrorCount(2);
         assertThat(compilation)
-                .hadErrorContaining("@DynamoDBHashKey must exist on exactly one attribute.")
+                .hadErrorContaining("@DynoDaoHashKey must exist on exactly one attribute.")
                 .inFile(schema)
                 .onLine(9)
                 .atColumn(5);
         assertThat(compilation)
-                .hadErrorContaining("@DynamoDBHashKey must exist on exactly one attribute.")
+                .hadErrorContaining("@DynoDaoHashKey must exist on exactly one attribute.")
                 .inFile(schema)
                 .onLine(12)
                 .atColumn(5);

@@ -17,7 +17,7 @@ public class NoTableHashKeyTest extends AbstractResourceCompilingTest {
         assertThat(compilation).failed();
         assertThat(compilation).hadErrorCount(2);
         assertThat(compilation)
-                .hadErrorContaining("@DynamoDBHashKey must exist on exactly one scalar attribute, but none found.")
+                .hadErrorContaining("@DynoDaoHashKey must exist on exactly one scalar attribute, but none found.")
                 .inFile(schema)
                 .onLine(6)
                 .atColumn(1);

@@ -1,13 +1,13 @@
 package org.lemon.dynodao.processor.itest.validation.no_table_hash_key_test;
 
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBRangeKey;
-import org.lemon.dynodao.DynoDao;
+import org.lemon.dynodao.annotation.DynoDaoRangeKey;
+import org.lemon.dynodao.annotation.DynoDaoSchema;
 
-@DynoDao
+@DynoDaoSchema(tableName = "things")
 public class Schema {
 
     private String hashKey;
 
-    @DynamoDBRangeKey
+    @DynoDaoRangeKey
     private String rangeKey;
 }

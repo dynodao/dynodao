@@ -1,15 +1,15 @@
 package org.lemon.dynodao.processor.itest.validation.multiple_table_hash_keys_test;
 
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBHashKey;
-import org.lemon.dynodao.DynoDao;
+import org.lemon.dynodao.annotation.DynoDaoHashKey;
+import org.lemon.dynodao.annotation.DynoDaoSchema;
 
-@DynoDao
+@DynoDaoSchema(tableName = "things")
 public class Schema {
 
-    @DynamoDBHashKey
+    @DynoDaoHashKey
     private String hashKey1;
 
-    @DynamoDBHashKey
+    @DynoDaoHashKey
     private String hashKey2;
 
 }

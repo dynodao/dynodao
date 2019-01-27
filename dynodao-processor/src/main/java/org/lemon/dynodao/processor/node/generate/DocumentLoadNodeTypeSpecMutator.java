@@ -1,6 +1,5 @@
 package org.lemon.dynodao.processor.node.generate;
 
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.FieldSpec;
 import com.squareup.javapoet.MethodSpec;
@@ -24,8 +23,8 @@ import static org.lemon.dynodao.processor.util.StreamUtil.concat;
 import static org.lemon.dynodao.processor.util.StringUtil.repeat;
 
 /**
- * Implements the {@link org.lemon.dynodao.DocumentLoad#load(DynamoDBMapper)} method. If the type does not implement
- * {@link org.lemon.dynodao.DocumentLoad}, then nothing is added.
+ * Implements the {@link org.lemon.dynodao.DocumentLoad#load(com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper)} method.
+ * If the type does not implement {@link org.lemon.dynodao.DocumentLoad}, then nothing is added.
  */
 class DocumentLoadNodeTypeSpecMutator implements NodeTypeSpecMutator {
 

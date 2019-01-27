@@ -1,7 +1,6 @@
 package org.lemon.dynodao.processor;
 
 import com.squareup.javapoet.JavaFile;
-import org.lemon.dynodao.DynoDao;
 import org.lemon.dynodao.processor.context.ProcessorContext;
 import org.lemon.dynodao.processor.context.ProcessorMessager;
 import org.lemon.dynodao.processor.context.Processors;
@@ -40,7 +39,7 @@ class TypeSpecWriter {
      */
     void write(BuiltTypeSpec builtTypeSpec) {
         if (!processorMessager.hasErrors()) {
-            JavaFile file = JavaFile.builder(getDynoDaoPackageName(builtTypeSpec.getDocument()), builtTypeSpec.getTypeSpec())
+            JavaFile file = JavaFile.builder(getPackage(builtTypeSpec.getDocument()), builtTypeSpec.getTypeSpec())
                     .indent("    ")
                     .skipJavaLangImports(true)
                     .build();
@@ -52,13 +51,8 @@ class TypeSpecWriter {
         }
     }
 
-    private String getDynoDaoPackageName(TypeElement document) {
-        String packageName = document.getAnnotation(DynoDao.class).implPackage();
-        if (packageName.isEmpty()) {
-            return processors.getPackageOf(document).getQualifiedName().toString();
-        } else {
-            return packageName;
-        }
+    private String getPackage(TypeElement document) {
+        return processors.getPackageOf(document).getQualifiedName().toString();
     }
 
 }

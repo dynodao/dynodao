@@ -12,11 +12,13 @@ import java.util.List;
 @Singleton
 public class ProcessorMessager {
 
-    @Inject ProcessorContext processorContext;
+    private final ProcessorContext processorContext;
 
     private final List<ProcessorMessage> messages = new ArrayList<>();
 
-    @Inject ProcessorMessager() { }
+    @Inject ProcessorMessager(ProcessorContext processorContext) {
+        this.processorContext = processorContext;
+    }
 
     /**
      * @param args the objects to display

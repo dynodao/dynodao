@@ -1,14 +1,14 @@
 package org.lemon.dynodao.processor.itest.hash_key_only;
 
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBHashKey;
 import lombok.Data;
-import org.lemon.dynodao.DynoDao;
+import org.lemon.dynodao.annotation.DynoDaoHashKey;
+import org.lemon.dynodao.annotation.DynoDaoSchema;
 
 @Data
-@DynoDao
+@DynoDaoSchema(tableName = "things")
 class Schema {
 
-    @DynamoDBHashKey
+    @DynoDaoHashKey
     private String hashKey;
 
 }

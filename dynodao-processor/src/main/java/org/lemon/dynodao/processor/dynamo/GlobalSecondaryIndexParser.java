@@ -1,7 +1,7 @@
 package org.lemon.dynodao.processor.dynamo;
 
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBIndexHashKey;
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBIndexRangeKey;
+import org.lemon.dynodao.annotation.DynoDaoIndexHashKey;
+import org.lemon.dynodao.annotation.DynoDaoIndexRangeKey;
 import org.lemon.dynodao.processor.context.ProcessorMessager;
 
 import javax.inject.Inject;
@@ -11,13 +11,9 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
-import java.util.stream.Stream;
-
-import static java.util.stream.Collectors.toSet;
 
 /**
  * Extracts global secondary indexes from the schema document.
@@ -38,10 +34,10 @@ class GlobalSecondaryIndexParser implements DynamoIndexParser {
         Set<DynamoAttribute> rangeKeys = new LinkedHashSet<>();
         Set<DynamoAttribute> attributes = new LinkedHashSet<>();
         for (DynamoAttribute attribute : schemaFieldsProvider.getDynamoAttributes(document)) {
-            if (attribute.getField().getAnnotation(DynamoDBIndexHashKey.class) != null) {
+            if (attribute.getField().getAnnotation(DynoDaoIndexHashKey.class) != null) {
                 hashKeys.add(attribute);
             }
-            if (attribute.getField().getAnnotation(DynamoDBIndexRangeKey.class) != null) {
+            if (attribute.getField().getAnnotation(DynoDaoIndexRangeKey.class) != null) {
                 rangeKeys.add(attribute);
             }
             attributes.add(attribute);
@@ -53,8 +49,8 @@ class GlobalSecondaryIndexParser implements DynamoIndexParser {
     }
 
     private void validate(Set<DynamoAttribute> hashKeys, Set<DynamoAttribute> rangeKeys, Set<DynamoAttribute> attributes) {
-        validateIndex(hashKeys, DynamoDBIndexHashKey.class, this::getHashKeyIndexNames);
-        validateIndex(rangeKeys, DynamoDBIndexRangeKey.class, this::getRangeKeyIndexNames);
+        validateIndex(hashKeys, DynoDaoIndexHashKey.class, this::getHashKeyIndexNames);
+        validateIndex(rangeKeys, DynoDaoIndexRangeKey.class, this::getRangeKeyIndexNames);
     }
 
     private void validateIndex(Set<DynamoAttribute> keys, Class<?> annotation, Function<DynamoAttribute, Set<String>> getIndexNames) {
@@ -70,23 +66,17 @@ class GlobalSecondaryIndexParser implements DynamoIndexParser {
     }
 
     private Set<String> getHashKeyIndexNames(DynamoAttribute hashKey) {
-        DynamoDBIndexHashKey key = hashKey.getField().getAnnotation(DynamoDBIndexHashKey.class);
-        return Stream.concat(Stream.of(key.globalSecondaryIndexName()), Arrays.stream(key.globalSecondaryIndexNames()))
-                .filter(Objects::nonNull)
-                .filter(str -> !str.isEmpty())
-                .collect(toSet());
+        DynoDaoIndexHashKey key = hashKey.getField().getAnnotation(DynoDaoIndexHashKey.class);
+        return new HashSet<>(Arrays.asList(key.gsiNames()));
     }
 
     private Set<String> getRangeKeyIndexNames(DynamoAttribute rangeKey) {
-        DynamoDBIndexRangeKey key = rangeKey.getField().getAnnotation(DynamoDBIndexRangeKey.class);
-        return Stream.concat(Stream.of(key.globalSecondaryIndexName()), Arrays.stream(key.globalSecondaryIndexNames()))
-                .filter(Objects::nonNull)
-                .filter(str -> !str.isEmpty())
-                .collect(toSet());
+        DynoDaoIndexRangeKey key = rangeKey.getField().getAnnotation(DynoDaoIndexRangeKey.class);
+        return new HashSet<>(Arrays.asList(key.gsiNames()));
     }
 
     private Set<DynamoIndex> toIndexes(Set<DynamoAttribute> hashKeys, Set<DynamoAttribute> rangeKeys, Set<DynamoAttribute> attributes) {
-        Set<DynamoIndex> indexes = new HashSet<>();
+        Set<DynamoIndex> indexes = new LinkedHashSet<>();
         for (DynamoAttribute hashKey : hashKeys) {
             for (String indexName : getHashKeyIndexNames(hashKey)) {
                 Optional<DynamoAttribute> rangeKey = getRangeKeyForIndex(indexName, rangeKeys);

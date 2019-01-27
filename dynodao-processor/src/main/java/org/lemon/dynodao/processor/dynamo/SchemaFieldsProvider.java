@@ -1,6 +1,6 @@
 package org.lemon.dynodao.processor.dynamo;
 
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBIgnore;
+import org.lemon.dynodao.annotation.DynoDaoIgnore;
 
 import javax.inject.Inject;
 import javax.lang.model.element.ElementKind;
@@ -24,7 +24,7 @@ class SchemaFieldsProvider {
     Set<DynamoAttribute> getDynamoAttributes(TypeElement document) {
         return document.getEnclosedElements().stream()
                 .filter(element -> element.getKind().equals(ElementKind.FIELD))
-                .filter(element -> element.getAnnotation(DynamoDBIgnore.class) == null)
+                .filter(element -> element.getAnnotation(DynoDaoIgnore.class) == null)
                 .map(element -> (VariableElement) element)
                 .map(DynamoAttribute::of)
                 .collect(toLinkedHashSet());

@@ -6,6 +6,7 @@ import com.squareup.javapoet.TypeName;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.Value;
+import org.lemon.dynodao.annotation.DynoDaoAttribute;
 
 import javax.lang.model.element.Modifier;
 import javax.lang.model.element.VariableElement;
@@ -27,13 +28,12 @@ public class DynamoAttribute {
      * @return DynamoAttribute for the field
      */
     static DynamoAttribute of(VariableElement field) {
-        String name = field.getAnnotationMirrors().stream()
-                .filter(mirror -> mirror.getAnnotationType().asElement().getSimpleName().toString().startsWith("DynamoDB"))
-                .flatMap(mirror -> mirror.getElementValues().entrySet().stream())
-                .filter(entry -> entry.getKey().getSimpleName().contentEquals("attributeName"))
-                .map(entry -> entry.getValue().getValue().toString())
-                .findAny().orElse(field.getSimpleName().toString());
-        return new DynamoAttribute(name, field);
+        DynoDaoAttribute attribute = field.getAnnotation(DynoDaoAttribute.class);
+        if (attribute != null && !attribute.attributeName().isEmpty()) {
+            return new DynamoAttribute(attribute.attributeName(), field);
+        } else {
+            return new DynamoAttribute(field.getSimpleName().toString(), field);
+        }
     }
 
     /**

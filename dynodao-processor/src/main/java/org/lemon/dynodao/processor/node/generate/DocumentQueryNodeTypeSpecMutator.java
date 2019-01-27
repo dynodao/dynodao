@@ -1,6 +1,5 @@
 package org.lemon.dynodao.processor.node.generate;
 
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
 import com.squareup.javapoet.FieldSpec;
 import com.squareup.javapoet.MethodSpec;
 import com.squareup.javapoet.ParameterSpec;
@@ -24,8 +23,8 @@ import static org.lemon.dynodao.processor.util.DynamoDbUtil.dynamoDbQueryExpress
 import static org.lemon.dynodao.processor.util.DynamoDbUtil.paginatedList;
 
 /**
- * Implements the {@link org.lemon.dynodao.DocumentQuery#query(DynamoDBMapper)} method. If the type does not implement
- * {@link org.lemon.dynodao.DocumentQuery}, then nothing is added.
+ * Implements the {@link org.lemon.dynodao.DocumentQuery#query(com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper)} method.
+ * If the type does not implement {@link org.lemon.dynodao.DocumentQuery}, then nothing is added.
  */
 class DocumentQueryNodeTypeSpecMutator implements NodeTypeSpecMutator {
 

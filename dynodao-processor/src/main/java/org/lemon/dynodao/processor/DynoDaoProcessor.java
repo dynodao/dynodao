@@ -31,11 +31,11 @@ import java.util.Set;
 import static java.util.stream.Collectors.toSet;
 
 /**
- * The annotation processor for {@link org.lemon.dynodao.DynoDao}.
+ * The annotation processor for {@link org.lemon.dynodao.annotation.DynoDaoSchema}.
  */
 @AutoService(Processor.class)
 @SupportedSourceVersion(SourceVersion.RELEASE_8)
-@SupportedAnnotationTypes("org.lemon.dynodao.*")
+@SupportedAnnotationTypes("org.lemon.dynodao.annotation.DynoDaoSchema")
 public class DynoDaoProcessor extends AbstractProcessor {
 
     @Inject ProcessorContext processorContext;

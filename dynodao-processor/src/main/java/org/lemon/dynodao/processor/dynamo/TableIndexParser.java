@@ -1,8 +1,8 @@
 package org.lemon.dynodao.processor.dynamo;
 
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBHashKey;
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBRangeKey;
-import org.lemon.dynodao.DynoDao;
+import org.lemon.dynodao.annotation.DynoDaoHashKey;
+import org.lemon.dynodao.annotation.DynoDaoRangeKey;
+import org.lemon.dynodao.annotation.DynoDaoSchema;
 import org.lemon.dynodao.processor.context.ProcessorMessager;
 
 import javax.inject.Inject;
@@ -31,10 +31,10 @@ class TableIndexParser implements DynamoIndexParser {
         Set<DynamoAttribute> rangeKeys = new LinkedHashSet<>();
         Set<DynamoAttribute> attributes = new LinkedHashSet<>();
         for (DynamoAttribute attribute : schemaFieldsProvider.getDynamoAttributes(document)) {
-            if (attribute.getField().getAnnotation(DynamoDBHashKey.class) != null) {
+            if (attribute.getField().getAnnotation(DynoDaoHashKey.class) != null) {
                 hashKeys.add(attribute);
             }
-            if (attribute.getField().getAnnotation(DynamoDBRangeKey.class) != null) {
+            if (attribute.getField().getAnnotation(DynoDaoRangeKey.class) != null) {
                 rangeKeys.add(attribute);
             }
             attributes.add(attribute);
@@ -48,16 +48,16 @@ class TableIndexParser implements DynamoIndexParser {
     private void validate(TypeElement document, Set<DynamoAttribute> hashKeys, Set<DynamoAttribute> rangeKeys) {
         if (hashKeys.size() != 1) {
             if (hashKeys.isEmpty()) {
-                processorMessager.submitError("@%s must exist on exactly one scalar attribute, but none found.", DynamoDBHashKey.class.getSimpleName())
+                processorMessager.submitError("@%s must exist on exactly one scalar attribute, but none found.", DynoDaoHashKey.class.getSimpleName())
                         .atElement(document)
-                        .atAnnotation(DynoDao.class);
+                        .atAnnotation(DynoDaoSchema.class);
             }
-            hashKeys.forEach(hashKey -> processorMessager.submitError("@%s must exist on exactly one attribute.", DynamoDBHashKey.class.getSimpleName())
+            hashKeys.forEach(hashKey -> processorMessager.submitError("@%s must exist on exactly one attribute.", DynoDaoHashKey.class.getSimpleName())
                     .atElement(hashKey.getField())
-                    .atAnnotation(DynamoDBHashKey.class));
+                    .atAnnotation(DynoDaoHashKey.class));
         }
         if (rangeKeys.size() > 1) {
-            processorMessager.submitError("@%s must exist on at most one attribute, but found %s", DynamoDBRangeKey.class.getSimpleName(), rangeKeys);
+            processorMessager.submitError("@%s must exist on at most one attribute, but found %s", DynoDaoRangeKey.class.getSimpleName(), rangeKeys);
         }
     }
 
