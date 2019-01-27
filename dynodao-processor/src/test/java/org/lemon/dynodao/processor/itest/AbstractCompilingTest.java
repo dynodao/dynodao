@@ -46,7 +46,7 @@ public abstract class AbstractCompilingTest extends AbstractUnitTest {
      */
     protected final Compilation compile(JavaFileObject javaFileObject) {
         return Compiler.javac()
-                .withProcessors(new DynoDaoProcessor())
+                .withProcessors(new DynoDaoProcessor(), lombok())
                 .compile(javaFileObject);
     }
 

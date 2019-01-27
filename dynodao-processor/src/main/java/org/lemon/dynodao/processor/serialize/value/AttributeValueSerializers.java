@@ -16,6 +16,7 @@ public class AttributeValueSerializers implements Streamable<AttributeValueSeria
     @Inject StringSerializer stringSerializer;
     @Inject NumericSerializer numericSerializer;
     @Inject MapSerializer mapSerializer;
+    @Inject DocumentSerializer documentSerializer;
 
     private final List<AttributeValueSerializer> attributeValueSerializers = new ArrayList<>();
 
@@ -30,6 +31,7 @@ public class AttributeValueSerializers implements Streamable<AttributeValueSeria
         attributeValueSerializers.add(stringSerializer);
         attributeValueSerializers.add(numericSerializer);
         attributeValueSerializers.add(mapSerializer);
+        attributeValueSerializers.add(documentSerializer);
     }
 
     @Override

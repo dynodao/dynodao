@@ -43,7 +43,7 @@ public class SerializerTypeSpecFactory {
 
     private SerializationContext buildSerializationContext(TypeElement document, DynamoStructuredSchema schema) {
         SerializationContext serializationContext = new SerializationContext(document, processors);
-        schema.getTableAttributes().forEach(attribute -> addSerializerForType(attribute.getField().asType(), serializationContext));
+        addSerializerForType(document.asType(), serializationContext);
         return serializationContext;
     }
 
