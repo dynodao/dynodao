@@ -10,11 +10,11 @@ import java.util.Set;
  */
 public class DynamoSchemaParser {
 
-    @Inject TableIndexParser tableIndexParser;
-    @Inject LocalSecondaryIndexParser localSecondaryIndexParser;
-    @Inject GlobalSecondaryIndexParser globalSecondaryIndexParser;
+    private final DynamoIndexParsers dynamoIndexParsers;
 
-    @Inject DynamoSchemaParser() { }
+    @Inject DynamoSchemaParser(DynamoIndexParsers dynamoIndexParsers) {
+        this.dynamoIndexParsers = dynamoIndexParsers;
+    }
 
     /**
      * Returns the dynamo schema the document object represents.
@@ -29,9 +29,7 @@ public class DynamoSchemaParser {
 
     private Set<DynamoIndex> getIndexes(TypeElement document) {
         Set<DynamoIndex> indexes = new LinkedHashSet<>();
-        indexes.addAll(tableIndexParser.getIndexesFrom(document));
-        indexes.addAll(localSecondaryIndexParser.getIndexesFrom(document));
-        indexes.addAll(globalSecondaryIndexParser.getIndexesFrom(document));
+        dynamoIndexParsers.forEach(parser -> indexes.addAll(parser.getIndexesFrom(document)));
         return indexes;
     }
 

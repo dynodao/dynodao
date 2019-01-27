@@ -8,7 +8,6 @@ import org.lemon.dynodao.processor.serialize.SerializeMethod;
 
 import javax.inject.Inject;
 import javax.lang.model.type.TypeMirror;
-
 import java.util.Collection;
 
 import static java.util.Collections.emptySet;
@@ -31,9 +30,11 @@ class StringSerializer implements AttributeValueSerializer {
             .body(METHOD_BODY)
             .build();
 
-    @Inject Processors processors;
+    private final Processors processors;
 
-    @Inject StringSerializer() { }
+    @Inject StringSerializer(Processors processors) {
+        this.processors = processors;
+    }
 
     @Override
     public boolean isApplicableTo(TypeMirror type) {

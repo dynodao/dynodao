@@ -30,7 +30,7 @@ class ContextModule {
 
     private final ProcessorContext processorContext;
 
-    @Provides
+    @Provides @Singleton
     ProcessorContext providesProcessorContext() {
         return processorContext;
     }

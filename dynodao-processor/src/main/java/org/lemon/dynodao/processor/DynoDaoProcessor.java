@@ -1,8 +1,6 @@
 package org.lemon.dynodao.processor;
 
 import com.google.auto.service.AutoService;
-import lombok.AccessLevel;
-import lombok.RequiredArgsConstructor;
 import org.lemon.dynodao.processor.context.ProcessorContext;
 import org.lemon.dynodao.processor.context.ProcessorMessager;
 import org.lemon.dynodao.processor.dynamo.DynamoIndex;

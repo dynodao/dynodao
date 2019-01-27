@@ -12,8 +12,7 @@ import static org.lemon.dynodao.processor.util.DynoDaoUtil.generatedAnnotation;
  */
 class GeneratedAnnotationSerializerTypeSpecMutator implements SerializerTypeSpecMutator {
 
-    @Inject
-    GeneratedAnnotationSerializerTypeSpecMutator() { }
+    @Inject GeneratedAnnotationSerializerTypeSpecMutator() { }
 
     @Override
     public void mutate(TypeSpec.Builder typeSpec, SerializerClassData serializerClassData) {

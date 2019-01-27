@@ -13,9 +13,11 @@ import static org.lemon.dynodao.processor.util.StringUtil.toClassCase;
  */
 public class NodeTypeSpecFactory {
 
-    @Inject NodeTypeSpecMutators nodeTypeSpecMutators;
+    private final NodeTypeSpecMutators nodeTypeSpecMutators;
 
-    @Inject NodeTypeSpecFactory() { }
+    @Inject NodeTypeSpecFactory(NodeTypeSpecMutators nodeTypeSpecMutators) {
+        this.nodeTypeSpecMutators = nodeTypeSpecMutators;
+    }
 
     /**
      * @param node the node class to build

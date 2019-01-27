@@ -10,9 +10,7 @@ import org.lemon.dynodao.processor.serialize.SerializeMethod;
 import javax.inject.Inject;
 import javax.lang.model.type.PrimitiveType;
 import javax.lang.model.type.TypeMirror;
-
 import java.util.Collection;
-import java.util.Collections;
 
 import static java.util.Collections.emptySet;
 import static org.lemon.dynodao.processor.util.DynamoDbUtil.attributeValue;
@@ -24,9 +22,11 @@ import static org.lemon.dynodao.processor.util.StringUtil.toClassCase;
  */
 class NumericSerializer implements AttributeValueSerializer {
 
-    @Inject Processors processors;
+    private final Processors processors;
 
-    @Inject NumericSerializer() { }
+    @Inject NumericSerializer(Processors processors) {
+        this.processors = processors;
+    }
 
     @Override
     public boolean isApplicableTo(TypeMirror type) {

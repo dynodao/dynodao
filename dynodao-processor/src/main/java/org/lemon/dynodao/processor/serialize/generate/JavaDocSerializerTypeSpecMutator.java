@@ -16,8 +16,7 @@ class JavaDocSerializerTypeSpecMutator implements SerializerTypeSpecMutator {
 
     @Override
     public void mutate(TypeSpec.Builder typeSpec, SerializerClassData serializerClassData) {
-        typeSpec
-                .addJavadoc("Utility class for converting types within {@link $T} into {@link $T}.\n",
+        typeSpec.addJavadoc("Utility class for converting types within {@link $T} into {@link $T}.\n",
                         serializerClassData.getDocument().asType(), attributeValue());
     }
 

@@ -16,7 +16,6 @@ import javax.lang.model.type.TypeMirror;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 
 import static org.lemon.dynodao.processor.util.DynamoDbUtil.attributeValue;
@@ -30,9 +29,11 @@ class MapSerializer implements AttributeValueSerializer {
 
     private static final TypeName MAP_OF_ATTRIBUTE_VALUE = ParameterizedTypeName.get(ClassName.get(Map.class), TypeName.get(String.class), attributeValue());
 
-    @Inject Processors processors;
+    private final Processors processors;
 
-    @Inject MapSerializer() { }
+    @Inject MapSerializer(Processors processors) {
+        this.processors = processors;
+    }
 
     @Override
     public boolean isApplicableTo(TypeMirror type) {

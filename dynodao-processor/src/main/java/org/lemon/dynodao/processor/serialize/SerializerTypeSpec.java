@@ -1,6 +1,5 @@
 package org.lemon.dynodao.processor.serialize;
 
-import com.squareup.javapoet.MethodSpec;
 import com.squareup.javapoet.TypeSpec;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -31,13 +30,6 @@ public class SerializerTypeSpec implements BuiltTypeSpec {
      */
     public SerializeMethod getSerializationMethodForType(TypeMirror type) {
         return serializationContext.getSerializationMethodForType(type);
-    }
-
-    public MethodSpec getSerializationMethodSpecForType(TypeMirror type) {
-        SerializeMethod method = getSerializationMethodForType(type);
-        return typeSpec.methodSpecs.stream()
-                .filter(spec -> spec.name.equals(method.getMethodName()))
-                .findAny().orElse(null);
     }
 
 }

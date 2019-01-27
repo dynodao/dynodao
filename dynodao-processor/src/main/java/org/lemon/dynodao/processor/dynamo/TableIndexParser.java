@@ -17,10 +17,13 @@ import static java.util.Collections.singleton;
  */
 class TableIndexParser implements DynamoIndexParser {
 
-    @Inject ProcessorMessager processorMessager;
-    @Inject SchemaFieldsProvider schemaFieldsProvider;
+    private final ProcessorMessager processorMessager;
+    private final SchemaFieldsProvider schemaFieldsProvider;
 
-    @Inject TableIndexParser() { }
+    @Inject TableIndexParser(ProcessorMessager processorMessager, SchemaFieldsProvider schemaFieldsProvider) {
+        this.processorMessager = processorMessager;
+        this.schemaFieldsProvider = schemaFieldsProvider;
+    }
 
     @Override
     public Set<DynamoIndex> getIndexesFrom(TypeElement document) {

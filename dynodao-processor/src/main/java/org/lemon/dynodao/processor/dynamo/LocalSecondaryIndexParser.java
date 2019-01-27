@@ -24,10 +24,13 @@ import static java.util.stream.Collectors.toSet;
  */
 class LocalSecondaryIndexParser implements DynamoIndexParser {
 
-    @Inject ProcessorMessager processorMessager;
-    @Inject SchemaFieldsProvider schemaFieldsProvider;
+    private final ProcessorMessager processorMessager;
+    private final SchemaFieldsProvider schemaFieldsProvider;
 
-    @Inject LocalSecondaryIndexParser() { }
+    @Inject LocalSecondaryIndexParser(ProcessorMessager processorMessager, SchemaFieldsProvider schemaFieldsProvider) {
+        this.processorMessager = processorMessager;
+        this.schemaFieldsProvider = schemaFieldsProvider;
+    }
 
     @Override
     public Set<DynamoIndex> getIndexesFrom(TypeElement document) {

@@ -17,10 +17,8 @@ import javax.inject.Inject;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
-import javax.lang.model.type.TypeMirror;
 
 import static java.util.stream.Collectors.joining;
-import static org.lemon.dynodao.processor.util.DynamoDbUtil.attributeValue;
 import static org.lemon.dynodao.processor.util.DynamoDbUtil.dynamoDbMapper;
 import static org.lemon.dynodao.processor.util.DynamoDbUtil.dynamoDbQueryExpression;
 import static org.lemon.dynodao.processor.util.DynamoDbUtil.paginatedList;
@@ -31,22 +29,17 @@ import static org.lemon.dynodao.processor.util.DynamoDbUtil.paginatedList;
  */
 class DocumentQueryNodeTypeSpecMutator implements NodeTypeSpecMutator {
 
-    @Inject Processors processors;
+    private static final ParameterSpec DYNAMO_DB_MAPPER_PARAM = ParameterSpec.builder(dynamoDbMapper(), "dynamoDbMapper").build();
 
-    private MethodSpec queryWithNoReturnOrBody;
-    private ParameterSpec dynamoDbMapperParam;
+    private final MethodSpec queryWithNoReturnOrBody;
 
-    @Inject DocumentQueryNodeTypeSpecMutator() { }
-
-    @Inject void init() {
-        dynamoDbMapperParam = ParameterSpec.builder(dynamoDbMapper(), "dynamoDbMapper").build();
-
+    @Inject DocumentQueryNodeTypeSpecMutator(Processors processors) {
         TypeElement interfaceType = processors.getTypeElement(InterfaceType.DOCUMENT_QUERY.getInterfaceClass().get());
         ExecutableElement method = (ExecutableElement) interfaceType.getEnclosedElements().iterator().next();
         queryWithNoReturnOrBody = MethodSpec.methodBuilder(method.getSimpleName().toString())
                 .addAnnotation(Override.class)
                 .addModifiers(Modifier.PUBLIC)
-                .addParameter(dynamoDbMapperParam)
+                .addParameter(DYNAMO_DB_MAPPER_PARAM)
                 .build();
     }
 
@@ -73,7 +66,7 @@ class DocumentQueryNodeTypeSpecMutator implements NodeTypeSpecMutator {
         appendKeyConditionExpression(query, node);
         appendExpressionAttributeNames(query, node);
         appendExpressionAttributeValues(query, node);
-        query.addStatement("return $N.query($T.class, query)", dynamoDbMapperParam, node.getDocument().asType());
+        query.addStatement("return $N.query($T.class, query)", DYNAMO_DB_MAPPER_PARAM, node.getDocument().asType());
         return query.build();
     }
 

@@ -29,22 +29,17 @@ import static org.lemon.dynodao.processor.util.StringUtil.repeat;
  */
 class DocumentLoadNodeTypeSpecMutator implements NodeTypeSpecMutator {
 
-    @Inject Processors processors;
+    private static final ParameterSpec DYNAMO_DB_MAPPER_PARAM = ParameterSpec.builder(dynamoDbMapper(), "dynamoDbMapper").build();
 
-    private MethodSpec loadWithNoReturnOrBody;
-    private ParameterSpec dynamoDbMapperParam;
+    private final MethodSpec loadWithNoReturnOrBody;
 
-    @Inject DocumentLoadNodeTypeSpecMutator() { }
-
-    @Inject void init() {
-        dynamoDbMapperParam = ParameterSpec.builder(dynamoDbMapper(), "dynamoDbMapper").build();
-
+    @Inject DocumentLoadNodeTypeSpecMutator(Processors processors) {
         TypeElement interfaceType = processors.getTypeElement(InterfaceType.DOCUMENT_LOAD.getInterfaceClass().get());
         ExecutableElement method = (ExecutableElement) interfaceType.getEnclosedElements().iterator().next();
         loadWithNoReturnOrBody = MethodSpec.methodBuilder(method.getSimpleName().toString())
                 .addAnnotation(Override.class)
                 .addModifiers(Modifier.PUBLIC)
-                .addParameter(dynamoDbMapperParam)
+                .addParameter(DYNAMO_DB_MAPPER_PARAM)
                 .build();
     }
 
@@ -63,7 +58,7 @@ class DocumentLoadNodeTypeSpecMutator implements NodeTypeSpecMutator {
     private MethodSpec buildLoad(NodeClassData node) {
         List<FieldSpec> fields = node.getAttributesAsFields();
         String argsFormat = repeat(fields.size(), "$N", ", ");
-        Object[] args = concat(Collections.class, dynamoDbMapperParam, node.getDocument().asType(), fields).toArray();
+        Object[] args = concat(Collections.class, DYNAMO_DB_MAPPER_PARAM, node.getDocument().asType(), fields).toArray();
 
         return loadWithNoReturnOrBody.toBuilder()
                 .returns(ParameterizedTypeName.get(ClassName.get(List.class), TypeName.get(node.getDocument().asType())))

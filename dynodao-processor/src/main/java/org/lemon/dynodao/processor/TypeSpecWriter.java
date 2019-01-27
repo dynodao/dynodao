@@ -16,11 +16,15 @@ import java.io.UncheckedIOException;
  */
 class TypeSpecWriter {
 
-    @Inject Processors processors;
-    @Inject ProcessorMessager processorMessager;
-    @Inject ProcessorContext processorContext;
+    private final Processors processors;
+    private final ProcessorMessager processorMessager;
+    private final ProcessorContext processorContext;
 
-    @Inject TypeSpecWriter() { }
+    @Inject TypeSpecWriter(Processors processors, ProcessorMessager processorMessager, ProcessorContext processorContext) {
+        this.processors = processors;
+        this.processorMessager = processorMessager;
+        this.processorContext = processorContext;
+    }
 
     /**
      * Writes all of the type specs to file.

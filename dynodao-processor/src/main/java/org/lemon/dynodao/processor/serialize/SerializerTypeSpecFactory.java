@@ -17,12 +17,17 @@ import javax.lang.model.type.TypeMirror;
  */
 public class SerializerTypeSpecFactory {
 
-    @Inject Processors processors;
-    @Inject ProcessorMessager processorMessager;
-    @Inject SerializerTypeSpecMutators serializerTypeSpecMutators;
-    @Inject AttributeValueSerializers attributeValueSerializers;
+    private final Processors processors;
+    private final ProcessorMessager processorMessager;
+    private final SerializerTypeSpecMutators serializerTypeSpecMutators;
+    private final AttributeValueSerializers attributeValueSerializers;
 
-    @Inject SerializerTypeSpecFactory() { }
+    @Inject SerializerTypeSpecFactory(Processors processors, ProcessorMessager processorMessager, SerializerTypeSpecMutators serializerTypeSpecMutators, AttributeValueSerializers attributeValueSerializers) {
+        this.processors = processors;
+        this.processorMessager = processorMessager;
+        this.serializerTypeSpecMutators = serializerTypeSpecMutators;
+        this.attributeValueSerializers = attributeValueSerializers;
+    }
 
     /**
      * Builds the serialization class for the given document type and the schema it represents.

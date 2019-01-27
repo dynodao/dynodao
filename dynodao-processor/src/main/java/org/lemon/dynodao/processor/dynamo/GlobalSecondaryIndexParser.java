@@ -24,10 +24,13 @@ import static java.util.stream.Collectors.toSet;
  */
 class GlobalSecondaryIndexParser implements DynamoIndexParser {
 
-    @Inject ProcessorMessager processorMessager;
-    @Inject SchemaFieldsProvider schemaFieldsProvider;
+    private final ProcessorMessager processorMessager;
+    private final SchemaFieldsProvider schemaFieldsProvider;
 
-    @Inject GlobalSecondaryIndexParser() { }
+    @Inject GlobalSecondaryIndexParser(ProcessorMessager processorMessager, SchemaFieldsProvider schemaFieldsProvider) {
+        this.processorMessager = processorMessager;
+        this.schemaFieldsProvider = schemaFieldsProvider;
+    }
 
     @Override
     public Set<DynamoIndex> getIndexesFrom(TypeElement document) {
