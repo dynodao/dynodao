@@ -37,8 +37,8 @@ public class StringUtil {
      * @param str the string to transform into a class name
      * @return <tt>str</tt> as a class name
      */
-    public static String toClassCase(String str) {
-        char[] s = str.toCharArray();
+    public static String toClassCase(CharSequence str) {
+        char[] s = str.toString().toCharArray();
         StringBuilder builder = new StringBuilder();
         boolean titleCaseNext = true;
         for (int i = 0; i < s.length; ++i) {

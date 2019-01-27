@@ -1,36 +1,36 @@
-package org.lemon.dynodao.processor.generate;
+package org.lemon.dynodao.processor.node.generate;
 
 import com.squareup.javapoet.FieldSpec;
 import com.squareup.javapoet.MethodSpec;
 import com.squareup.javapoet.ParameterSpec;
 import com.squareup.javapoet.TypeSpec;
 import org.lemon.dynodao.processor.dynamo.DynamoAttribute;
-import org.lemon.dynodao.processor.model.PojoClassBuilder;
+import org.lemon.dynodao.processor.node.NodeClassData;
 
 import javax.inject.Inject;
 
 /**
  * Adds an all args constructor the type being built. If the type has no fields, nothing is added.
  */
-class CtorTypeSpecMutator implements TypeSpecMutator {
+class CtorNodeTypeSpecMutator implements NodeTypeSpecMutator {
 
-    @Inject CtorTypeSpecMutator() { }
+    @Inject CtorNodeTypeSpecMutator() { }
 
     @Override
-    public void mutate(TypeSpec.Builder typeSpec, PojoClassBuilder pojo) {
-        if (needsCtor(pojo)) {
-            MethodSpec ctor = buildCtor(pojo);
+    public void mutate(TypeSpec.Builder typeSpec, NodeClassData node) {
+        if (needsCtor(node)) {
+            MethodSpec ctor = buildCtor(node);
             typeSpec.addMethod(ctor);
         }
     }
 
-    private boolean needsCtor(PojoClassBuilder pojo) {
-        return !pojo.getAttributes().isEmpty();
+    private boolean needsCtor(NodeClassData node) {
+        return !node.getAttributes().isEmpty();
     }
 
-    private MethodSpec buildCtor(PojoClassBuilder pojo) {
+    private MethodSpec buildCtor(NodeClassData node) {
         MethodSpec.Builder ctor = MethodSpec.constructorBuilder();
-        for (DynamoAttribute attribute : pojo.getAttributes()) {
+        for (DynamoAttribute attribute : node.getAttributes()) {
             FieldSpec field = attribute.asFieldSpec();
             ParameterSpec param = attribute.asParameterSpec();
             ctor

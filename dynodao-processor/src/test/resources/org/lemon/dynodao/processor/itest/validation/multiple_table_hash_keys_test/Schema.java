@@ -11,4 +11,5 @@ public class Schema {
 
     @DynamoDBHashKey
     private String hashKey2;
+
 }

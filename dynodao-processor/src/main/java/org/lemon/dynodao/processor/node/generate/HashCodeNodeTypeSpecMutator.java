@@ -1,9 +1,9 @@
-package org.lemon.dynodao.processor.generate;
+package org.lemon.dynodao.processor.node.generate;
 
 import com.squareup.javapoet.FieldSpec;
 import com.squareup.javapoet.MethodSpec;
 import com.squareup.javapoet.TypeSpec;
-import org.lemon.dynodao.processor.model.PojoClassBuilder;
+import org.lemon.dynodao.processor.node.NodeClassData;
 
 import javax.inject.Inject;
 import javax.lang.model.element.Modifier;
@@ -16,31 +16,27 @@ import static org.lemon.dynodao.processor.util.StringUtil.repeat;
 /**
  * Adds a decent implementation of {@link Object#hashCode()}} to the type, delegating to {@link Objects#hash(Object...)}.
  */
-class HashCodeTypeSpecMutator implements TypeSpecMutator {
+class HashCodeNodeTypeSpecMutator implements NodeTypeSpecMutator {
 
-    private MethodSpec hashCodeWithNoBody;
+    private static final MethodSpec HASH_CODE_WITH_NO_BODY = MethodSpec.methodBuilder("hashCode")
+            .addAnnotation(Override.class)
+            .addModifiers(Modifier.PUBLIC)
+            .returns(int.class)
+            .build();
 
-    @Inject HashCodeTypeSpecMutator() { }
-
-    @Inject void init() {
-        hashCodeWithNoBody = MethodSpec.methodBuilder("hashCode")
-                .addAnnotation(Override.class)
-                .addModifiers(Modifier.PUBLIC)
-                .returns(int.class)
-                .build();
-    }
+    @Inject HashCodeNodeTypeSpecMutator() { }
 
     @Override
-    public void mutate(TypeSpec.Builder typeSpec, PojoClassBuilder pojo) {
-        MethodSpec hashCode = buildHashCode(pojo);
+    public void mutate(TypeSpec.Builder typeSpec, NodeClassData node) {
+        MethodSpec hashCode = buildHashCode(node);
         typeSpec.addMethod(hashCode);
     }
 
-    private MethodSpec buildHashCode(PojoClassBuilder pojo) {
-        List<FieldSpec> fields = pojo.getAttributesAsFields();
+    private MethodSpec buildHashCode(NodeClassData node) {
+        List<FieldSpec> fields = node.getAttributesAsFields();
         String hashCodeParams = repeat(fields.size(), "$N", ", ");
         Object[] args = concat(Objects.class, fields).toArray();
-        return hashCodeWithNoBody.toBuilder()
+        return HASH_CODE_WITH_NO_BODY.toBuilder()
                 .addStatement("return $T.hash(" + hashCodeParams + ")", args)
                 .build();
     }

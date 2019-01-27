@@ -1,6 +1,5 @@
 package org.lemon.dynodao.processor.dynamo;
 
-import com.squareup.javapoet.CodeBlock;
 import com.squareup.javapoet.FieldSpec;
 import com.squareup.javapoet.ParameterSpec;
 import com.squareup.javapoet.TypeName;
@@ -10,8 +9,6 @@ import lombok.Value;
 
 import javax.lang.model.element.Modifier;
 import javax.lang.model.element.VariableElement;
-
-import static org.lemon.dynodao.processor.util.DynamoDbUtil.attributeValue;
 
 /**
  * Represents a single attribute in a structured dynamo db schema.
@@ -53,17 +50,6 @@ public class DynamoAttribute {
      */
     public ParameterSpec asParameterSpec() {
         return ParameterSpec.builder(TypeName.get(field.asType()), field.getSimpleName().toString()).build();
-    }
-
-    /**
-     * Returns this attribute as a new {@link com.amazonaws.services.dynamodbv2.model.AttributeValue} block
-     * of code. The field name is assumed to be the same field name as the field returned by {@link #asFieldSpec()}.
-     * The block is standalone, no semicolon or statement is included, it is similar to
-     * <tt>new AttributeValue().withS(hashKey)</tt> or <tt>ModelAttributeValueFactory.hashKey(hashKey)</tt>.
-     * @return the block of code that initializes this as an {@link com.amazonaws.services.dynamodbv2.model.AttributeValue}
-     */
-    public CodeBlock toNewAttributeValue() {
-        return CodeBlock.of("new $T.$L($N)", attributeValue(), "withS", asFieldSpec());
     }
 
 }

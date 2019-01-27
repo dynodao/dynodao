@@ -1,14 +1,19 @@
 package org.lemon.dynodao.processor;
 
 import com.google.auto.service.AutoService;
+import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
 import org.lemon.dynodao.processor.context.ProcessorContext;
 import org.lemon.dynodao.processor.context.ProcessorMessager;
 import org.lemon.dynodao.processor.dynamo.DynamoIndex;
 import org.lemon.dynodao.processor.dynamo.DynamoSchemaParser;
-import org.lemon.dynodao.processor.generate.PojoTypeSpecFactory;
-import org.lemon.dynodao.processor.model.IndexLengthType;
-import org.lemon.dynodao.processor.model.PojoClassBuilder;
-import org.lemon.dynodao.processor.model.PojoTypeSpec;
+import org.lemon.dynodao.processor.dynamo.DynamoStructuredSchema;
+import org.lemon.dynodao.processor.node.IndexLengthType;
+import org.lemon.dynodao.processor.node.NodeClassData;
+import org.lemon.dynodao.processor.node.NodeTypeSpec;
+import org.lemon.dynodao.processor.node.NodeTypeSpecFactory;
+import org.lemon.dynodao.processor.serialize.SerializerTypeSpec;
+import org.lemon.dynodao.processor.serialize.SerializerTypeSpecFactory;
 
 import javax.annotation.processing.AbstractProcessor;
 import javax.annotation.processing.ProcessingEnvironment;
@@ -38,7 +43,8 @@ public class DynoDaoProcessor extends AbstractProcessor {
     @Inject ProcessorContext processorContext;
     @Inject ProcessorMessager processorMessager;
     @Inject DynamoSchemaParser dynamoSchemaParser;
-    @Inject PojoTypeSpecFactory pojoTypeSpecFactory;
+    @Inject SerializerTypeSpecFactory serializerTypeSpecFactory;
+    @Inject NodeTypeSpecFactory nodeTypeSpecFactory;
     @Inject TypeSpecWriter typeSpecWriter;
 
     @Override
@@ -74,55 +80,60 @@ public class DynoDaoProcessor extends AbstractProcessor {
             try {
                 processDocument(document);
             } catch (RuntimeException e) {
-                processorMessager.submitError("DynoDaoProcessor had uncaught exception: %s\nCheck for other errors!", e.getMessage());
+                processorMessager.submitError("DynoDaoProcessor had uncaught exception: %s\nDynoDao carries on even if it finds errors, check for others!", e.getMessage());
             }
         }
     }
 
     private void processDocument(TypeElement document) {
-        List<PojoTypeSpec> pojos = new ArrayList<>();
-        PojoClassBuilder stagedBuilder = new PojoClassBuilder(document);
-        for (DynamoIndex index : dynamoSchemaParser.getSchema(document).getIndexes()) {
+        DynamoStructuredSchema schema = dynamoSchemaParser.getSchema(document);
+        SerializerTypeSpec serializer = serializerTypeSpecFactory.build(document, schema);
+
+        List<BuiltTypeSpec> builtTypes = new ArrayList<>();
+        builtTypes.add(serializer);
+
+        NodeClassData stagedBuilder = new NodeClassData(document, serializer);
+        for (DynamoIndex index : schema.getIndexes()) {
             IndexLengthType indexLengthType = IndexLengthType.lengthOf(index);
 
-            Optional<PojoTypeSpec> indexRangeKeyPojo = getIndexRangeKeyPojo(document, index, indexLengthType);
-            PojoTypeSpec indexHashKeyPojo = getIndexHashKeyPojo(document, index, indexRangeKeyPojo);
-            PojoTypeSpec indexPojo = getIndexPojo(document, index, indexHashKeyPojo);
+            Optional<NodeTypeSpec> indexRangeKeyPojo = getIndexRangeKeyNode(document, serializer, index, indexLengthType);
+            NodeTypeSpec indexHashKeyPojo = getIndexHashKeyNode(document, serializer, index, indexRangeKeyPojo);
+            NodeTypeSpec indexPojo = getIndexNode(document, serializer, index, indexHashKeyPojo);
 
             stagedBuilder.addUser(indexPojo);
 
-            indexRangeKeyPojo.ifPresent(pojos::add);
-            pojos.add(indexHashKeyPojo);
-            pojos.add(indexPojo);
+            indexRangeKeyPojo.ifPresent(builtTypes::add);
+            builtTypes.add(indexHashKeyPojo);
+            builtTypes.add(indexPojo);
         }
-        pojos.add(toTypeSpec(stagedBuilder));
-        typeSpecWriter.writeAll(pojos);
+        builtTypes.add(toTypeSpec(stagedBuilder));
+        typeSpecWriter.writeAll(builtTypes);
     }
 
-    private Optional<PojoTypeSpec> getIndexRangeKeyPojo(TypeElement document, DynamoIndex index, IndexLengthType indexLengthType) {
+    private Optional<NodeTypeSpec> getIndexRangeKeyNode(TypeElement document, SerializerTypeSpec serializer, DynamoIndex index, IndexLengthType indexLengthType) {
         if (indexLengthType.equals(IndexLengthType.RANGE)) {
-            PojoClassBuilder pojo = new PojoClassBuilder(document).withIndex(index, indexLengthType);
+            NodeClassData pojo = new NodeClassData(document, serializer).withIndex(index, indexLengthType);
             return Optional.of(toTypeSpec(pojo));
         } else {
             return Optional.empty();
         }
     }
 
-    private PojoTypeSpec getIndexHashKeyPojo(TypeElement document, DynamoIndex index, Optional<PojoTypeSpec> indexRangeKeyPojo) {
-        PojoClassBuilder pojo = new PojoClassBuilder(document).withIndex(index, IndexLengthType.HASH);
+    private NodeTypeSpec getIndexHashKeyNode(TypeElement document, SerializerTypeSpec serializer, DynamoIndex index, Optional<NodeTypeSpec> indexRangeKeyPojo) {
+        NodeClassData pojo = new NodeClassData(document, serializer).withIndex(index, IndexLengthType.HASH);
         indexRangeKeyPojo.ifPresent(pojo::addWither);
         return toTypeSpec(pojo);
     }
 
-    private PojoTypeSpec getIndexPojo(TypeElement document, DynamoIndex index, PojoTypeSpec indexHashKeyPojo) {
-        PojoClassBuilder pojo = new PojoClassBuilder(document)
+    private NodeTypeSpec getIndexNode(TypeElement document, SerializerTypeSpec serializer, DynamoIndex index, NodeTypeSpec indexHashKeyPojo) {
+        NodeClassData pojo = new NodeClassData(document, serializer)
                 .withIndex(index, IndexLengthType.NONE)
                 .addWither(indexHashKeyPojo);
         return toTypeSpec(pojo);
     }
 
-    private PojoTypeSpec toTypeSpec(PojoClassBuilder pojo) {
-        return pojoTypeSpecFactory.build(pojo);
+    private NodeTypeSpec toTypeSpec(NodeClassData pojo) {
+        return nodeTypeSpecFactory.build(pojo);
     }
 
 }

@@ -9,6 +9,11 @@ import lombok.Builder;
 import lombok.Data;
 import org.lemon.dynodao.DynoDao;
 
+import java.math.BigDecimal;
+import java.math.BigInteger;
+import java.util.Collection;
+import java.util.Map;
+
 @Data
 @Builder
 @DynoDao
@@ -26,7 +31,7 @@ public class Model {
     private String gsiHashKey;
 
     @DynamoDBIndexRangeKey(globalSecondaryIndexName = "global-index-name")
-    private String gsiRangeKey;
+    private long gsiRangeKey;
 
     @DynamoDBIndexRangeKey(globalSecondaryIndexName = "global-index-2")
     private String gsiRangeKey2;
@@ -35,6 +40,11 @@ public class Model {
     private String soloGsiHashKey;
 
     @DynamoDBAttribute(attributeName = "ATTRIBUTE")
-    private String attribute;
+    private int attribute;
+    private long attribute2;
+    private BigDecimal attribute3;
+    private Integer attribute4;
+
+    private Map<String, BigInteger> mapOfBigInt;
 
 }

@@ -1,4 +1,4 @@
-package org.lemon.dynodao.processor.model;
+package org.lemon.dynodao.processor.node;
 
 import lombok.AccessLevel;
 import lombok.Getter;

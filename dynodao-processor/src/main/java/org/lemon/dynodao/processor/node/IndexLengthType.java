@@ -1,4 +1,4 @@
-package org.lemon.dynodao.processor.model;
+package org.lemon.dynodao.processor.node;
 
 import org.lemon.dynodao.processor.dynamo.DynamoAttribute;
 import org.lemon.dynodao.processor.dynamo.DynamoIndex;

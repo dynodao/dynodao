@@ -1,7 +1,6 @@
 package org.lemon.dynodao.processor.dynamo;
 
 import lombok.Builder;
-import lombok.Singular;
 import lombok.Value;
 
 import java.util.Optional;
@@ -19,6 +18,6 @@ public class DynamoIndex {
 
     private final DynamoAttribute hashKeyAttribute;
     private final Optional<DynamoAttribute> rangeKeyAttribute;
-    @Singular private final Set<DynamoAttribute> projectedAttributes;
+    private final Set<DynamoAttribute> projectedAttributes;
 
 }

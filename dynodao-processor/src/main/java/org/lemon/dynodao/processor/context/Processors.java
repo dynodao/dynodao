@@ -19,17 +19,16 @@ import java.util.Arrays;
  */
 public class Processors implements Elements, Types {
 
-    @Inject ProcessorContext processorContext;
+    private final ProcessorContext processorContext;
 
     @Delegate(types = Elements.class)
-    private Elements elementUtils;
+    private final Elements elementUtils;
 
     @Delegate(types = Types.class)
-    private Types typeUtils;
+    private final Types typeUtils;
 
-    @Inject Processors() { }
-
-    @Inject void init() {
+    @Inject Processors(ProcessorContext processorContext) {
+        this.processorContext = processorContext;
         this.elementUtils = processorContext.getProcessingEnvironment().getElementUtils();
         this.typeUtils = processorContext.getProcessingEnvironment().getTypeUtils();
     }

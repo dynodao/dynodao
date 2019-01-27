@@ -1,12 +1,12 @@
-package org.lemon.dynodao.processor.generate;
+package org.lemon.dynodao.processor.node.generate;
 
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.MethodSpec;
 import com.squareup.javapoet.ParameterSpec;
 import com.squareup.javapoet.TypeSpec;
 import org.lemon.dynodao.processor.dynamo.DynamoAttribute;
-import org.lemon.dynodao.processor.model.PojoClassBuilder;
-import org.lemon.dynodao.processor.model.PojoTypeSpec;
+import org.lemon.dynodao.processor.node.NodeClassData;
+import org.lemon.dynodao.processor.node.NodeTypeSpec;
 
 import javax.inject.Inject;
 import javax.lang.model.element.Modifier;
@@ -23,24 +23,24 @@ import static org.lemon.dynodao.processor.util.StringUtil.repeat;
  * Adds a wither to type being built. The wither is a factory which forwards the fields in this type
  * plus wither method arguments to the construct of a new type, which is returned.
  */
-class WitherTypeSpecMutator implements TypeSpecMutator {
+class WitherNodeTypeSpecMutator implements NodeTypeSpecMutator {
 
-    @Inject WitherTypeSpecMutator() { }
+    @Inject WitherNodeTypeSpecMutator() { }
 
     @Override
-    public void mutate(TypeSpec.Builder typeSpec, PojoClassBuilder pojo) {
-        for (PojoTypeSpec targetWither : pojo.getTargetWithers()) {
-            MethodSpec wither = buildWither(pojo, targetWither);
+    public void mutate(TypeSpec.Builder typeSpec, NodeClassData node) {
+        for (NodeTypeSpec witherTarget : node.getTargetWithers()) {
+            MethodSpec wither = buildWither(node, witherTarget);
             typeSpec.addMethod(wither);
         }
     }
 
-    private MethodSpec buildWither(PojoClassBuilder pojo, PojoTypeSpec targetWither) {
-        List<ParameterSpec> params = getRequiredParameters(pojo, targetWither);
-        ClassName type = ClassName.bestGuess(targetWither.getTypeSpec().name);
+    private MethodSpec buildWither(NodeClassData node, NodeTypeSpec witherTarget) {
+        List<ParameterSpec> params = getRequiredParameters(node, witherTarget);
+        ClassName type = ClassName.bestGuess(witherTarget.getTypeSpec().name);
 
-        String argsFormat = repeat(pojo.getAttributes().size() + params.size(), "$N", ", ");
-        Object[] args = concat(type, pojo.getAttributesAsFields(), params).toArray();
+        String argsFormat = repeat(node.getAttributes().size() + params.size(), "$N", ", ");
+        Object[] args = concat(type, node.getAttributesAsFields(), params).toArray();
 
         return MethodSpec.methodBuilder(getMethodName(params))
                 .addModifiers(Modifier.PUBLIC)
@@ -50,9 +50,9 @@ class WitherTypeSpecMutator implements TypeSpecMutator {
                 .build();
     }
 
-    private List<ParameterSpec> getRequiredParameters(PojoClassBuilder pojo, PojoTypeSpec targetWither) {
-        List<DynamoAttribute> attributes = new ArrayList<>(targetWither.getPojo().getAttributes());
-        attributes.removeAll(pojo.getAttributes());
+    private List<ParameterSpec> getRequiredParameters(NodeClassData node, NodeTypeSpec witherTarget) {
+        List<DynamoAttribute> attributes = new ArrayList<>(witherTarget.getNode().getAttributes());
+        attributes.removeAll(node.getAttributes());
         return attributes.stream()
                 .map(DynamoAttribute::asParameterSpec)
                 .collect(toList());

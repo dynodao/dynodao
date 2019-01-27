@@ -4,7 +4,14 @@ import lombok.experimental.UtilityClass;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.LinkedHashSet;
+import java.util.Spliterator;
+import java.util.function.Consumer;
+import java.util.stream.Collector;
 import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
+
+import static java.util.stream.Collectors.toCollection;
 
 /**
  * Utility methods for basic stream operations.
@@ -33,4 +40,31 @@ public class StreamUtil {
                     }
                 });
     }
+
+    /**
+     * Returns a {@link Collector} that accumulates the input elements into a {@link LinkedHashSet}.
+     * @param <T> the type of the input elements
+     * @return a {@link Collector} that accumulates the input elements into a {@link LinkedHashSet}
+     */
+    public static <T> Collector<T, ?, LinkedHashSet<T>> toLinkedHashSet() {
+        return toCollection(LinkedHashSet::new);
+    }
+
+    /**
+     * A utility interface to add a <tt>stream()</tt> method to the {@link Iterable} interface.
+     * @param <T> the type of element in the stream
+     */
+    public interface Streamable<T> extends Iterable<T> {
+
+        /**
+         * A stream over this {@link Iterable}.
+         * @return a stream
+         * @see Collection#stream()
+         * @see StreamSupport#stream(Spliterator, boolean)
+         */
+        default Stream<T> stream() {
+            return StreamSupport.stream(spliterator(), false);
+        }
+    }
+
 }

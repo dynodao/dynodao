@@ -5,7 +5,6 @@ import org.lemon.dynodao.DynoDao;
 import org.lemon.dynodao.processor.context.ProcessorContext;
 import org.lemon.dynodao.processor.context.ProcessorMessager;
 import org.lemon.dynodao.processor.context.Processors;
-import org.lemon.dynodao.processor.model.PojoTypeSpec;
 
 import javax.inject.Inject;
 import javax.lang.model.element.TypeElement;
@@ -25,19 +24,19 @@ class TypeSpecWriter {
 
     /**
      * Writes all of the type specs to file.
-     * @param pojoTypeSpecs all of the types the document creates
+     * @param builtTypeSpecs all of the types the document creates
      */
-    void writeAll(Iterable<PojoTypeSpec> pojoTypeSpecs) {
-        pojoTypeSpecs.forEach(this::write);
+    void writeAll(Iterable<BuiltTypeSpec> builtTypeSpecs) {
+        builtTypeSpecs.forEach(this::write);
     }
 
     /**
      * Writes a single type spec to file.
-     * @param pojoTypeSpec a type the annotated class creates
+     * @param builtTypeSpec a type the annotated class creates
      */
-    void write(PojoTypeSpec pojoTypeSpec) {
+    void write(BuiltTypeSpec builtTypeSpec) {
         if (!processorMessager.hasErrors()) {
-            JavaFile file = JavaFile.builder(getDynoDaoPackageName(pojoTypeSpec.getPojo().getDocument()), pojoTypeSpec.getTypeSpec())
+            JavaFile file = JavaFile.builder(getDynoDaoPackageName(builtTypeSpec.getDocument()), builtTypeSpec.getTypeSpec())
                     .indent("    ")
                     .skipJavaLangImports(true)
                     .build();

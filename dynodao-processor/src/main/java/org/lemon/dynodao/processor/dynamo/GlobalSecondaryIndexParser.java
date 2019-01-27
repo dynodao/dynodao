@@ -60,7 +60,7 @@ class GlobalSecondaryIndexParser implements DynamoIndexParser {
             getIndexNames.apply(key).forEach(index -> keysByIndex.computeIfAbsent(index, k -> new HashSet<>()).add(key));
         }
         keysByIndex.forEach((index, indexKeys) -> {
-            if (indexKeys.size() != 1) { // for range key, no entry would be created, it is sufficient to check size=1
+            if (indexKeys.size() != 1) { // for range key, no entry would be created if it was absent, it is sufficient to check size=1
                 processorMessager.submitError("@%s must exist on exactly one field for GSI[%s], but found %s", annotation.getSimpleName(), index, indexKeys);
             }
         });

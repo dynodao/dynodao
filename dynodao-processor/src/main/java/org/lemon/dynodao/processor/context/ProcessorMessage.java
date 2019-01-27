@@ -24,6 +24,10 @@ public class ProcessorMessage {
     private final Diagnostic.Kind kind;
     private final String message;
 
+    private Element element;
+    private AnnotationMirror annotationMirror;
+    private AnnotationValue annotationValue;
+
     /**
      * Sole ctor.
      * @param kind the kind of message to send, error, warning etc
@@ -34,10 +38,6 @@ public class ProcessorMessage {
         this.kind = kind;
         this.message = String.format(format, args);
     }
-
-    private Element element;
-    private AnnotationMirror annotationMirror;
-    private AnnotationValue annotationValue;
 
     /**
      * @param element the element this message occurs at
