@@ -32,6 +32,7 @@
         <assertj.version>3.8.0</assertj.version>
         <compile.testing.version>0.15</compile.testing.version>
         <equals.verifier.version>3.1.4</equals.verifier.version>
+        <tostring.verifier.version>1.4.5</tostring.verifier.version>
     </properties>
 
     <licenses>
@@ -91,6 +92,11 @@
                 <groupId>nl.jqno.equalsverifier</groupId>
                 <artifactId>equalsverifier</artifactId>
                 <version>${equals.verifier.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.jparams</groupId>
+                <artifactId>to-string-verifier</artifactId>
+                <version>${tostring.verifier.version}</version>
             </dependency>
         </dependencies>
     </dependencyManagement>

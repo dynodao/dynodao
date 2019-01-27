@@ -1,16 +1,9 @@
 package org.lemon.dynodao.processor.itest;
 
-import com.google.testing.compile.Compilation;
-import com.google.testing.compile.Compiler;
 import com.google.testing.compile.JavaFileObjects;
-import com.squareup.javapoet.JavaFile;
-import com.squareup.javapoet.TypeSpec;
 import lombok.SneakyThrows;
 import org.junit.Ignore;
-import org.lemon.dynodao.processor.DynoDaoProcessor;
-import org.lemon.dynodao.processor.test.AbstractUnitTest;
 
-import javax.annotation.processing.Processor;
 import javax.tools.JavaFileObject;
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -25,43 +18,13 @@ import static java.util.stream.Collectors.joining;
 import static java.util.stream.Collectors.toMap;
 
 @Ignore
-public abstract class AbstractIntegrationTest extends AbstractUnitTest {
-
-    /**
-     * Places the type into the default package and compiles the resultant file.
-     * @param typeSpec the type to compile, will be put into the default package
-     * @return the compilation result, for assertions
-     */
-    protected Compilation compile(TypeSpec typeSpec) {
-        return compile(JavaFile.builder("", typeSpec)
-                .skipJavaLangImports(true)
-                .indent("    ")
-                .build());
-    }
-
-    /**
-     * Compiles the in memory java file, returning the compilation result.
-     * @param javaFile the file to compile
-     * @return the compilation result, for assertions
-     */
-    protected Compilation compile(JavaFile javaFile) {
-        return compile(javaFile.toJavaFileObject());
-    }
-
-    /**
-     * Compiles the java file object, returning the compilation result.
-     * @param javaFileObject the file to compile
-     * @return the compilation result, for assertions
-     */
-    protected final Compilation compile(JavaFileObject javaFileObject) {
-        return Compiler.javac()
-                .withProcessors(new DynoDaoProcessor())
-                .compile(javaFileObject);
-    }
+public abstract class AbstractResourceCompilingTest extends AbstractCompilingTest {
 
     /**
      * Returns the Schema source file.
-     * // TODO docs here
+     * <p>
+     * The schema source file is stored in the test resources.
+     * TODO re-visit this, we should probably specify the resource path instead
      * @return the Schema source file
      */
     protected final JavaFileObject getSchemaResource() {
@@ -78,6 +41,10 @@ public abstract class AbstractIntegrationTest extends AbstractUnitTest {
                 .toLowerCase();
     }
 
+    /**
+     * FIXME ?
+     * @return
+     */
     protected final Map<String, JavaFileObject> getAdditionalFiles() {
         String packageName = getClass().getPackage().getName();
         String asPackage = toSnakeCase(getClass().getSimpleName());
@@ -111,8 +78,4 @@ public abstract class AbstractIntegrationTest extends AbstractUnitTest {
         return Thread.currentThread().getContextClassLoader();
     }
 
-    @SneakyThrows({ ClassNotFoundException.class, InstantiationException.class, IllegalAccessException.class })
-    private Processor lombok() {
-        return (Processor) Class.forName("lombok.launch.AnnotationProcessorHider$AnnotationProcessor").newInstance();
-    }
 }

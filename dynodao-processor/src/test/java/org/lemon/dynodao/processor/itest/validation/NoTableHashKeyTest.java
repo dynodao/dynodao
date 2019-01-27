@@ -2,13 +2,13 @@ package org.lemon.dynodao.processor.itest.validation;
 
 import com.google.testing.compile.Compilation;
 import org.junit.Test;
-import org.lemon.dynodao.processor.itest.AbstractIntegrationTest;
+import org.lemon.dynodao.processor.itest.AbstractResourceCompilingTest;
 
 import javax.tools.JavaFileObject;
 
 import static com.google.testing.compile.CompilationSubject.assertThat;
 
-public class NoTableHashKeyTest extends AbstractIntegrationTest {
+public class NoTableHashKeyTest extends AbstractResourceCompilingTest {
 
     @Test
     public void schemaHasNoHashKeySpecified_errorIssuedOnDynoDaoAnnotation() {
