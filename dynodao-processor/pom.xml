@@ -128,7 +128,8 @@
         <dependency>
             <groupId>com.amazonaws</groupId>
             <artifactId>aws-java-sdk-dynamodb</artifactId>
-            <scope>test</scope>
+            <scope>runtime</scope>
+            <optional>true</optional>
         </dependency>
     </dependencies>
     
