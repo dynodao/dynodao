@@ -12,11 +12,11 @@ import org.lemon.dynodao.annotation.DynoDaoSchema;
 import org.lemon.dynodao.processor.context.Processors;
 import org.lemon.dynodao.processor.serialize.MarshallMethod;
 import org.lemon.dynodao.processor.serialize.SerializationContext;
+import org.lemon.dynodao.processor.serialize.UnmarshallMethod;
 
 import javax.inject.Inject;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ElementKind;
-import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.TypeKind;
@@ -27,6 +27,7 @@ import java.util.List;
 import java.util.Map;
 
 import static java.util.stream.Collectors.toList;
+import static org.lemon.dynodao.processor.serialize.UnmarshallMethod.parameter;
 import static org.lemon.dynodao.processor.util.DynamoDbUtil.attributeValue;
 import static org.lemon.dynodao.processor.util.StringUtil.capitalize;
 
@@ -78,7 +79,7 @@ class DocumentMarshaller implements AttributeValueMarshaller {
         ParameterSpec param = getParameter(type);
         CodeBlock body = getBody(type, param, serializationContext);
         return MarshallMethod.builder()
-                .methodName(getMethodName(type))
+                .methodName("serialize" + processors.asElement(type).getSimpleName())
                 .parameter(param)
                 .body(body)
                 .build();
@@ -86,10 +87,6 @@ class DocumentMarshaller implements AttributeValueMarshaller {
 
     private ParameterSpec getParameter(DeclaredType type) {
         return ParameterSpec.builder(TypeName.get(type), "document").build();
-    }
-
-    private String getMethodName(DeclaredType type) {
-        return "serialize" + processors.asElement(type).getSimpleName();
     }
 
     private CodeBlock getBody(DeclaredType type, ParameterSpec param, SerializationContext serializationContext) {
@@ -119,17 +116,36 @@ class DocumentMarshaller implements AttributeValueMarshaller {
      * TODO validate the method exists
      */
     private String accessField(Element field) {
-        if (isPackageAccessible(field)) {
-            return field.getSimpleName().toString();
-        } else if (processors.isSameType(processors.getPrimitiveType(TypeKind.BOOLEAN), field.asType())) {
+        if (processors.isSameType(processors.getPrimitiveType(TypeKind.BOOLEAN), field.asType())) {
             return "is" + capitalize(field) + "()";
         } else {
             return "get" + capitalize(field) + "()";
         }
     }
 
-    private boolean isPackageAccessible(Element element) {
-        return !element.getModifiers().contains(Modifier.PRIVATE);
+    @Override
+    public UnmarshallMethod deserialize(TypeMirror type, SerializationContext serializationContext) {
+        return UnmarshallMethod.builder()
+                .methodName("deserialize" + processors.asElement(type).getSimpleName())
+                .body(deserializeBody(type, serializationContext))
+                .build();
+    }
+
+    private CodeBlock deserializeBody(TypeMirror type, SerializationContext serializationContext) {
+        CodeBlock.Builder body = CodeBlock.builder()
+                .addStatement("$T document = new $T()", type, type);
+
+        for (Element field : getFieldsOf((TypeElement) processors.asElement(type))) {
+            UnmarshallMethod method = serializationContext.getUnmarshallMethodForType(field.asType());
+            body.addStatement("document.$L($L($N.getM().get($S)))", setField(field), method.getMethodName(), parameter(), attributeName(field));
+        }
+        return body
+                .addStatement("return document")
+                .build();
+    }
+
+    private String setField(Element field) {
+        return "set" + capitalize(field);
     }
 
 }

@@ -7,7 +7,6 @@ import org.lemon.dynodao.processor.dynamo.DynamoStructuredSchema;
 import org.lemon.dynodao.processor.serialize.generate.SerializerTypeSpecMutators;
 import org.lemon.dynodao.processor.serialize.marshall.AttributeValueMarshaller;
 import org.lemon.dynodao.processor.serialize.marshall.AttributeValueMarshallers;
-import org.lemon.dynodao.processor.serialize.unmarshall.AttributeValueUnmarshallers;
 
 import javax.inject.Inject;
 import javax.lang.model.element.TypeElement;
@@ -22,14 +21,12 @@ public class SerializerTypeSpecFactory {
     private final ProcessorMessager processorMessager;
     private final SerializerTypeSpecMutators serializerTypeSpecMutators;
     private final AttributeValueMarshallers attributeValueMarshallers;
-    private final AttributeValueUnmarshallers attributeValueUnmarshallers;
 
-    @Inject SerializerTypeSpecFactory(Processors processors, ProcessorMessager processorMessager, SerializerTypeSpecMutators serializerTypeSpecMutators, AttributeValueMarshallers attributeValueMarshallers, AttributeValueUnmarshallers attributeValueUnmarshallers) {
+    @Inject SerializerTypeSpecFactory(Processors processors, ProcessorMessager processorMessager, SerializerTypeSpecMutators serializerTypeSpecMutators, AttributeValueMarshallers attributeValueMarshallers) {
         this.processors = processors;
         this.processorMessager = processorMessager;
         this.serializerTypeSpecMutators = serializerTypeSpecMutators;
         this.attributeValueMarshallers = attributeValueMarshallers;
-        this.attributeValueUnmarshallers = attributeValueUnmarshallers;
     }
 
     /**

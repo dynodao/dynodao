@@ -8,6 +8,7 @@ import com.squareup.javapoet.TypeName;
 import org.lemon.dynodao.processor.context.Processors;
 import org.lemon.dynodao.processor.serialize.MarshallMethod;
 import org.lemon.dynodao.processor.serialize.SerializationContext;
+import org.lemon.dynodao.processor.serialize.UnmarshallMethod;
 
 import javax.inject.Inject;
 import javax.lang.model.element.TypeElement;
@@ -97,6 +98,11 @@ class MapMarshaller implements AttributeValueMarshaller {
     private String getValueSerializeMethodName(DeclaredType type, SerializationContext serializationContext) {
         TypeMirror ofArg = type.getTypeArguments().get(1);
         return serializationContext.getMarshallMethodForType(ofArg).getMethodName();
+    }
+
+    @Override
+    public UnmarshallMethod deserialize(TypeMirror type, SerializationContext serializationContext) {
+        return null;
     }
 
 }

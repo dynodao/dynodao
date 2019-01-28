@@ -2,12 +2,13 @@ package org.lemon.dynodao.processor.serialize.marshall;
 
 import org.lemon.dynodao.processor.serialize.MarshallMethod;
 import org.lemon.dynodao.processor.serialize.SerializationContext;
+import org.lemon.dynodao.processor.serialize.UnmarshallMethod;
 
 import javax.lang.model.type.TypeMirror;
 import java.util.Collection;
 
 /**
- * Builds a method to convert a type to an {@link com.amazonaws.services.dynamodbv2.model.AttributeValue}.
+ * Builds a method to convert a type to and from an {@link com.amazonaws.services.dynamodbv2.model.AttributeValue}.
  */
 public interface AttributeValueMarshaller {
 
@@ -35,4 +36,14 @@ public interface AttributeValueMarshaller {
      * @return the method which serializes the type
      */
     MarshallMethod serialize(TypeMirror type, SerializationContext serializationContext);
+
+    /**
+     * Generates the method which converts an {@link com.amazonaws.services.dynamodbv2.model.AttributeValue} parameter into
+     * the specified type. This is guaranteed to only be called if {@code isApplicableTo(type)} returns <tt>true</tt>, and all those types
+     * returned by {@code getTypeDependencies(type)} have already been evaluated and added to <tt>serializationContext</tt>.
+     * @param type the type to deserialize
+     * @param serializationContext the context in which the serialization occurs
+     * @return the method which deserializes the type
+     */
+    UnmarshallMethod deserialize(TypeMirror type, SerializationContext serializationContext);
 }
