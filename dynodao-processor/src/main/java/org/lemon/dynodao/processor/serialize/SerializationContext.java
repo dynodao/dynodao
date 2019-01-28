@@ -27,6 +27,9 @@ public class SerializationContext {
     private final List<Serializer> serializers = new ArrayList<>();
     private final Processors processors;
 
+    /**
+     * TODO this doesn't really support {@link org.lemon.dynodao.annotation.DynoDaoValueMapped}, which is not at a type level
+     */
     @Value
     private static class Serializer {
         private final TypeMirror type;
