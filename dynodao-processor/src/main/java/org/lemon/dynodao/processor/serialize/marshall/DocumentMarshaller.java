@@ -95,7 +95,7 @@ class DocumentMarshaller implements AttributeValueMarshaller {
 
         for (Element field : getFieldsOf((TypeElement) processors.asElement(type))) {
             MarshallMethod method = serializationContext.getMarshallMethodForType(field.asType());
-            body.addStatement("attrValueMap.put($S, $L($N.$L))", attributeName(field), method.getMethodName(), param, accessField(field));
+            body.addStatement("attrValueMap.put($S, $L($N.$L()))", attributeName(field), method.getMethodName(), param, accessorOf(field));
         }
 
         return body
@@ -115,11 +115,11 @@ class DocumentMarshaller implements AttributeValueMarshaller {
     /**
      * TODO validate the method exists
      */
-    private String accessField(Element field) {
+    private String accessorOf(Element field) {
         if (processors.isSameType(processors.getPrimitiveType(TypeKind.BOOLEAN), field.asType())) {
-            return "is" + capitalize(field) + "()";
+            return "is" + capitalize(field);
         } else {
-            return "get" + capitalize(field) + "()";
+            return "get" + capitalize(field);
         }
     }
 
@@ -137,14 +137,14 @@ class DocumentMarshaller implements AttributeValueMarshaller {
 
         for (Element field : getFieldsOf((TypeElement) processors.asElement(type))) {
             UnmarshallMethod method = serializationContext.getUnmarshallMethodForType(field.asType());
-            body.addStatement("document.$L($L($N.getM().get($S)))", setField(field), method.getMethodName(), parameter(), attributeName(field));
+            body.addStatement("document.$L($L($N.getM().get($S)))", mutatorOf(field), method.getMethodName(), parameter(), attributeName(field));
         }
         return body
                 .addStatement("return document")
                 .build();
     }
 
-    private String setField(Element field) {
+    private String mutatorOf(Element field) {
         return "set" + capitalize(field);
     }
 
