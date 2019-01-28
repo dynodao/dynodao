@@ -49,21 +49,21 @@ public class SerializerTypeSpecFactory {
 
     private void addSerializerForType(TypeMirror type, SerializationContext serializationContext) {
         if (!serializationContext.hasMarshallerForType(type)) {
-            boolean serializerCreated = false;
-            for (AttributeValueMarshaller serializer : attributeValueMarshallers) {
-                if (serializer.isApplicableTo(type)) {
-                    serializerCreated = true;
-                    serializer.getTypeDependencies(type).forEach(dependency -> addSerializerForType(dependency, serializationContext));
+            boolean created = false;
+            for (AttributeValueMarshaller marshaller : attributeValueMarshallers) {
+                if (marshaller.isApplicableTo(type)) {
+                    created = true;
+                    marshaller.getTypeDependencies(type).forEach(dependency -> addSerializerForType(dependency, serializationContext));
 
-                    MarshallMethod marshall = serializer.serialize(type, serializationContext);
+                    MarshallMethod marshall = marshaller.serialize(type, serializationContext);
                     serializationContext.addMarshaller(type, marshall);
 
-                    UnmarshallMethod unmarshall = serializer.deserialize(type, serializationContext);
+                    UnmarshallMethod unmarshall = marshaller.deserialize(type, serializationContext);
                     serializationContext.addUnmarshaller(type, unmarshall);
                     break;
                 }
             }
-            if (!serializerCreated) {
+            if (!created) {
                 submitUnableToSerializeError(type);
             }
         }
