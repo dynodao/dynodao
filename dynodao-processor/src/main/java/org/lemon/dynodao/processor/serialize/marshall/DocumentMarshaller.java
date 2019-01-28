@@ -10,8 +10,8 @@ import org.lemon.dynodao.annotation.DynoDaoDocument;
 import org.lemon.dynodao.annotation.DynoDaoIgnore;
 import org.lemon.dynodao.annotation.DynoDaoSchema;
 import org.lemon.dynodao.processor.context.Processors;
-import org.lemon.dynodao.processor.serialize.SerializationContext;
 import org.lemon.dynodao.processor.serialize.MarshallMethod;
+import org.lemon.dynodao.processor.serialize.SerializationContext;
 
 import javax.inject.Inject;
 import javax.lang.model.element.Element;

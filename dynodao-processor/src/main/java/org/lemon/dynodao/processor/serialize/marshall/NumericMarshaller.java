@@ -4,8 +4,8 @@ import com.squareup.javapoet.CodeBlock;
 import com.squareup.javapoet.ParameterSpec;
 import com.squareup.javapoet.TypeName;
 import org.lemon.dynodao.processor.context.Processors;
-import org.lemon.dynodao.processor.serialize.SerializationContext;
 import org.lemon.dynodao.processor.serialize.MarshallMethod;
+import org.lemon.dynodao.processor.serialize.SerializationContext;
 
 import javax.inject.Inject;
 import javax.lang.model.type.PrimitiveType;

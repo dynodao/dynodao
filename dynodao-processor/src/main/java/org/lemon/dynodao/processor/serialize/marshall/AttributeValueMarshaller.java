@@ -1,7 +1,7 @@
 package org.lemon.dynodao.processor.serialize.marshall;
 
-import org.lemon.dynodao.processor.serialize.SerializationContext;
 import org.lemon.dynodao.processor.serialize.MarshallMethod;
+import org.lemon.dynodao.processor.serialize.SerializationContext;
 
 import javax.lang.model.type.TypeMirror;
 import java.util.Collection;

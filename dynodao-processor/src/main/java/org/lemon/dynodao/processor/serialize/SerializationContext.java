@@ -1,7 +1,5 @@
 package org.lemon.dynodao.processor.serialize;
 
-import static java.util.stream.Collectors.toList;
-
 import lombok.AccessLevel;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -14,6 +12,8 @@ import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.TypeMirror;
 import java.util.ArrayList;
 import java.util.List;
+
+import static java.util.stream.Collectors.toList;
 
 /**
  * Houses contextual data for serializing values into {@link com.amazonaws.services.dynamodbv2.model.AttributeValue}s.

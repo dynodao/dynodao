@@ -1,11 +1,11 @@
 package org.lemon.dynodao.processor.serialize;
 
-import static org.lemon.dynodao.processor.util.DynamoDbUtil.attributeValue;
-
 import com.squareup.javapoet.CodeBlock;
 import com.squareup.javapoet.ParameterSpec;
 import lombok.Builder;
 import lombok.Value;
+
+import static org.lemon.dynodao.processor.util.DynamoDbUtil.attributeValue;
 
 /**
  * A method definition which deserializes an {@link com.amazonaws.services.dynamodbv2.model.AttributeValue}
