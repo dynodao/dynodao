@@ -5,8 +5,8 @@ import org.lemon.dynodao.processor.context.ProcessorMessager;
 import org.lemon.dynodao.processor.context.Processors;
 import org.lemon.dynodao.processor.dynamo.DynamoStructuredSchema;
 import org.lemon.dynodao.processor.serialize.generate.SerializerTypeSpecMutators;
-import org.lemon.dynodao.processor.serialize.value.AttributeValueSerializer;
-import org.lemon.dynodao.processor.serialize.value.AttributeValueSerializers;
+import org.lemon.dynodao.processor.serialize.marshall.AttributeValueMarshaller;
+import org.lemon.dynodao.processor.serialize.marshall.AttributeValueMarshallers;
 
 import javax.inject.Inject;
 import javax.lang.model.element.TypeElement;
@@ -20,13 +20,13 @@ public class SerializerTypeSpecFactory {
     private final Processors processors;
     private final ProcessorMessager processorMessager;
     private final SerializerTypeSpecMutators serializerTypeSpecMutators;
-    private final AttributeValueSerializers attributeValueSerializers;
+    private final AttributeValueMarshallers attributeValueMarshallers;
 
-    @Inject SerializerTypeSpecFactory(Processors processors, ProcessorMessager processorMessager, SerializerTypeSpecMutators serializerTypeSpecMutators, AttributeValueSerializers attributeValueSerializers) {
+    @Inject SerializerTypeSpecFactory(Processors processors, ProcessorMessager processorMessager, SerializerTypeSpecMutators serializerTypeSpecMutators, AttributeValueMarshallers attributeValueMarshallers) {
         this.processors = processors;
         this.processorMessager = processorMessager;
         this.serializerTypeSpecMutators = serializerTypeSpecMutators;
-        this.attributeValueSerializers = attributeValueSerializers;
+        this.attributeValueMarshallers = attributeValueMarshallers;
     }
 
     /**
@@ -48,14 +48,14 @@ public class SerializerTypeSpecFactory {
     }
 
     private void addSerializerForType(TypeMirror type, SerializationContext serializationContext) {
-        if (!serializationContext.hasSerializerForType(type)) {
+        if (!serializationContext.hasMarshallerForType(type)) {
             boolean serializerCreated = false;
-            for (AttributeValueSerializer serializer : attributeValueSerializers) {
+            for (AttributeValueMarshaller serializer : attributeValueMarshallers) {
                 if (serializer.isApplicableTo(type)) {
                     serializerCreated = true;
                     serializer.getTypeDependencies(type).forEach(dependency -> addSerializerForType(dependency, serializationContext));
-                    SerializeMethod method = serializer.serialize(type, serializationContext);
-                    serializationContext.addSerializer(type, method);
+                    MarshallMethod method = serializer.serialize(type, serializationContext);
+                    serializationContext.addMarshaller(type, method);
                     break;
                 }
             }

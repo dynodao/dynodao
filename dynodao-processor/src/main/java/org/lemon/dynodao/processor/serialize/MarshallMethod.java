@@ -10,7 +10,7 @@ import lombok.Value;
  */
 @Value
 @Builder
-public class SerializeMethod {
+public class MarshallMethod {
 
     private final String methodName;
     private final ParameterSpec parameter;

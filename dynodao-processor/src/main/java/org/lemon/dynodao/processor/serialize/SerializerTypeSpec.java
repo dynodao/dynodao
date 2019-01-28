@@ -28,8 +28,8 @@ public class SerializerTypeSpec implements BuiltTypeSpec {
      * @param type the type
      * @return the method which serializes the type, or <tt>null</tt> if no such method exists
      */
-    public SerializeMethod getSerializationMethodForType(TypeMirror type) {
-        return serializationContext.getSerializationMethodForType(type);
+    public MarshallMethod getSerializationMethodForType(TypeMirror type) {
+        return serializationContext.getMarshallMethodForType(type);
     }
 
 }

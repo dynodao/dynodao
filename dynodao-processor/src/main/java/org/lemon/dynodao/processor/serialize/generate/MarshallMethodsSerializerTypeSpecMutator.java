@@ -4,7 +4,7 @@ import com.squareup.javapoet.FieldSpec;
 import com.squareup.javapoet.MethodSpec;
 import com.squareup.javapoet.ParameterSpec;
 import com.squareup.javapoet.TypeSpec;
-import org.lemon.dynodao.processor.serialize.SerializeMethod;
+import org.lemon.dynodao.processor.serialize.MarshallMethod;
 import org.lemon.dynodao.processor.serialize.SerializerClassData;
 
 import javax.inject.Inject;
@@ -18,20 +18,20 @@ import static org.lemon.dynodao.processor.util.DynamoDbUtil.attributeValue;
 /**
  * Adds all of the methods which serialize to {@link com.amazonaws.services.dynamodbv2.model.AttributeValue}.
  */
-class SerializeMethodsSerializerTypeSpecMutator implements SerializerTypeSpecMutator {
+class MarshallMethodsSerializerTypeSpecMutator implements SerializerTypeSpecMutator {
 
     private static final FieldSpec NULL_ATTRIBUTE_VALUE = FieldSpec.builder(attributeValue(), "NULL_ATTRIBUTE_VALUE", Modifier.PRIVATE, Modifier.STATIC, Modifier.FINAL)
             .initializer("new $T().withNULL(true)", attributeValue())
             .build();
 
-    @Inject SerializeMethodsSerializerTypeSpecMutator() { }
+    @Inject MarshallMethodsSerializerTypeSpecMutator() { }
 
     @Override
     public void mutate(TypeSpec.Builder typeSpec, SerializerClassData serializerClassData) {
         typeSpec.addField(NULL_ATTRIBUTE_VALUE);
 
         Iterable<Modifier> modifiers = getModifiers(serializerClassData.getDocument());
-        for (SerializeMethod method : serializerClassData.getAllSerializationMethods()) {
+        for (MarshallMethod method : serializerClassData.getAllMarshallMethods()) {
             MethodSpec serializeMethod = toMethodSpec(method, modifiers);
             typeSpec.addMethod(serializeMethod);
         }
@@ -45,7 +45,7 @@ class SerializeMethodsSerializerTypeSpecMutator implements SerializerTypeSpecMut
         }
     }
 
-    private MethodSpec toMethodSpec(SerializeMethod method, Iterable<Modifier> modifiers) {
+    private MethodSpec toMethodSpec(MarshallMethod method, Iterable<Modifier> modifiers) {
         ParameterSpec parameter = method.getParameter();
         MethodSpec.Builder serialize = MethodSpec.methodBuilder(method.getMethodName())
                 .addJavadoc("Serializes <tt>$N</tt> as an {@link $T}\n", parameter, attributeValue())

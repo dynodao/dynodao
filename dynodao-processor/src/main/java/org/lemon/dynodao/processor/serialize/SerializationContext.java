@@ -24,35 +24,36 @@ import static java.util.stream.Collectors.toList;
 public class SerializationContext {
 
     @Getter private final TypeElement document;
-    private final List<Serializer> serializers = new ArrayList<>();
+    private final List<Marshaller> marshallers = new ArrayList<>();
     private final Processors processors;
 
     /**
      * TODO this doesn't really support {@link org.lemon.dynodao.annotation.DynoDaoValueMapped}, which is not at a type level
      */
     @Value
-    private static class Serializer {
+    private static class Marshaller {
         private final TypeMirror type;
-        private final SerializeMethod method;
+        private final MarshallMethod method;
     }
 
     /**
      * @param type the type
      * @return <tt>true</tt> if the context already knows how to serialize the type, <tt>false</tt> otherwise
      */
-    public boolean hasSerializerForType(TypeMirror type) {
-        return getSerializationMethodForType(type) != null;
+    public boolean hasMarshallerForType(TypeMirror type) {
+        return getMarshallMethodForType(type) != null;
     }
 
     /**
-     * Returns the method which can serialize the type, or <tt>null</tt> if the type is not able to be serialized.
+     * Returns the method which can marshall the type into AttributeValue, or <tt>null</tt> if the type
+     * is not able to be marshalled.
      * @param type the type
      * @return the method which serializes the type, or <tt>null</tt> if no such method exists
      */
-    public SerializeMethod getSerializationMethodForType(TypeMirror type) {
-        return serializers.stream()
-                .filter(serializer -> processors.isSameType(type, serializer.getType()))
-                .map(Serializer::getMethod)
+    public MarshallMethod getMarshallMethodForType(TypeMirror type) {
+        return marshallers.stream()
+                .filter(marshaller -> processors.isSameType(type, marshaller.getType()))
+                .map(Marshaller::getMethod)
                 .findAny().orElse(null);
     }
 
@@ -61,16 +62,16 @@ public class SerializationContext {
      * @param type the type which the method serializes
      * @param method the serialization method
      */
-    void addSerializer(TypeMirror type, SerializeMethod method) {
-        serializers.add(new Serializer(type, method));
+    void addMarshaller(TypeMirror type, MarshallMethod method) {
+        marshallers.add(new Marshaller(type, method));
     }
 
     /**
      * @return all serialization methods
      */
-    List<SerializeMethod> getAllSerializationMethods() {
-        return serializers.stream()
-                .map(Serializer::getMethod)
+    List<MarshallMethod> getAllMarshallMethods() {
+        return marshallers.stream()
+                .map(Marshaller::getMethod)
                 .collect(toList());
     }
 

@@ -17,8 +17,8 @@ public class SerializerClassData {
     /**
      * @return all serialization methods
      */
-    public List<SerializeMethod> getAllSerializationMethods() {
-        return serializationContext.getAllSerializationMethods();
+    public List<MarshallMethod> getAllMarshallMethods() {
+        return serializationContext.getAllMarshallMethods();
     }
 
 }

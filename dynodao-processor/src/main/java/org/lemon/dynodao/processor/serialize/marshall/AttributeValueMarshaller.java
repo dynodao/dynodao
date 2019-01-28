@@ -1,7 +1,7 @@
-package org.lemon.dynodao.processor.serialize.value;
+package org.lemon.dynodao.processor.serialize.marshall;
 
 import org.lemon.dynodao.processor.serialize.SerializationContext;
-import org.lemon.dynodao.processor.serialize.SerializeMethod;
+import org.lemon.dynodao.processor.serialize.MarshallMethod;
 
 import javax.lang.model.type.TypeMirror;
 import java.util.Collection;
@@ -9,7 +9,7 @@ import java.util.Collection;
 /**
  * Builds a method to convert a type to an {@link com.amazonaws.services.dynamodbv2.model.AttributeValue}.
  */
-public interface AttributeValueSerializer {
+public interface AttributeValueMarshaller {
 
     /**
      * Returns <tt>true</tt> if this serializer instance applies to the type provided.
@@ -34,5 +34,5 @@ public interface AttributeValueSerializer {
      * @param serializationContext the context in which the serialization occurs
      * @return the method which serializes the type
      */
-    SerializeMethod serialize(TypeMirror type, SerializationContext serializationContext);
+    MarshallMethod serialize(TypeMirror type, SerializationContext serializationContext);
 }

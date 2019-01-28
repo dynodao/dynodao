@@ -1,4 +1,4 @@
-package org.lemon.dynodao.processor.serialize.value;
+package org.lemon.dynodao.processor.serialize.marshall;
 
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.CodeBlock;
@@ -7,7 +7,7 @@ import com.squareup.javapoet.ParameterizedTypeName;
 import com.squareup.javapoet.TypeName;
 import org.lemon.dynodao.processor.context.Processors;
 import org.lemon.dynodao.processor.serialize.SerializationContext;
-import org.lemon.dynodao.processor.serialize.SerializeMethod;
+import org.lemon.dynodao.processor.serialize.MarshallMethod;
 
 import javax.inject.Inject;
 import javax.lang.model.element.TypeElement;
@@ -25,13 +25,13 @@ import static org.lemon.dynodao.processor.util.DynamoDbUtil.attributeValue;
  * {@link com.amazonaws.services.dynamodbv2.model.AttributeValue#getM()} is also keyed by String.
  * The value type is delegated to the {@link SerializationContext}, the method created therein.
  */
-class MapSerializer implements AttributeValueSerializer {
+class MapMarshaller implements AttributeValueMarshaller {
 
     private static final TypeName MAP_OF_ATTRIBUTE_VALUE = ParameterizedTypeName.get(ClassName.get(Map.class), TypeName.get(String.class), attributeValue());
 
     private final Processors processors;
 
-    @Inject MapSerializer(Processors processors) {
+    @Inject MapMarshaller(Processors processors) {
         this.processors = processors;
     }
 
@@ -50,11 +50,11 @@ class MapSerializer implements AttributeValueSerializer {
     }
 
     @Override
-    public SerializeMethod serialize(TypeMirror type, SerializationContext serializationContext) {
+    public MarshallMethod serialize(TypeMirror type, SerializationContext serializationContext) {
         return serialize((DeclaredType) type, serializationContext);
     }
 
-    private SerializeMethod serialize(DeclaredType type, SerializationContext serializationContext) {
+    private MarshallMethod serialize(DeclaredType type, SerializationContext serializationContext) {
         ParameterSpec param = getParameter(type);
         CodeBlock body = CodeBlock.builder()
                 .addStatement("$T attrValueMap = new $T<>()", MAP_OF_ATTRIBUTE_VALUE, HashMap.class)
@@ -65,7 +65,7 @@ class MapSerializer implements AttributeValueSerializer {
                 .endControlFlow()
                 .addStatement("return new $T().withM(attrValueMap)", attributeValue())
                 .build();
-        return SerializeMethod.builder()
+        return MarshallMethod.builder()
                 .methodName(getMethodName(type))
                 .parameter(param)
                 .body(body)
@@ -96,7 +96,7 @@ class MapSerializer implements AttributeValueSerializer {
 
     private String getValueSerializeMethodName(DeclaredType type, SerializationContext serializationContext) {
         TypeMirror ofArg = type.getTypeArguments().get(1);
-        return serializationContext.getSerializationMethodForType(ofArg).getMethodName();
+        return serializationContext.getMarshallMethodForType(ofArg).getMethodName();
     }
 
 }

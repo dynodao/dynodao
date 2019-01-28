@@ -10,7 +10,7 @@ import org.lemon.dynodao.processor.dynamo.DynamoAttribute;
 import org.lemon.dynodao.processor.dynamo.IndexType;
 import org.lemon.dynodao.processor.node.InterfaceType;
 import org.lemon.dynodao.processor.node.NodeClassData;
-import org.lemon.dynodao.processor.serialize.SerializeMethod;
+import org.lemon.dynodao.processor.serialize.MarshallMethod;
 
 import javax.inject.Inject;
 import javax.lang.model.element.ExecutableElement;
@@ -89,9 +89,9 @@ class DocumentQueryNodeTypeSpecMutator implements NodeTypeSpecMutator {
     private void appendExpressionAttributeValues(MethodSpec.Builder query, NodeClassData node) {
         String serializerClass = node.getSerializer().getTypeSpec().name;
         for (DynamoAttribute attribute : node.getAttributes()) {
-            SerializeMethod serializer = node.getSerializer().getSerializationMethodForType(attribute.getField().asType());
+            MarshallMethod marshaller = node.getSerializer().getSerializationMethodForType(attribute.getField().asType());
             FieldSpec field = attribute.asFieldSpec();
-            query.addStatement("query.addExpressionAttributeValuesEntry($S, $L.$L($N))", ":" + field.name, serializerClass, serializer.getMethodName(), field);
+            query.addStatement("query.addExpressionAttributeValuesEntry($S, $L.$L($N))", ":" + field.name, serializerClass, marshaller.getMethodName(), field);
         }
     }
 

@@ -1,10 +1,10 @@
-package org.lemon.dynodao.processor.serialize.value;
+package org.lemon.dynodao.processor.serialize.marshall;
 
 import com.squareup.javapoet.CodeBlock;
 import com.squareup.javapoet.ParameterSpec;
 import org.lemon.dynodao.processor.context.Processors;
 import org.lemon.dynodao.processor.serialize.SerializationContext;
-import org.lemon.dynodao.processor.serialize.SerializeMethod;
+import org.lemon.dynodao.processor.serialize.MarshallMethod;
 
 import javax.inject.Inject;
 import javax.lang.model.type.TypeMirror;
@@ -17,14 +17,14 @@ import static org.lemon.dynodao.processor.util.DynamoDbUtil.attributeValue;
  * Handles serialization of {@link String}.
  * TODO handle {@link CharSequence} instead of String?
  */
-class StringSerializer implements AttributeValueSerializer {
+class StringMarshaller implements AttributeValueMarshaller {
 
     private static final String METHOD_NAME = "serializeString";
     private static final ParameterSpec STRING_PARAM = ParameterSpec.builder(String.class, "string").build();
     private static final CodeBlock METHOD_BODY = CodeBlock.builder()
             .addStatement("return new $T().withS($N)", attributeValue(), STRING_PARAM)
             .build();
-    private static final SerializeMethod SERIALIZE_METHOD = SerializeMethod.builder()
+    private static final MarshallMethod MARSHALL_METHOD = MarshallMethod.builder()
             .methodName(METHOD_NAME)
             .parameter(STRING_PARAM)
             .body(METHOD_BODY)
@@ -32,7 +32,7 @@ class StringSerializer implements AttributeValueSerializer {
 
     private final Processors processors;
 
-    @Inject StringSerializer(Processors processors) {
+    @Inject StringMarshaller(Processors processors) {
         this.processors = processors;
     }
 
@@ -47,8 +47,8 @@ class StringSerializer implements AttributeValueSerializer {
     }
 
     @Override
-    public SerializeMethod serialize(TypeMirror type, SerializationContext serializationContext) {
-        return SERIALIZE_METHOD;
+    public MarshallMethod serialize(TypeMirror type, SerializationContext serializationContext) {
+        return MARSHALL_METHOD;
     }
 
 }

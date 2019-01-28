@@ -1,11 +1,11 @@
-package org.lemon.dynodao.processor.serialize.value;
+package org.lemon.dynodao.processor.serialize.marshall;
 
 import com.squareup.javapoet.CodeBlock;
 import com.squareup.javapoet.ParameterSpec;
 import com.squareup.javapoet.TypeName;
 import org.lemon.dynodao.processor.context.Processors;
 import org.lemon.dynodao.processor.serialize.SerializationContext;
-import org.lemon.dynodao.processor.serialize.SerializeMethod;
+import org.lemon.dynodao.processor.serialize.MarshallMethod;
 
 import javax.inject.Inject;
 import javax.lang.model.type.PrimitiveType;
@@ -20,11 +20,11 @@ import static org.lemon.dynodao.processor.util.StringUtil.toClassCase;
  * Handles numeric serialization to {@link com.amazonaws.services.dynamodbv2.model.AttributeValue}.
  * Accepts primitive and boxed types; anything assignable to {@link Number}.
  */
-class NumericSerializer implements AttributeValueSerializer {
+class NumericMarshaller implements AttributeValueMarshaller {
 
     private final Processors processors;
 
-    @Inject NumericSerializer(Processors processors) {
+    @Inject NumericMarshaller(Processors processors) {
         this.processors = processors;
     }
 
@@ -47,12 +47,12 @@ class NumericSerializer implements AttributeValueSerializer {
     }
 
     @Override
-    public SerializeMethod serialize(TypeMirror type, SerializationContext serializationContext) {
+    public MarshallMethod serialize(TypeMirror type, SerializationContext serializationContext) {
         ParameterSpec numberParam = getParameter(type);
         CodeBlock body = CodeBlock.builder()
                 .addStatement("return new $T().withN($T.valueOf($N))", attributeValue(), String.class, numberParam)
                 .build();
-        return SerializeMethod.builder()
+        return MarshallMethod.builder()
                 .methodName(getMethodName(type))
                 .parameter(numberParam)
                 .body(body)
