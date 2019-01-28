@@ -27,4 +27,10 @@ public class UnmarshallMethod {
         return ATTRIBUTE_VALUE_PARAMETER;
     }
 
+    /**
+     * @return the parameter to the unmarshalling method
+     */
+    public static ParameterSpec parameter() {
+        return ATTRIBUTE_VALUE_PARAMETER;
+    }
 }

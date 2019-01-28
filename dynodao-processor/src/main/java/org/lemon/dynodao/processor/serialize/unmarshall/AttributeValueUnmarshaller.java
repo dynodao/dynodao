@@ -34,5 +34,5 @@ public interface AttributeValueUnmarshaller {
      * @param serializationContext the context in which the deserialization occurs
      * @return the method which deserializes the type
      */
-    UnmarshallMethod serialize(TypeMirror type, SerializationContext serializationContext);
+    UnmarshallMethod deserialize(TypeMirror type, SerializationContext serializationContext);
 }

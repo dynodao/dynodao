@@ -32,8 +32,8 @@ class MarshallMethodsSerializerTypeSpecMutator implements SerializerTypeSpecMuta
 
         Iterable<Modifier> modifiers = getModifiers(serializerClassData.getDocument());
         for (MarshallMethod method : serializerClassData.getAllMarshallMethods()) {
-            MethodSpec serializeMethod = toMethodSpec(method, modifiers);
-            typeSpec.addMethod(serializeMethod);
+            MethodSpec marshallMethod = toMethodSpec(method, modifiers);
+            typeSpec.addMethod(marshallMethod);
         }
     }
 
