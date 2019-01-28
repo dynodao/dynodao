@@ -102,7 +102,10 @@ class MapMarshaller implements AttributeValueMarshaller {
 
     @Override
     public UnmarshallMethod deserialize(TypeMirror type, SerializationContext serializationContext) {
-        return null;
+        return UnmarshallMethod.builder()
+                .methodName("deserializeMapOf" +  processors.asElement(((DeclaredType) type).getTypeArguments().get(1)).getSimpleName())
+                .body(CodeBlock.builder().addStatement("return null").build())
+                .build();
     }
 
 }

@@ -54,8 +54,12 @@ public class SerializerTypeSpecFactory {
                 if (serializer.isApplicableTo(type)) {
                     serializerCreated = true;
                     serializer.getTypeDependencies(type).forEach(dependency -> addSerializerForType(dependency, serializationContext));
-                    MarshallMethod method = serializer.serialize(type, serializationContext);
-                    serializationContext.addMarshaller(type, method);
+
+                    MarshallMethod marshall = serializer.serialize(type, serializationContext);
+                    serializationContext.addMarshaller(type, marshall);
+
+                    UnmarshallMethod unmarshall = serializer.deserialize(type, serializationContext);
+                    serializationContext.addUnmarshaller(type, unmarshall);
                     break;
                 }
             }
