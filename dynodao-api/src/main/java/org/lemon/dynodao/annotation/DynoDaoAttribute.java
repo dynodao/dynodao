@@ -21,5 +21,5 @@ public @interface DynoDaoAttribute {
      * name is the same as the field name.
      * @return the name of the attribute in DynamoDb
      */
-    String attributeName();
+    String value();
 }

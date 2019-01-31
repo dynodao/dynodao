@@ -42,7 +42,7 @@ public class Model {
     @DynoDaoIndexHashKey(gsiNames = "global-solo-index")
     private String soloGsiHashKey;
 
-    @DynoDaoAttribute(attributeName = "ATTRIBUTE")
+    @DynoDaoAttribute("ATTRIBUTE")
     private int attribute;
     private long attribute2;
     private BigDecimal attribute3;

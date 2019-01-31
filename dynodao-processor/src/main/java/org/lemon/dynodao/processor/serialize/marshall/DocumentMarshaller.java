@@ -105,8 +105,8 @@ class DocumentMarshaller implements AttributeValueMarshaller {
 
     private String attributeName(Element field) {
         DynoDaoAttribute attribute = field.getAnnotation(DynoDaoAttribute.class);
-        if (attribute != null && !attribute.attributeName().isEmpty()) {
-            return attribute.attributeName();
+        if (attribute != null && !attribute.value().isEmpty()) {
+            return attribute.value();
         } else {
             return field.getSimpleName().toString();
         }

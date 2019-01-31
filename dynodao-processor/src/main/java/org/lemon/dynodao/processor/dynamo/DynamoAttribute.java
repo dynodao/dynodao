@@ -29,8 +29,8 @@ public class DynamoAttribute {
      */
     static DynamoAttribute of(VariableElement field) {
         DynoDaoAttribute attribute = field.getAnnotation(DynoDaoAttribute.class);
-        if (attribute != null && !attribute.attributeName().isEmpty()) {
-            return new DynamoAttribute(attribute.attributeName(), field);
+        if (attribute != null && !attribute.value().isEmpty()) {
+            return new DynamoAttribute(attribute.value(), field);
         } else {
             return new DynamoAttribute(field.getSimpleName().toString(), field);
         }
