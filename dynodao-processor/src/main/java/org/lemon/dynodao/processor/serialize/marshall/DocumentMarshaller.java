@@ -128,6 +128,7 @@ class DocumentMarshaller implements AttributeValueMarshaller {
         return UnmarshallMethod.builder()
                 .methodName("deserialize" + processors.asElement(type).getSimpleName())
                 .body(deserializeBody(type, serializationContext))
+                .returnType(TypeName.get(type))
                 .build();
     }
 

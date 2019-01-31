@@ -1,7 +1,9 @@
 package org.lemon.dynodao.playground;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.lemon.dynodao.annotation.DynoDaoAttribute;
 import org.lemon.dynodao.annotation.DynoDaoHashKey;
 import org.lemon.dynodao.annotation.DynoDaoIndexHashKey;
@@ -15,6 +17,8 @@ import java.util.Map;
 
 @Data
 @Builder
+@NoArgsConstructor
+@AllArgsConstructor
 @DynoDaoSchema(tableName = "models")
 public class Model {
 

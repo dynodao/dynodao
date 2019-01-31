@@ -17,6 +17,7 @@ public class SerializerTypeSpecMutators implements Streamable<SerializerTypeSpec
     @Inject ModifiersSerializerTypeSpecMutator modifiersSerializerTypeSpecMutator;
     @Inject CtorSerializerTypeSpecMutator ctorSerializerTypeSpecMutator;
     @Inject MarshallMethodsSerializerTypeSpecMutator marshallMethodsSerializerTypeSpecMutator;
+    @Inject UnmarshallMethodsSerializerTypeSpecMutator unmarshallMethodsSerializerTypeSpecMutator;
 
     private final List<SerializerTypeSpecMutator> serializerTypeSpecMutators = new ArrayList<>();
 
@@ -33,6 +34,7 @@ public class SerializerTypeSpecMutators implements Streamable<SerializerTypeSpec
         serializerTypeSpecMutators.add(ctorSerializerTypeSpecMutator);
 
         serializerTypeSpecMutators.add(marshallMethodsSerializerTypeSpecMutator);
+        serializerTypeSpecMutators.add(unmarshallMethodsSerializerTypeSpecMutator);
     }
 
     @Override

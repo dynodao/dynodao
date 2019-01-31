@@ -52,7 +52,7 @@ class MarshallMethodsSerializerTypeSpecMutator implements SerializerTypeSpecMuta
                 .addJavadoc("@param $N the value to serialize\n", parameter)
                 .addJavadoc("@return the serialization of <tt>$N</tt>\n", parameter)
                 .addModifiers(modifiers)
-                .returns(attributeValue())
+                .returns(method.getReturnType())
                 .addParameter(parameter);
 
         if (!parameter.type.isPrimitive()) {

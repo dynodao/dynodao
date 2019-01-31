@@ -2,6 +2,7 @@ package org.lemon.dynodao.processor.serialize.marshall;
 
 import com.squareup.javapoet.CodeBlock;
 import com.squareup.javapoet.ParameterSpec;
+import com.squareup.javapoet.TypeName;
 import org.lemon.dynodao.processor.context.Processors;
 import org.lemon.dynodao.processor.serialize.MarshallMethod;
 import org.lemon.dynodao.processor.serialize.SerializationContext;
@@ -37,6 +38,7 @@ class StringMarshaller implements AttributeValueMarshaller {
     private static final UnmarshallMethod UNMARSHALL_METHOD = UnmarshallMethod.builder()
             .methodName("deserializeString")
             .body(DESERIALIZE_METHOD_BODY)
+            .returnType(TypeName.get(String.class))
             .build();
 
     private final Processors processors;

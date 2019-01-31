@@ -2,6 +2,7 @@ package org.lemon.dynodao.processor.serialize;
 
 import com.squareup.javapoet.CodeBlock;
 import com.squareup.javapoet.ParameterSpec;
+import com.squareup.javapoet.TypeName;
 import lombok.Builder;
 import lombok.Value;
 
@@ -19,6 +20,7 @@ public class UnmarshallMethod {
 
     private final String methodName;
     private final CodeBlock body;
+    private final TypeName returnType;
 
     /**
      * @return the parameter to the unmarshalling method

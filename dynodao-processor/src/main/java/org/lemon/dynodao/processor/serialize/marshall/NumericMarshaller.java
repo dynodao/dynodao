@@ -79,6 +79,7 @@ class NumericMarshaller implements AttributeValueMarshaller {
         return UnmarshallMethod.builder()
                 .methodName(methodName("deserialize", type))
                 .body(deserializeBody(type))
+                .returnType(TypeName.get(type))
                 .build();
     }
 

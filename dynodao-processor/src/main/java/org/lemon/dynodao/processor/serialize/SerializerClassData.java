@@ -21,4 +21,11 @@ public class SerializerClassData {
         return serializationContext.getAllMarshallMethods();
     }
 
+    /**
+     * @return all deserialization methods
+     */
+    public List<UnmarshallMethod> getAllUnmarshallMethods() {
+        return serializationContext.getAllUnmarshallMethods();
+    }
+
 }

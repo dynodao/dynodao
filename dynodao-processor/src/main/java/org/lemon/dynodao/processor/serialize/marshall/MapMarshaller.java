@@ -5,6 +5,7 @@ import com.squareup.javapoet.CodeBlock;
 import com.squareup.javapoet.ParameterSpec;
 import com.squareup.javapoet.ParameterizedTypeName;
 import com.squareup.javapoet.TypeName;
+import com.sun.tools.javac.jvm.Code;
 import org.lemon.dynodao.processor.context.Processors;
 import org.lemon.dynodao.processor.serialize.MarshallMethod;
 import org.lemon.dynodao.processor.serialize.SerializationContext;
@@ -19,6 +20,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
+import static org.lemon.dynodao.processor.serialize.UnmarshallMethod.parameter;
 import static org.lemon.dynodao.processor.util.DynamoDbUtil.attributeValue;
 
 /**
@@ -29,6 +31,8 @@ import static org.lemon.dynodao.processor.util.DynamoDbUtil.attributeValue;
 class MapMarshaller implements AttributeValueMarshaller {
 
     private static final TypeName MAP_OF_ATTRIBUTE_VALUE = ParameterizedTypeName.get(ClassName.get(Map.class), TypeName.get(String.class), attributeValue());
+    private static final TypeName MAP_ENTRY_OF_ATTRIBUTE_VALUE = ParameterizedTypeName.get(ClassName.get(Map.Entry.class), TypeName.get(String.class), attributeValue());
+    private static final TypeName MAP_OF_ATTRIBUTE_VALUE_ITERATOR = ParameterizedTypeName.get(ClassName.get(Iterator.class), MAP_ENTRY_OF_ATTRIBUTE_VALUE);
 
     private final Processors processors;
 
@@ -67,7 +71,7 @@ class MapMarshaller implements AttributeValueMarshaller {
                 .addStatement("return new $T().withM(attrValueMap)", attributeValue())
                 .build();
         return MarshallMethod.builder()
-                .methodName(getMethodName(type))
+                .methodName(getMethodName("serialize", type))
                 .parameter(param)
                 .body(body)
                 .build();
@@ -80,9 +84,9 @@ class MapMarshaller implements AttributeValueMarshaller {
     /**
      * TODO handle nested template type names
      */
-    private String getMethodName(DeclaredType type) {
+    private String getMethodName(String prefix, DeclaredType type) {
         TypeMirror ofArg = type.getTypeArguments().get(1);
-        return "serializeMapOf" + processors.asElement(ofArg).getSimpleName();
+        return prefix + "MapOf" + processors.asElement(ofArg).getSimpleName();
     }
 
     private TypeName getIteratorOf(DeclaredType type) {
@@ -102,10 +106,29 @@ class MapMarshaller implements AttributeValueMarshaller {
 
     @Override
     public UnmarshallMethod deserialize(TypeMirror type, SerializationContext serializationContext) {
-        return UnmarshallMethod.builder()
-                .methodName("deserializeMapOf" +  processors.asElement(((DeclaredType) type).getTypeArguments().get(1)).getSimpleName())
-                .body(CodeBlock.builder().addStatement("return null").build())
+        return deserialize((DeclaredType) type, serializationContext);
+    }
+
+    private UnmarshallMethod deserialize(DeclaredType type, SerializationContext serializationContext) {
+        CodeBlock body = CodeBlock.builder()
+                .addStatement("$T map = new $T<>()", type, HashMap.class)
+                .addStatement("$T it = $N.getM().entrySet().iterator()", MAP_OF_ATTRIBUTE_VALUE_ITERATOR, parameter())
+                .beginControlFlow("while (it.hasNext())")
+                .addStatement("$T entry = it.next()", MAP_ENTRY_OF_ATTRIBUTE_VALUE)
+                .addStatement("map.put(entry.getKey(), $L(entry.getValue()))", getValueDeserializeMethodName(type, serializationContext))
+                .endControlFlow()
+                .addStatement("return map")
                 .build();
+        return UnmarshallMethod.builder()
+                .methodName(getMethodName("deserialize", type))
+                .body(body)
+                .returnType(TypeName.get(type))
+                .build();
+    }
+
+    private String getValueDeserializeMethodName(DeclaredType type, SerializationContext serializationContext) {
+        TypeMirror ofArg = type.getTypeArguments().get(1);
+        return serializationContext.getUnmarshallMethodForType(ofArg).getMethodName();
     }
 
 }
