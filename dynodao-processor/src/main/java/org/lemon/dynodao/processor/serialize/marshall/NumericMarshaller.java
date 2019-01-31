@@ -80,6 +80,7 @@ class NumericMarshaller implements AttributeValueMarshaller {
                 .methodName(methodName("deserialize", type))
                 .body(deserializeBody(type))
                 .returnType(TypeName.get(type))
+                .expectedPresentAttribute("N")
                 .build();
     }
 

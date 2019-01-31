@@ -39,6 +39,7 @@ class StringMarshaller implements AttributeValueMarshaller {
             .methodName("deserializeString")
             .body(DESERIALIZE_METHOD_BODY)
             .returnType(TypeName.get(String.class))
+            .expectedPresentAttribute("S")
             .build();
 
     private final Processors processors;

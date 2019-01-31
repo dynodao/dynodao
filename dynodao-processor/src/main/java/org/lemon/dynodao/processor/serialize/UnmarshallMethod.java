@@ -21,6 +21,7 @@ public class UnmarshallMethod {
     private final String methodName;
     private final CodeBlock body;
     private final TypeName returnType;
+    private final String expectedPresentAttribute;
 
     /**
      * @return the parameter to the unmarshalling method

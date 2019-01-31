@@ -123,6 +123,7 @@ class MapMarshaller implements AttributeValueMarshaller {
                 .methodName(getMethodName("deserialize", type))
                 .body(body)
                 .returnType(TypeName.get(type))
+                .expectedPresentAttribute("M")
                 .build();
     }
 

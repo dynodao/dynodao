@@ -40,20 +40,16 @@ class UnmarshallMethodsSerializerTypeSpecMutator implements SerializerTypeSpecMu
 
     private MethodSpec toMethodSpec(UnmarshallMethod method, Iterable<Modifier> modifiers) {
         ParameterSpec parameter = method.getParameter();
-        MethodSpec.Builder deserialize = MethodSpec.methodBuilder(method.getMethodName())
-                .addJavadoc("Deserializes <tt>$N</tt> as an {@link $T}\n", parameter, method.getReturnType())
+        return MethodSpec.methodBuilder(method.getMethodName())
+                .addJavadoc("Deserializes <tt>$N</tt> into {@link $T}\n", parameter, method.getReturnType())
                 .addJavadoc("@param $N the value to deserialize\n", parameter)
                 .addJavadoc("@return the deserialization of <tt>$N</tt>\n", parameter)
                 .addModifiers(modifiers)
                 .returns(method.getReturnType())
-                .addParameter(parameter);
-
-        deserialize
-                .beginControlFlow("if ($N == null || $T.TRUE.equals($N.getNULL()))", parameter, Boolean.class, parameter)
+                .addParameter(parameter)
+                .beginControlFlow("if ($1N == null || $1N.get$2L() == null || $3T.TRUE.equals($1N.getNULL()))", parameter, method.getExpectedPresentAttribute(), Boolean.class)
                 .addStatement("return $L", getDefaultLiteralForType(method.getReturnType()))
-                .endControlFlow();
-
-        return deserialize
+                .endControlFlow()
                 .addCode(method.getBody())
                 .build();
     }

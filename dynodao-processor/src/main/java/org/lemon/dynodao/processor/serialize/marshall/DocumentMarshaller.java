@@ -129,6 +129,7 @@ class DocumentMarshaller implements AttributeValueMarshaller {
                 .methodName("deserialize" + processors.asElement(type).getSimpleName())
                 .body(deserializeBody(type, serializationContext))
                 .returnType(TypeName.get(type))
+                .expectedPresentAttribute("M")
                 .build();
     }
 
