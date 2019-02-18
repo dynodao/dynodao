@@ -6,7 +6,6 @@ import org.lemon.dynodao.processor.schema.serialize.MappingMethod;
 
 import javax.lang.model.element.Element;
 import javax.lang.model.type.TypeMirror;
-import java.util.List;
 
 /**
  * A list attribute containing a single known attribute type within, of an unknown quantity.
