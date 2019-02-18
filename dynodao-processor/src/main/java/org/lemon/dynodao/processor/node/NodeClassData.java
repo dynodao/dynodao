@@ -4,8 +4,9 @@ import com.squareup.javapoet.FieldSpec;
 import lombok.AccessLevel;
 import lombok.Data;
 import lombok.Setter;
-import org.lemon.dynodao.processor.dynamo.DynamoAttribute;
-import org.lemon.dynodao.processor.dynamo.DynamoIndex;
+import org.lemon.dynodao.processor.schema.DynamoSchema;
+import org.lemon.dynodao.processor.schema.attribute.DynamoAttribute;
+import org.lemon.dynodao.processor.schema.index.DynamoIndex;
 import org.lemon.dynodao.processor.serialize.SerializerTypeSpec;
 
 import javax.lang.model.element.TypeElement;
@@ -22,12 +23,12 @@ import static java.util.stream.Collectors.toList;
 @Setter(AccessLevel.NONE)
 public class NodeClassData {
 
-    private final TypeElement document;
+    private final DynamoSchema schema;
     private final SerializerTypeSpec serializer;
     private final List<DynamoAttribute> attributes = new ArrayList<>();
 
     private DynamoIndex dynamoIndex;
-    private IndexLengthType indexLengthType = IndexLengthType.NONE;
+    private KeyLengthType keyLengthType = KeyLengthType.NONE;
     private InterfaceType interfaceType = InterfaceType.NONE;
 
     private final List<NodeTypeSpec> targetWithers = new ArrayList<>();
@@ -35,15 +36,15 @@ public class NodeClassData {
 
     /**
      * @param index the index to use
-     * @param indexLengthType the number of fields to use from the index
+     * @param keyLengthType the number of fields to use from the index
      * @return <tt>this</tt>
      */
-    public NodeClassData withIndex(DynamoIndex index, IndexLengthType indexLengthType) {
+    public NodeClassData withIndex(DynamoIndex index, KeyLengthType keyLengthType) {
         this.dynamoIndex = index;
-        this.indexLengthType = indexLengthType;
+        this.keyLengthType = keyLengthType;
 
-        this.attributes.addAll(indexLengthType.getKeyAttributes(index));
-        this.interfaceType = InterfaceType.typeOf(index, indexLengthType);
+        this.attributes.addAll(keyLengthType.getKeyAttributes(index));
+        this.interfaceType = InterfaceType.typeOf(index, keyLengthType);
         return this;
     }
 
@@ -81,6 +82,13 @@ public class NodeClassData {
         return attributes.stream()
                 .map(DynamoAttribute::asFieldSpec)
                 .collect(toList());
+    }
+
+    /**
+     * @return the schema document element
+     */
+    public TypeElement getDocumentElement() {
+        return schema.getDocumentElement();
     }
 
 }

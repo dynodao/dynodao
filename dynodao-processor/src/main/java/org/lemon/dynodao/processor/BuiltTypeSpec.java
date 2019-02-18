@@ -12,10 +12,11 @@ public interface BuiltTypeSpec {
     /**
      * @return the document class for which this class was generated in response to
      */
-    TypeElement getDocument();
+    TypeElement getDocumentElement();
 
     /**
      * @return the type to write to file
      */
     TypeSpec getTypeSpec();
+
 }

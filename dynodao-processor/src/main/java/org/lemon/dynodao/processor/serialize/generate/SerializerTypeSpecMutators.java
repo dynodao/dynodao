@@ -16,25 +16,21 @@ public class SerializerTypeSpecMutators implements Streamable<SerializerTypeSpec
     @Inject JavaDocSerializerTypeSpecMutator javaDocSerializerTypeSpecMutator;
     @Inject ModifiersSerializerTypeSpecMutator modifiersSerializerTypeSpecMutator;
     @Inject CtorSerializerTypeSpecMutator ctorSerializerTypeSpecMutator;
-    @Inject MarshallMethodsSerializerTypeSpecMutator marshallMethodsSerializerTypeSpecMutator;
-    @Inject UnmarshallMethodsSerializerTypeSpecMutator unmarshallMethodsSerializerTypeSpecMutator;
+    @Inject SerializationMethodsSerializerTypeSpecMutator serializationMethodsSerializerTypeSpecMutator;
+    @Inject DeserializationMethodsSerializerTypeSpecMutator deserializationMethodsSerializerTypeSpecMutator;
 
     private final List<SerializerTypeSpecMutator> serializerTypeSpecMutators = new ArrayList<>();
 
     @Inject SerializerTypeSpecMutators() { }
 
-    /**
-     * Populates the serializerTypeSpecMutators field. The list is ordered, the first elements are added to the
-     * generated class first.
-     */
     @Inject void initSerializerTypeSpecMutators() {
         serializerTypeSpecMutators.add(generatedAnnotationSerializerTypeSpecMutator);
         serializerTypeSpecMutators.add(javaDocSerializerTypeSpecMutator);
         serializerTypeSpecMutators.add(modifiersSerializerTypeSpecMutator);
         serializerTypeSpecMutators.add(ctorSerializerTypeSpecMutator);
 
-        serializerTypeSpecMutators.add(marshallMethodsSerializerTypeSpecMutator);
-        serializerTypeSpecMutators.add(unmarshallMethodsSerializerTypeSpecMutator);
+        serializerTypeSpecMutators.add(serializationMethodsSerializerTypeSpecMutator);
+        serializerTypeSpecMutators.add(deserializationMethodsSerializerTypeSpecMutator);
     }
 
     @Override

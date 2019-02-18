@@ -1,24 +1,23 @@
 package org.lemon.dynodao.playground;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.lemon.dynodao.annotation.DynoDaoAttribute;
+import org.lemon.dynodao.annotation.DynoDaoDocument;
 import org.lemon.dynodao.annotation.DynoDaoHashKey;
 import org.lemon.dynodao.annotation.DynoDaoIndexHashKey;
 import org.lemon.dynodao.annotation.DynoDaoIndexRangeKey;
 import org.lemon.dynodao.annotation.DynoDaoRangeKey;
 import org.lemon.dynodao.annotation.DynoDaoSchema;
+import org.lemon.dynodao.annotation.DynoDaoValueMapped;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.util.List;
 import java.util.Map;
 
 @Data
-@Builder
 @NoArgsConstructor
-@AllArgsConstructor
 @DynoDaoSchema(tableName = "models")
 public class Model {
 
@@ -48,6 +47,19 @@ public class Model {
     private BigDecimal attribute3;
     private Integer attribute4;
 
-    private Map<String, BigInteger> mapOfBigInt;
+//    private Map<String, BigInteger> mapOfBigInt;
+
+    private NestedModel nestedModel;
+//    private Map<String, NestedModel> nestedModelMap;
+//    private List<NestedModel> nestedModelList;
+
+}
+
+@Data
+@NoArgsConstructor
+@DynoDaoDocument
+class NestedModel {
+
+    private String string;
 
 }

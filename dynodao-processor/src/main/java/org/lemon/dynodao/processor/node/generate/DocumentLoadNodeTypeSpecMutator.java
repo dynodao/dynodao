@@ -57,10 +57,10 @@ class DocumentLoadNodeTypeSpecMutator implements NodeTypeSpecMutator {
     private MethodSpec buildLoad(NodeClassData node) {
         List<FieldSpec> fields = node.getAttributesAsFields();
         String argsFormat = repeat(fields.size(), "$N", ", ");
-        Object[] args = concat(Collections.class, DYNAMO_DB_MAPPER_PARAM, node.getDocument().asType(), fields).toArray();
+        Object[] args = concat(Collections.class, DYNAMO_DB_MAPPER_PARAM, node.getSchema().getDocument().getTypeMirror(), fields).toArray();
 
         return loadWithNoReturnOrBody.toBuilder()
-                .returns(ParameterizedTypeName.get(ClassName.get(List.class), TypeName.get(node.getDocument().asType())))
+                .returns(ParameterizedTypeName.get(ClassName.get(List.class), TypeName.get(node.getSchema().getDocument().getTypeMirror())))
                 .addStatement("return $T.singletonList($N.load($T.class, " + argsFormat + "))", args)
                 .build();
     }

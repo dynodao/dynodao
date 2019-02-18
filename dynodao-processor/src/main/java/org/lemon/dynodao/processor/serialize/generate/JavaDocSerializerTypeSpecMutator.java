@@ -1,7 +1,7 @@
 package org.lemon.dynodao.processor.serialize.generate;
 
 import com.squareup.javapoet.TypeSpec;
-import org.lemon.dynodao.processor.serialize.SerializerClassData;
+import org.lemon.dynodao.processor.schema.DynamoSchema;
 
 import javax.inject.Inject;
 
@@ -15,9 +15,9 @@ class JavaDocSerializerTypeSpecMutator implements SerializerTypeSpecMutator {
     @Inject JavaDocSerializerTypeSpecMutator() { }
 
     @Override
-    public void mutate(TypeSpec.Builder typeSpec, SerializerClassData serializerClassData) {
+    public void mutate(TypeSpec.Builder typeSpec, DynamoSchema schema) {
         typeSpec.addJavadoc("Utility class for converting types within {@link $T} into {@link $T}.\n",
-                        serializerClassData.getDocument().asType(), attributeValue());
+                schema.getDocument().getTypeMirror(), attributeValue());
     }
 
 }

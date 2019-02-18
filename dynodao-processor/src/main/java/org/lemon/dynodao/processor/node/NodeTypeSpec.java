@@ -17,8 +17,8 @@ public class NodeTypeSpec implements BuiltTypeSpec {
     private final TypeSpec typeSpec;
 
     @Override
-    public TypeElement getDocument() {
-        return node.getDocument();
+    public TypeElement getDocumentElement() {
+        return node.getDocumentElement();
     }
 
 }

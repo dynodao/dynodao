@@ -3,13 +3,13 @@ package org.lemon.dynodao.processor;
 import com.google.auto.service.AutoService;
 import org.lemon.dynodao.processor.context.ProcessorContext;
 import org.lemon.dynodao.processor.context.ProcessorMessager;
-import org.lemon.dynodao.processor.dynamo.DynamoIndex;
-import org.lemon.dynodao.processor.dynamo.DynamoSchemaParser;
-import org.lemon.dynodao.processor.dynamo.DynamoStructuredSchema;
-import org.lemon.dynodao.processor.node.IndexLengthType;
+import org.lemon.dynodao.processor.node.KeyLengthType;
 import org.lemon.dynodao.processor.node.NodeClassData;
 import org.lemon.dynodao.processor.node.NodeTypeSpec;
 import org.lemon.dynodao.processor.node.NodeTypeSpecFactory;
+import org.lemon.dynodao.processor.schema.DynamoSchema;
+import org.lemon.dynodao.processor.schema.DynamoSchemaParser;
+import org.lemon.dynodao.processor.schema.index.DynamoIndex;
 import org.lemon.dynodao.processor.serialize.SerializerTypeSpec;
 import org.lemon.dynodao.processor.serialize.SerializerTypeSpecFactory;
 
@@ -74,29 +74,30 @@ public class DynoDaoProcessor extends AbstractProcessor {
     }
 
     private void processElements(Set<TypeElement> elements) {
-        for (TypeElement document : elements) {
+        for (TypeElement documentElement : elements) {
             try {
-                processDocument(document);
+                processDocumentElement(documentElement);
             } catch (RuntimeException e) {
                 processorMessager.submitError("DynoDaoProcessor had uncaught exception: %s\nDynoDao carries on even if it finds errors, check for others!", e.getMessage());
+                e.printStackTrace();
             }
         }
     }
 
-    private void processDocument(TypeElement document) {
-        DynamoStructuredSchema schema = dynamoSchemaParser.getSchema(document);
-        SerializerTypeSpec serializer = serializerTypeSpecFactory.build(document, schema);
+    private void processDocumentElement(TypeElement documentElement) {
+        DynamoSchema schema = dynamoSchemaParser.parse(documentElement);
+        SerializerTypeSpec serializer = serializerTypeSpecFactory.build(schema);
 
         List<BuiltTypeSpec> builtTypes = new ArrayList<>();
         builtTypes.add(serializer);
 
-        NodeClassData stagedBuilder = new NodeClassData(document, serializer);
+        NodeClassData stagedBuilder = new NodeClassData(schema, serializer);
         for (DynamoIndex index : schema.getIndexes()) {
-            IndexLengthType indexLengthType = IndexLengthType.lengthOf(index);
+            KeyLengthType keyLengthType = KeyLengthType.lengthOf(index);
 
-            Optional<NodeTypeSpec> indexRangeKeyPojo = getIndexRangeKeyNode(document, serializer, index, indexLengthType);
-            NodeTypeSpec indexHashKeyPojo = getIndexHashKeyNode(document, serializer, index, indexRangeKeyPojo);
-            NodeTypeSpec indexPojo = getIndexNode(document, serializer, index, indexHashKeyPojo);
+            Optional<NodeTypeSpec> indexRangeKeyPojo = getIndexRangeKeyNode(schema, serializer, index, keyLengthType);
+            NodeTypeSpec indexHashKeyPojo = getIndexHashKeyNode(schema, serializer, index, indexRangeKeyPojo);
+            NodeTypeSpec indexPojo = getIndexNode(schema, serializer, index, indexHashKeyPojo);
 
             stagedBuilder.addUser(indexPojo);
 
@@ -108,24 +109,26 @@ public class DynoDaoProcessor extends AbstractProcessor {
         typeSpecWriter.writeAll(builtTypes);
     }
 
-    private Optional<NodeTypeSpec> getIndexRangeKeyNode(TypeElement document, SerializerTypeSpec serializer, DynamoIndex index, IndexLengthType indexLengthType) {
-        if (indexLengthType.equals(IndexLengthType.RANGE)) {
-            NodeClassData pojo = new NodeClassData(document, serializer).withIndex(index, indexLengthType);
+    private Optional<NodeTypeSpec> getIndexRangeKeyNode(DynamoSchema schema, SerializerTypeSpec serializer, DynamoIndex index, KeyLengthType keyLengthType) {
+        if (keyLengthType.equals(KeyLengthType.RANGE)) {
+            NodeClassData pojo = new NodeClassData(schema, serializer)
+                    .withIndex(index, keyLengthType);
             return Optional.of(toTypeSpec(pojo));
         } else {
             return Optional.empty();
         }
     }
 
-    private NodeTypeSpec getIndexHashKeyNode(TypeElement document, SerializerTypeSpec serializer, DynamoIndex index, Optional<NodeTypeSpec> indexRangeKeyPojo) {
-        NodeClassData pojo = new NodeClassData(document, serializer).withIndex(index, IndexLengthType.HASH);
+    private NodeTypeSpec getIndexHashKeyNode(DynamoSchema schema, SerializerTypeSpec serializer, DynamoIndex index, Optional<NodeTypeSpec> indexRangeKeyPojo) {
+        NodeClassData pojo = new NodeClassData(schema, serializer)
+                .withIndex(index, KeyLengthType.HASH);
         indexRangeKeyPojo.ifPresent(pojo::addWither);
         return toTypeSpec(pojo);
     }
 
-    private NodeTypeSpec getIndexNode(TypeElement document, SerializerTypeSpec serializer, DynamoIndex index, NodeTypeSpec indexHashKeyPojo) {
-        NodeClassData pojo = new NodeClassData(document, serializer)
-                .withIndex(index, IndexLengthType.NONE)
+    private NodeTypeSpec getIndexNode(DynamoSchema schema, SerializerTypeSpec serializer, DynamoIndex index, NodeTypeSpec indexHashKeyPojo) {
+        NodeClassData pojo = new NodeClassData(schema, serializer)
+                .withIndex(index, KeyLengthType.NONE)
                 .addWither(indexHashKeyPojo);
         return toTypeSpec(pojo);
     }
@@ -133,5 +136,7 @@ public class DynoDaoProcessor extends AbstractProcessor {
     private NodeTypeSpec toTypeSpec(NodeClassData pojo) {
         return nodeTypeSpecFactory.build(pojo);
     }
+
+
 
 }

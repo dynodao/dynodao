@@ -16,7 +16,7 @@ class ModifiersNodeTypeSpecMutator implements NodeTypeSpecMutator {
 
     @Override
     public void mutate(TypeSpec.Builder typeSpec, NodeClassData node) {
-        if (node.getDocument().getModifiers().contains(Modifier.PUBLIC)) {
+        if (node.getDocumentElement().getModifiers().contains(Modifier.PUBLIC)) {
             typeSpec.addModifiers(Modifier.PUBLIC, Modifier.FINAL);
         } else {
             typeSpec.addModifiers(Modifier.FINAL);

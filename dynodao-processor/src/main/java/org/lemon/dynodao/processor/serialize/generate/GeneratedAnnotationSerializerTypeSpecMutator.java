@@ -1,7 +1,7 @@
 package org.lemon.dynodao.processor.serialize.generate;
 
 import com.squareup.javapoet.TypeSpec;
-import org.lemon.dynodao.processor.serialize.SerializerClassData;
+import org.lemon.dynodao.processor.schema.DynamoSchema;
 
 import javax.inject.Inject;
 
@@ -15,7 +15,7 @@ class GeneratedAnnotationSerializerTypeSpecMutator implements SerializerTypeSpec
     @Inject GeneratedAnnotationSerializerTypeSpecMutator() { }
 
     @Override
-    public void mutate(TypeSpec.Builder typeSpec, SerializerClassData serializerClassData) {
+    public void mutate(TypeSpec.Builder typeSpec, DynamoSchema schema) {
         typeSpec.addAnnotation(generatedAnnotation());
     }
 

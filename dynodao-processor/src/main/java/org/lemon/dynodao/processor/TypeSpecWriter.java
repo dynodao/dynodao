@@ -39,7 +39,7 @@ class TypeSpecWriter {
      */
     void write(BuiltTypeSpec builtTypeSpec) {
         if (!processorMessager.hasErrors()) {
-            JavaFile file = JavaFile.builder(getPackage(builtTypeSpec.getDocument()), builtTypeSpec.getTypeSpec())
+            JavaFile file = JavaFile.builder(getPackage(builtTypeSpec.getDocumentElement()), builtTypeSpec.getTypeSpec())
                     .indent("    ")
                     .skipJavaLangImports(true)
                     .build();

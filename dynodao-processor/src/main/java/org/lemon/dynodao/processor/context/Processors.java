@@ -59,6 +59,20 @@ public class Processors implements Elements, Types {
     }
 
     /**
+     * Returns <tt>true</tt> if the <tt>typeMirror</tt> is the same type as the declared type
+     * constructed by the Class arguments.
+     * @param typeMirror the type to test
+     * @param type the declared class type
+     * @param typeArguments the template arguments of the declared class type, if any
+     * @return <tt>true</tt> if <tt>typeMirror</tt> is the same declared type as the classes provided
+     * @see Types#isSameType(TypeMirror, TypeMirror)
+     * @see #getDeclaredType(Class, Class[])
+     */
+    public boolean isSameType(TypeMirror typeMirror, Class<?> type, Class<?>... typeArguments) {
+        return isSameType(typeMirror, getDeclaredType(type, typeArguments));
+    }
+
+    /**
      * Returns the annotation mirror of the specified class.
      * @param element the element which has the annotation
      * @param annotation the annotation class to get the mirror of

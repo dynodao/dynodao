@@ -5,8 +5,8 @@ import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.lemon.dynodao.DocumentLoad;
 import org.lemon.dynodao.DocumentQuery;
-import org.lemon.dynodao.processor.dynamo.DynamoIndex;
-import org.lemon.dynodao.processor.dynamo.IndexType;
+import org.lemon.dynodao.processor.schema.index.DynamoIndex;
+import org.lemon.dynodao.processor.schema.index.IndexType;
 
 import java.util.Optional;
 
@@ -27,13 +27,13 @@ public enum InterfaceType {
     /**
      * Returns the interface for the given index and length type.
      * @param index the dynamo index
-     * @param indexLengthType the length type being used from the index
+     * @param keyLengthType the length type being used from the index
      * @return the interface type, either load or query
      */
-    public static InterfaceType typeOf(DynamoIndex index, IndexLengthType indexLengthType) {
-        if (indexLengthType.equals(IndexLengthType.NONE)) {
+    public static InterfaceType typeOf(DynamoIndex index, KeyLengthType keyLengthType) {
+        if (keyLengthType.equals(KeyLengthType.NONE)) {
             return NONE;
-        } else if (IndexLengthType.lengthOf(index).equals(indexLengthType) && index.getIndexType().equals(IndexType.TABLE)) {
+        } else if (KeyLengthType.lengthOf(index).equals(keyLengthType) && index.getIndexType().equals(IndexType.TABLE)) {
             return DOCUMENT_LOAD;
         } else {
             return DOCUMENT_QUERY;

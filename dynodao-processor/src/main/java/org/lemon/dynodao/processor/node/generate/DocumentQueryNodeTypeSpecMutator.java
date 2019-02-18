@@ -6,11 +6,11 @@ import com.squareup.javapoet.ParameterSpec;
 import com.squareup.javapoet.TypeName;
 import com.squareup.javapoet.TypeSpec;
 import org.lemon.dynodao.processor.context.Processors;
-import org.lemon.dynodao.processor.dynamo.DynamoAttribute;
-import org.lemon.dynodao.processor.dynamo.IndexType;
 import org.lemon.dynodao.processor.node.InterfaceType;
 import org.lemon.dynodao.processor.node.NodeClassData;
-import org.lemon.dynodao.processor.serialize.MarshallMethod;
+import org.lemon.dynodao.processor.schema.attribute.DynamoAttribute;
+import org.lemon.dynodao.processor.schema.index.IndexType;
+import org.lemon.dynodao.processor.schema.serialize.MappingMethod;
 
 import javax.inject.Inject;
 import javax.lang.model.element.ExecutableElement;
@@ -56,16 +56,16 @@ class DocumentQueryNodeTypeSpecMutator implements NodeTypeSpecMutator {
 
     private MethodSpec buildQuery(NodeClassData node) {
         MethodSpec.Builder query = queryWithNoReturnOrBody.toBuilder()
-                .returns(paginatedList(node.getDocument()));
+                .returns(paginatedList(node.getDocumentElement()));
 
-        TypeName queryExpression = dynamoDbQueryExpression(node.getDocument());
+        TypeName queryExpression = dynamoDbQueryExpression(node.getDocumentElement());
 
         query.addStatement("$T query = new $T()", queryExpression, queryExpression);
         appendIndexName(query, node);
         appendKeyConditionExpression(query, node);
         appendExpressionAttributeNames(query, node);
         appendExpressionAttributeValues(query, node);
-        query.addStatement("return $N.query($T.class, query)", DYNAMO_DB_MAPPER_PARAM, node.getDocument().asType());
+        query.addStatement("return $N.query($T.class, query)", DYNAMO_DB_MAPPER_PARAM, node.getDocumentElement().asType());
         return query.build();
     }
 
@@ -89,9 +89,9 @@ class DocumentQueryNodeTypeSpecMutator implements NodeTypeSpecMutator {
     private void appendExpressionAttributeValues(MethodSpec.Builder query, NodeClassData node) {
         String serializerClass = node.getSerializer().getTypeSpec().name;
         for (DynamoAttribute attribute : node.getAttributes()) {
-            MarshallMethod marshaller = node.getSerializer().getSerializationMethodForType(attribute.getField().asType());
+            MappingMethod method = attribute.getSerializationMethod();
             FieldSpec field = attribute.asFieldSpec();
-            query.addStatement("query.addExpressionAttributeValuesEntry($S, $L.$L($N))", ":" + field.name, serializerClass, marshaller.getMethodName(), field);
+            query.addStatement("query.addExpressionAttributeValuesEntry($S, $L.$L($N))", ":" + field.name, serializerClass, method.getMethodName(), field);
         }
     }
 

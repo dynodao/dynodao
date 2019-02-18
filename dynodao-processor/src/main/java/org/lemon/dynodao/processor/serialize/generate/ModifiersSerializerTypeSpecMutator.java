@@ -1,7 +1,7 @@
 package org.lemon.dynodao.processor.serialize.generate;
 
 import com.squareup.javapoet.TypeSpec;
-import org.lemon.dynodao.processor.serialize.SerializerClassData;
+import org.lemon.dynodao.processor.schema.DynamoSchema;
 
 import javax.inject.Inject;
 import javax.lang.model.element.Modifier;
@@ -15,12 +15,11 @@ class ModifiersSerializerTypeSpecMutator implements SerializerTypeSpecMutator {
     @Inject ModifiersSerializerTypeSpecMutator() { }
 
     @Override
-    public void mutate(TypeSpec.Builder typeSpec, SerializerClassData serializerClassData) {
-        if (serializerClassData.getDocument().getModifiers().contains(Modifier.PUBLIC)) {
+    public void mutate(TypeSpec.Builder typeSpec, DynamoSchema schema) {
+        if (schema.getDocumentElement().getModifiers().contains(Modifier.PUBLIC)) {
             typeSpec.addModifiers(Modifier.PUBLIC, Modifier.FINAL);
         } else {
             typeSpec.addModifiers(Modifier.FINAL);
         }
     }
-
 }

@@ -19,8 +19,8 @@ class SuperInterfaceNodeTypeSpecMutator implements NodeTypeSpecMutator {
     @Override
     public void mutate(TypeSpec.Builder typeSpec, NodeClassData node) {
         node.getInterfaceType().getInterfaceClass().ifPresent(interfaceClass -> {
-            TypeName sup = ParameterizedTypeName.get(ClassName.get(interfaceClass), TypeName.get(node.getDocument().asType()));
-            typeSpec.addSuperinterface(sup);
+            TypeName superType = ParameterizedTypeName.get(ClassName.get(interfaceClass), TypeName.get(node.getSchema().getDocument().getTypeMirror()));
+            typeSpec.addSuperinterface(superType);
         });
     }
 

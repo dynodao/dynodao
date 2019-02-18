@@ -38,7 +38,7 @@ public class NodeTypeSpecFactory {
     }
 
     private String getStagedBuilderClassName(NodeClassData node) {
-        return node.getDocument().getSimpleName() + "StagedDynamoBuilder";
+        return node.getDocumentElement().getSimpleName() + "StagedDynamoBuilder";
     }
 
     private String getIndexNodeClassName(NodeClassData node) {
@@ -46,14 +46,14 @@ public class NodeTypeSpecFactory {
 
         name.append(toClassCase(node.getDynamoIndex().getName()));
 
-        if (node.getIndexLengthType().compareTo(IndexLengthType.HASH) >= 0) {
-            name.append(capitalize(node.getDynamoIndex().getHashKeyAttribute().getField()));
+        if (node.getKeyLengthType().compareTo(KeyLengthType.HASH) >= 0) {
+            name.append(capitalize(node.getDynamoIndex().getHashKey().getElement()));
         }
-        if (node.getIndexLengthType().compareTo(IndexLengthType.RANGE) >= 0) {
-            name.append(capitalize(node.getDynamoIndex().getRangeKeyAttribute().get().getField()));
+        if (node.getKeyLengthType().compareTo(KeyLengthType.RANGE) >= 0) {
+            name.append(capitalize(node.getDynamoIndex().getRangeKey().get().getElement()));
         }
 
-        name.append(node.getDocument().getSimpleName());
+        name.append(node.getDocumentElement().getSimpleName());
 
         node.getInterfaceType().getInterfaceClass().ifPresent(clazz -> name.append(clazz.getSimpleName()));
         return name.toString();
