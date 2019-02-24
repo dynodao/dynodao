@@ -13,6 +13,7 @@ import java.util.List;
 public class SchemaParsers implements Streamable<SchemaParser> {
 
     @Inject DocumentSchemaParser documentSchemaParser;
+    @Inject MapTypeSchemaParser mapTypeSchemaParser;
     @Inject StringTypeSchemaParser stringTypeSchemaParser;
     @Inject NumericTypeSchemaParser numericTypeSchemaParser;
     @Inject NullSchemaParser nullSchemaParser;
@@ -33,6 +34,7 @@ public class SchemaParsers implements Streamable<SchemaParser> {
     @Inject void initSchemaParsers() {
         schemaParsers.add(documentSchemaParser);
 
+        schemaParsers.add(mapTypeSchemaParser);
         schemaParsers.add(stringTypeSchemaParser);
         schemaParsers.add(numericTypeSchemaParser);
 

@@ -13,8 +13,10 @@ import org.lemon.dynodao.annotation.DynoDaoValueMapped;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.SortedMap;
 
 @Data
 @NoArgsConstructor
@@ -47,7 +49,9 @@ public class Model {
     private BigDecimal attribute3;
     private Integer attribute4;
 
-//    private Map<String, BigInteger> mapOfBigInt;
+    private Map<String, BigInteger> mapOfBigInt;
+    private SortedMap<String, Integer> sortedMapOfInt;
+    private HashMap<String, Map<String, String>> hashMapOfMaps;
 
     private NestedModel nestedModel;
 //    private Map<String, NestedModel> nestedModelMap;
