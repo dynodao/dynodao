@@ -1,5 +1,6 @@
 package org.lemon.dynodao.processor.schema;
 
+import org.lemon.dynodao.annotation.DynoDaoSchema;
 import org.lemon.dynodao.processor.context.Processors;
 import org.lemon.dynodao.processor.schema.attribute.DocumentDynamoAttribute;
 import org.lemon.dynodao.processor.schema.attribute.DynamoAttribute;
@@ -34,12 +35,18 @@ public class DynamoSchemaParser {
      * @param documentElement the schema document type
      */
     public DynamoSchema parse(TypeElement documentElement) {
+        String tableName = getTableName(documentElement);
         DocumentDynamoAttribute document = parseDocument(documentElement);
         Set<DynamoIndex> indexes = getIndexes(document);
         return DynamoSchema.builder()
+                .tableName(tableName)
                 .document(document)
                 .indexes(indexes)
                 .build();
+    }
+
+    private String getTableName(TypeElement documentElement) {
+        return documentElement.getAnnotation(DynoDaoSchema.class).tableName();
     }
 
     private DocumentDynamoAttribute parseDocument(TypeElement documentElement) {

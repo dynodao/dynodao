@@ -13,7 +13,7 @@ public class HashKeyOnlyTest extends AbstractIntegrationTest {
 
     @Test
     public void tableHashKeySchemaDocumentLoad_equals_success() {
-        EqualsVerifier.forClass(TableHashKeySchemaDocumentLoad.class).verify();
+        EqualsVerifier.forClass(TableHashKeySchemaDynoDaoLoad.class).verify();
     }
 
     @Test

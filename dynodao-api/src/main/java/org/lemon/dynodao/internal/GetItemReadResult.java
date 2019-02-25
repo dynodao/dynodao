@@ -1,6 +1,5 @@
 package org.lemon.dynodao.internal;
 
-import com.amazonaws.services.dynamodbv2.model.AttributeValue;
 import com.amazonaws.services.dynamodbv2.model.GetItemResult;
 import lombok.RequiredArgsConstructor;
 

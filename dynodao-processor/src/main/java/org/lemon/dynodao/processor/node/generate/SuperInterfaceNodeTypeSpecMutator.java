@@ -9,8 +9,8 @@ import org.lemon.dynodao.processor.node.NodeClassData;
 import javax.inject.Inject;
 
 /**
- * Adds the appropriate implementing interfaces to the type. These include {@link org.lemon.dynodao.DocumentLoad}
- * and {@link org.lemon.dynodao.DocumentQuery}.
+ * Adds the appropriate implementing interfaces to the type. These include {@link org.lemon.dynodao.DynoDaoLoad}
+ * and {@link org.lemon.dynodao.DynoDaoQuery}.
  */
 class SuperInterfaceNodeTypeSpecMutator implements NodeTypeSpecMutator {
 

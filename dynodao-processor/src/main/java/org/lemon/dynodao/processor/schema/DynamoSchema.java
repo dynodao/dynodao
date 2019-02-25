@@ -15,6 +15,7 @@ import java.util.Set;
 @Builder
 public class DynamoSchema {
 
+    private final String tableName;
     private final DocumentDynamoAttribute document;
     private final Set<DynamoIndex> indexes;
 

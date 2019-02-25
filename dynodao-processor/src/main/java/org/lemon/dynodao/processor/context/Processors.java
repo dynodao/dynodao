@@ -5,6 +5,8 @@ import lombok.experimental.Delegate;
 import javax.inject.Inject;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.Element;
+import javax.lang.model.element.ElementKind;
+import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.TypeMirror;
@@ -70,6 +72,21 @@ public class Processors implements Elements, Types {
      */
     public boolean isSameType(TypeMirror typeMirror, Class<?> type, Class<?>... typeArguments) {
         return isSameType(typeMirror, getDeclaredType(type, typeArguments));
+    }
+
+    /**
+     * Returns the method element enclosed in the <tt>typeElement</tt> whose simple name is <tt>methodName</tt>.
+     * @param typeElement the type to find a method in
+     * @param methodName the method name to find
+     * @return the method
+     * @throws IllegalArgumentException if the method does not exist
+     */
+    public ExecutableElement getMethodByName(TypeElement typeElement, String methodName) {
+        return typeElement.getEnclosedElements().stream()
+                .filter(element -> element.getKind().equals(ElementKind.METHOD))
+                .filter(method -> method.getSimpleName().contentEquals(methodName))
+                .map(method -> (ExecutableElement) method)
+                .findFirst().orElseThrow(() -> new IllegalArgumentException(String.format("no such method [%s] in [%s]", methodName, typeElement)));
     }
 
     /**

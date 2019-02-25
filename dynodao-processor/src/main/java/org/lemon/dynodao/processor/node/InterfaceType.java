@@ -3,15 +3,15 @@ package org.lemon.dynodao.processor.node;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import org.lemon.dynodao.DocumentLoad;
-import org.lemon.dynodao.DocumentQuery;
+import org.lemon.dynodao.DynoDaoLoad;
+import org.lemon.dynodao.DynoDaoQuery;
 import org.lemon.dynodao.processor.schema.index.DynamoIndex;
 import org.lemon.dynodao.processor.schema.index.IndexType;
 
 import java.util.Optional;
 
 /**
- * Indicates which of {@link DocumentLoad} or {@link DocumentQuery} interfaces a type
+ * Indicates which of {@link DynoDaoLoad} or {@link DynoDaoQuery} interfaces a type
  * should implement, if any.
  */
 @Getter
@@ -19,8 +19,8 @@ import java.util.Optional;
 public enum InterfaceType {
 
     NONE(Optional.empty()),
-    DOCUMENT_LOAD(Optional.of(DocumentLoad.class)),
-    DOCUMENT_QUERY(Optional.of(DocumentQuery.class));
+    LOAD(Optional.of(DynoDaoLoad.class)),
+    QUERY(Optional.of(DynoDaoQuery.class));
 
     private final Optional<Class<?>> interfaceClass;
 
@@ -34,9 +34,9 @@ public enum InterfaceType {
         if (keyLengthType.equals(KeyLengthType.NONE)) {
             return NONE;
         } else if (KeyLengthType.lengthOf(index).equals(keyLengthType) && index.getIndexType().equals(IndexType.TABLE)) {
-            return DOCUMENT_LOAD;
+            return LOAD;
         } else {
-            return DOCUMENT_QUERY;
+            return QUERY;
         }
     }
 

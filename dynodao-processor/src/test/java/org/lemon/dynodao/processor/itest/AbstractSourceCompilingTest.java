@@ -59,7 +59,8 @@ public abstract class AbstractSourceCompilingTest extends AbstractCompilingTest 
 
     @Test
     public void toString_allGeneratedSources_validToString() {
-        ToStringVerifier.forPackage(getCompilationUnitUnderTest().getPackage().getName(), false).verify();
+        ToStringVerifier.forPackage(getCompilationUnitUnderTest().getPackage().getName(), false,
+                clazz -> !clazz.isAnonymousClass()).verify();
     }
 
     @Test
@@ -90,6 +91,7 @@ class PackageScanner {
         return findClasses(testClass.getClass().getPackage().getName()).stream()
                 .filter(clazz -> !clazz.equals(testClass.getCompilationUnitUnderTest()))
                 .filter(clazz -> !clazz.equals(testClass.getClass()))
+                .filter(clazz -> !clazz.isAnonymousClass())
                 .collect(toList());
     }
 

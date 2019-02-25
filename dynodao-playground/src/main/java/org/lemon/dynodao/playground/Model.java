@@ -9,12 +9,10 @@ import org.lemon.dynodao.annotation.DynoDaoIndexHashKey;
 import org.lemon.dynodao.annotation.DynoDaoIndexRangeKey;
 import org.lemon.dynodao.annotation.DynoDaoRangeKey;
 import org.lemon.dynodao.annotation.DynoDaoSchema;
-import org.lemon.dynodao.annotation.DynoDaoValueMapped;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.SortedMap;
 

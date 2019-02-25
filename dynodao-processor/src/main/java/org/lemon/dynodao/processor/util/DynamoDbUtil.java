@@ -16,7 +16,6 @@ public class DynamoDbUtil {
     private static final ClassName PAGINATED_LIST = ClassName.get("com.amazonaws.services.dynamodbv2.datamodeling", "PaginatedList");
     private static final ClassName DYNAMO_DB_MAPPER = ClassName.get("com.amazonaws.services.dynamodbv2.datamodeling", "DynamoDBMapper");
     private static final ClassName DYNAMO_DB_QUERY_EXPRESSION = ClassName.get("com.amazonaws.services.dynamodbv2.datamodeling", "DynamoDBQueryExpression");
-    private static final ClassName ATTRIBUTE_VALUE = ClassName.get("com.amazonaws.services.dynamodbv2.model", "AttributeValue");
 
     /**
      * @param document the document type
@@ -45,7 +44,42 @@ public class DynamoDbUtil {
      * @return the {@link com.amazonaws.services.dynamodbv2.model.AttributeValue} type
      */
     public static ClassName attributeValue() {
-        return ATTRIBUTE_VALUE;
+        return ClassName.get("com.amazonaws.services.dynamodbv2.model", "AttributeValue");
+    }
+
+    /**
+     * @return the {@link com.amazonaws.services.dynamodbv2.AmazonDynamoDB} type
+     */
+    public static ClassName amazonDynamoDb() {
+        return ClassName.get("com.amazonaws.services.dynamodbv2", "AmazonDynamoDB");
+    }
+
+    /**
+     * @return the {@link com.amazonaws.services.dynamodbv2.model.GetItemRequest} type
+     */
+    public static ClassName getItemRequest() {
+        return ClassName.get("com.amazonaws.services.dynamodbv2.model", "GetItemRequest");
+    }
+
+    /**
+     * @return the {@link com.amazonaws.services.dynamodbv2.model.GetItemResult} type
+     */
+    public static ClassName getItemResult() {
+        return ClassName.get("com.amazonaws.services.dynamodbv2.model", "GetItemResult");
+    }
+
+    /**
+     * @return the {@link com.amazonaws.services.dynamodbv2.model.QueryRequest} type
+     */
+    public static ClassName queryRequest() {
+        return ClassName.get("com.amazonaws.services.dynamodbv2.model", "QueryRequest");
+    }
+
+    /**
+     * @return the {@link com.amazonaws.services.dynamodbv2.model.QueryResult} type
+     */
+    public static ClassName queryResult() {
+        return ClassName.get("com.amazonaws.services.dynamodbv2.model", "QueryResult");
     }
 
 }

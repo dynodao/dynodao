@@ -40,10 +40,7 @@ public abstract class QueryReadResult<T> extends AbstractReadResult<T> {
 
         @Override
         public boolean tryAdvance(Consumer<? super T> action) {
-            if (iterator.hasNext()) {
-                action.accept(deserialize(iterator.next()));
-                return true;
-            } else if ((iterator = loadNextPage()) != null && iterator.hasNext()) {
+            if (iterator.hasNext() || ((iterator = loadNextPage()) != null && iterator.hasNext())) {
                 action.accept(deserialize(iterator.next()));
                 return true;
             } else {
