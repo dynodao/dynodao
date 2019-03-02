@@ -32,4 +32,3 @@ public class StringSetDynamoAttribute implements DynamoAttribute {
     }
 
 }
-

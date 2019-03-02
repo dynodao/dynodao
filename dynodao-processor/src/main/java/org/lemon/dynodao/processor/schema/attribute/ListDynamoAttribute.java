@@ -32,4 +32,3 @@ public class ListDynamoAttribute implements DynamoAttribute {
     }
 
 }
-

@@ -31,4 +31,3 @@ public class BinaryDynamoAttribute implements DynamoAttribute {
     }
 
 }
-

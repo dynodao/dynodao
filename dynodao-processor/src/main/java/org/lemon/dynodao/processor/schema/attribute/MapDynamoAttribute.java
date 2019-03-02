@@ -32,4 +32,3 @@ public class MapDynamoAttribute implements DynamoAttribute {
     }
 
 }
-

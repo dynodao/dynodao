@@ -31,4 +31,3 @@ public class BooleanDynamoAttribute implements DynamoAttribute {
     }
 
 }
-

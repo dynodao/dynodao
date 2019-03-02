@@ -31,4 +31,3 @@ public class StringDynamoAttribute implements DynamoAttribute {
     }
 
 }
-

@@ -36,4 +36,3 @@ public class DocumentDynamoAttribute implements DynamoAttribute {
     }
 
 }
-

@@ -26,7 +26,6 @@ import javax.lang.model.type.TypeMirror;
 import javax.lang.model.type.WildcardType;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
-
 import java.io.Writer;
 import java.util.List;
 import java.util.Map;
