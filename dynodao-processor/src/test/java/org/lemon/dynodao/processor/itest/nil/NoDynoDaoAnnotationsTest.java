@@ -9,7 +9,7 @@ import static com.google.testing.compile.CompilationSubject.assertThat;
 public class NoDynoDaoAnnotationsTest extends AbstractResourceCompilingTest {
 
     @Test
-    public void noClassesWithDynoDaoAnnotation_processorDoesNothing() {
+    public void noClassesWithDynoDaoAnnotation_onlyUseCase_processorDoesNothing() {
         Compilation compilation = compile(getSchemaResource());
         assertThat(compilation).succeededWithoutWarnings();
     }
