@@ -23,19 +23,19 @@ public class StringSerializationTest extends AbstractSourceCompilingTest {
     @Test
     public void deserializeString_null_returnsNull() {
         String value = SchemaAttributeValueSerializer.deserializeString(null);
-        assertThat(value).isNull();;
+        assertThat(value).isNull();
     }
 
     @Test
     public void deserializeString_nullAttributeValue_returnsNull() {
         String value = SchemaAttributeValueSerializer.deserializeString(new AttributeValue().withNULL(true));
-        assertThat(value).isNull();;
+        assertThat(value).isNull();
     }
 
     @Test
     public void deserializeString_stringValueNull_returnsNull() {
         String value = SchemaAttributeValueSerializer.deserializeString(new AttributeValue().withN("not string"));
-        assertThat(value).isNull();;
+        assertThat(value).isNull();
     }
 
     @Test
