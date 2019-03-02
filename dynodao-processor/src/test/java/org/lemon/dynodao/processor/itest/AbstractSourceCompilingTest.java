@@ -46,6 +46,7 @@ public abstract class AbstractSourceCompilingTest extends AbstractCompilingTest 
     /**
      * Returns the compilation unit that was compiled for the purposes of this test.
      * This class is re-compiled by this test to account for the code coverage of the package.
+     * By default, this returns the class with the name {@code Schema} in the same package as the test class.
      * @return the schema "class under test"
      */
     @SneakyThrows(ClassNotFoundException.class)
