@@ -15,11 +15,15 @@ import java.util.Objects;
 
 /**
  * A message to display during the compilation phase.
+ * <p>
+ * Implementation note: this class is mutable, rather than immutable. Immutability can be achieved, but
+ * would require interaction with {@link ProcessorMessager} in order to prevent multiple errors being emitted.
+ * In favour of keeping both classes simple, this class is mutable.
  */
 @Data
 @Setter(AccessLevel.NONE)
 @RequiredArgsConstructor(access = AccessLevel.NONE)
-public class ProcessorMessage {
+public final class ProcessorMessage {
 
     private final Diagnostic.Kind kind;
     private final String message;
@@ -33,6 +37,7 @@ public class ProcessorMessage {
      * @param kind the kind of message to send, error, warning etc
      * @param format the string format, used in String#format
      * @param args the args in format
+     * @throws java.util.IllegalFormatException when {@code String.format(format, args)} throws
      */
     ProcessorMessage(Diagnostic.Kind kind, String format, Object... args) {
         this.kind = kind;
@@ -71,7 +76,7 @@ public class ProcessorMessage {
         return element.getAnnotationMirrors().stream()
                 .filter(mirror -> mirror.getAnnotationType().asElement().toString().equals(annotation.getCanonicalName()))
                 .findAny()
-                .orElseThrow(() -> new IllegalStateException(String.format("No such annotation %s found on element %s", annotation, element)));
+                .orElseThrow(() -> new IllegalArgumentException(String.format("No such annotation %s found on element %s", annotation, element)));
     }
 
     /**
@@ -97,10 +102,10 @@ public class ProcessorMessage {
 
     private AnnotationValue getAnnotationValueByName(AnnotationMirror annotation, String attributeName) {
         return annotation.getElementValues().entrySet().stream()
-                .filter(entry -> entry.getKey().getSimpleName().equals(attributeName))
+                .filter(entry -> entry.getKey().getSimpleName().contentEquals(attributeName))
                 .map(entry -> entry.getValue())
                 .findAny()
-                .orElseThrow(() -> new IllegalStateException(String.format("No such method %s() found in %s", attributeName, annotation)));
+                .orElseThrow(() -> new IllegalArgumentException(String.format("No such method %s() found in %s", attributeName, annotation)));
     }
 
     /**

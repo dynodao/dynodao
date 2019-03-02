@@ -34,6 +34,7 @@ public class ProcessorMessager {
      * @param format the error format message
      * @param args the format arguments
      * @return the newly created message
+     * @throws java.util.IllegalFormatException when {@code String.format(format, args)} throws
      */
     public ProcessorMessage submitError(String format, Object... args) {
         return submit(Diagnostic.Kind.ERROR, format, args);
