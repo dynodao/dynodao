@@ -21,8 +21,6 @@ import java.util.Arrays;
  */
 public class Processors implements Elements, Types {
 
-    private final ProcessorContext processorContext;
-
     @Delegate(types = Elements.class)
     private final Elements elementUtils;
 
@@ -30,7 +28,6 @@ public class Processors implements Elements, Types {
     private final Types typeUtils;
 
     @Inject Processors(ProcessorContext processorContext) {
-        this.processorContext = processorContext;
         this.elementUtils = processorContext.getProcessingEnvironment().getElementUtils();
         this.typeUtils = processorContext.getProcessingEnvironment().getTypeUtils();
     }
@@ -87,18 +84,6 @@ public class Processors implements Elements, Types {
                 .filter(method -> method.getSimpleName().contentEquals(methodName))
                 .map(method -> (ExecutableElement) method)
                 .findFirst().orElseThrow(() -> new IllegalArgumentException(String.format("no such method [%s] in [%s]", methodName, typeElement)));
-    }
-
-    /**
-     * Returns the annotation mirror of the specified class.
-     * @param element the element which has the annotation
-     * @param annotation the annotation class to get the mirror of
-     * @return the annotation mirror, or null if none exists
-     */
-    public AnnotationMirror getAnnotationMirrorOfType(Element element, Class<? extends Annotation> annotation) {
-        return element.getAnnotationMirrors().stream()
-                .filter(mirror -> mirror.getAnnotationType().asElement().toString().equals(annotation.getCanonicalName()))
-                .findAny().orElse(null);
     }
 
 }
