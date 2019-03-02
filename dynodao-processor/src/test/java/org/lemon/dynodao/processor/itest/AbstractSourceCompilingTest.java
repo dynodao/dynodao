@@ -20,7 +20,9 @@ import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Enumeration;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import static com.google.testing.compile.CompilationSubject.assertThat;
 import static java.util.Collections.emptyList;
@@ -38,18 +40,28 @@ public abstract class AbstractSourceCompilingTest extends AbstractCompilingTest 
     private static final JavaCompiler COMPILER = ToolProvider.getSystemJavaCompiler();
     private static final StandardJavaFileManager FILE_MANAGER = COMPILER.getStandardFileManager(new DiagnosticCollector<>(), null, null);
 
+    // only run the recompile test once, since it takes quite a while
+    private static final Set<Class<?>> COMPILE_ONCE = new HashSet<>();
+
     /**
      * Returns the compilation unit that was compiled for the purposes of this test.
      * This class is re-compiled by this test to account for the code coverage of the package.
      * @return the schema "class under test"
      */
-    protected abstract Class<?> getCompilationUnitUnderTest();
+    @SneakyThrows(ClassNotFoundException.class)
+    protected Class<?> getCompilationUnitUnderTest() {
+        String testClassName = getClass().getCanonicalName();
+        String schemaClassName = testClassName.substring(0, testClassName.lastIndexOf('.') + 1) + "Schema";
+        return Class.forName(schemaClassName);
+    }
 
     @Test
     public void recompileSchemaClass_onlyUseCase_countTowardCodeCoverage() {
-        JavaFileObject schema = FILE_MANAGER.getJavaFileObjects(getFileName(getCompilationUnitUnderTest())).iterator().next();
-        Compilation compilation = compile(schema);
-        assertThat(compilation).succeeded();
+        if (COMPILE_ONCE.add(getCompilationUnitUnderTest())) {
+            JavaFileObject schema = FILE_MANAGER.getJavaFileObjects(getFileName(getCompilationUnitUnderTest())).iterator().next();
+            Compilation compilation = compile(schema);
+            assertThat(compilation).succeeded();
+        }
     }
 
     private String getFileName(Class<?> clazz) {
@@ -90,7 +102,7 @@ class PackageScanner {
     static List<Class<?>> findClasses(AbstractSourceCompilingTest testClass) {
         return findClasses(testClass.getClass().getPackage().getName()).stream()
                 .filter(clazz -> !clazz.equals(testClass.getCompilationUnitUnderTest()))
-                .filter(clazz -> !clazz.equals(testClass.getClass()))
+                .filter(clazz -> !AbstractSourceCompilingTest.class.isAssignableFrom(clazz))
                 .filter(clazz -> !clazz.isAnonymousClass())
                 .collect(toList());
     }
@@ -100,7 +112,7 @@ class PackageScanner {
      * @param packageName package to scan
      * @return classes
      */
-    static List<Class<?>> findClasses(String packageName) {
+    private static List<Class<?>> findClasses(String packageName) {
         String path = packageName.replace('.', '/');
         Enumeration<URL> resources = getResources(path);
 
