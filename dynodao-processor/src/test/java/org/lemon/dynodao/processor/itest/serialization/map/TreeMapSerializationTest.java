@@ -4,8 +4,8 @@ import com.amazonaws.services.dynamodbv2.model.AttributeValue;
 import org.junit.Test;
 import org.lemon.dynodao.processor.itest.AbstractSourceCompilingTest;
 
-import java.util.TreeMap;
 import java.util.Map;
+import java.util.TreeMap;
 
 import static java.util.Collections.emptyMap;
 import static java.util.Collections.singletonMap;

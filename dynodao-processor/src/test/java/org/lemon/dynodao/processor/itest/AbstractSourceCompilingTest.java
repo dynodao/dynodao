@@ -19,6 +19,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.List;
@@ -54,6 +55,15 @@ public abstract class AbstractSourceCompilingTest extends AbstractCompilingTest 
         String testClassName = getClass().getCanonicalName();
         String schemaClassName = testClassName.substring(0, testClassName.lastIndexOf('.') + 1) + "Schema";
         return Class.forName(schemaClassName);
+    }
+
+    /**
+     * Returns the set of classes that should not be tested for equals. This returns the {@code compilationUnitUnderTest}
+     * by default. The returned set is mutable.
+     * @return the set of classes to ignore equality checks for
+     */
+    protected Set<Class<?>> ignoreTestEqualsClasses() {
+        return new HashSet<>(Arrays.asList(getCompilationUnitUnderTest()));
     }
 
     @Test
@@ -102,7 +112,7 @@ class PackageScanner {
      */
     static List<Class<?>> findClasses(AbstractSourceCompilingTest testClass) {
         return findClasses(testClass.getClass().getPackage().getName()).stream()
-                .filter(clazz -> !clazz.equals(testClass.getCompilationUnitUnderTest()))
+                .filter(clazz -> !testClass.ignoreTestEqualsClasses().contains(clazz))
                 .filter(clazz -> !AbstractSourceCompilingTest.class.isAssignableFrom(clazz))
                 .filter(clazz -> !clazz.isAnonymousClass())
                 .collect(toList());
