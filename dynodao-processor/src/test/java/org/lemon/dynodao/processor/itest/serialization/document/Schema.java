@@ -14,7 +14,13 @@ class Schema {
     private String hashKey;
 
     /**
-     * We should only have to test against one nested type as the serializer delegates to other methods
+     * {@code boolean} needs a specific attribute, as the getter is <tt>isAttribute</tt>.
+     */
+    private boolean bool;
+    private Boolean boolObj;
+
+    /**
+     * We should only have to test against one other nested type as the serializer delegates to other methods
      * which will be tested by other classes.
      */
     @DynoDaoAttribute("attribute")

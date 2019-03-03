@@ -14,6 +14,7 @@ public class SchemaParsers implements Streamable<SchemaParser> {
 
     @Inject DocumentSchemaParser documentSchemaParser;
     @Inject MapTypeSchemaParser mapTypeSchemaParser;
+    @Inject BooleanTypeSchemaParser booleanTypeSchemaParser;
     @Inject StringTypeSchemaParser stringTypeSchemaParser;
     @Inject NumericTypeSchemaParser numericTypeSchemaParser;
     @Inject NullSchemaParser nullSchemaParser;
@@ -35,6 +36,7 @@ public class SchemaParsers implements Streamable<SchemaParser> {
         schemaParsers.add(documentSchemaParser);
 
         schemaParsers.add(mapTypeSchemaParser);
+        schemaParsers.add(booleanTypeSchemaParser);
         schemaParsers.add(stringTypeSchemaParser);
         schemaParsers.add(numericTypeSchemaParser);
 
