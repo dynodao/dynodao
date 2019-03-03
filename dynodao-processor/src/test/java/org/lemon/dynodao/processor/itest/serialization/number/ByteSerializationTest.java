@@ -15,7 +15,7 @@ public class ByteSerializationTest extends AbstractSourceCompilingTest {
     }
 
     @Test
-    public void serializeByte_onlyUseCase_returnsAttributeValueWithNumber() {
+    public void serializeByte_byte_returnsAttributeValueWithNumber() {
         AttributeValue value = SchemaAttributeValueSerializer.serializeByte(new Byte("1"));
         assertThat(value).isEqualTo(new AttributeValue().withN("1"));
     }

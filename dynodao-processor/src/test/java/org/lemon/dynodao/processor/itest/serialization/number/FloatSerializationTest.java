@@ -15,7 +15,7 @@ public class FloatSerializationTest extends AbstractSourceCompilingTest {
     }
 
     @Test
-    public void serializeFloat_onlyUseCase_returnsAttributeValueWithNumber() {
+    public void serializeFloat_float_returnsAttributeValueWithNumber() {
         AttributeValue value = SchemaAttributeValueSerializer.serializeFloat(new Float("0.125"));
         assertThat(value).isEqualTo(new AttributeValue().withN("0.125"));
     }

@@ -15,7 +15,7 @@ public class IntegerSerializationTest extends AbstractSourceCompilingTest {
     }
 
     @Test
-    public void serializeInteger_onlyUseCase_returnsAttributeValueWithNumber() {
+    public void serializeInteger_integer_returnsAttributeValueWithNumber() {
         AttributeValue value = SchemaAttributeValueSerializer.serializeInteger(new Integer("1"));
         assertThat(value).isEqualTo(new AttributeValue().withN("1"));
     }

@@ -15,7 +15,7 @@ public class ShortSerializationTest extends AbstractSourceCompilingTest {
     }
 
     @Test
-    public void serializeShort_onlyUseCase_returnsAttributeValueWithNumber() {
+    public void serializeShort_short_returnsAttributeValueWithNumber() {
         AttributeValue value = SchemaAttributeValueSerializer.serializeShort(new Short("1"));
         assertThat(value).isEqualTo(new AttributeValue().withN("1"));
     }

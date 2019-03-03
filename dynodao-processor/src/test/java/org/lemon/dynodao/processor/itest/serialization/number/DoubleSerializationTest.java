@@ -15,7 +15,7 @@ public class DoubleSerializationTest extends AbstractSourceCompilingTest {
     }
 
     @Test
-    public void serializeDouble_onlyUseCase_returnsAttributeValueWithNumber() {
+    public void serializeDouble_double_returnsAttributeValueWithNumber() {
         AttributeValue value = SchemaAttributeValueSerializer.serializeDouble(new Double("0.125"));
         assertThat(value).isEqualTo(new AttributeValue().withN("0.125"));
     }

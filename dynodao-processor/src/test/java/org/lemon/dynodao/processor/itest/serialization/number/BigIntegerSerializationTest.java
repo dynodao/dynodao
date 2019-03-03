@@ -17,7 +17,7 @@ public class BigIntegerSerializationTest extends AbstractSourceCompilingTest {
     }
 
     @Test
-    public void serializeBigInteger_onlyUseCase_returnsAttributeValueWithNumber() {
+    public void serializeBigInteger_bigInteger_returnsAttributeValueWithNumber() {
         AttributeValue value = SchemaAttributeValueSerializer.serializeBigInteger(new BigInteger("1"));
         assertThat(value).isEqualTo(new AttributeValue().withN("1"));
     }

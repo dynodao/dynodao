@@ -15,7 +15,7 @@ public class LongSerializationTest extends AbstractSourceCompilingTest {
     }
 
     @Test
-    public void serializeLong_onlyUseCase_returnsAttributeValueWithNumber() {
+    public void serializeLong_long_returnsAttributeValueWithNumber() {
         AttributeValue value = SchemaAttributeValueSerializer.serializeLong(new Long("1"));
         assertThat(value).isEqualTo(new AttributeValue().withN("1"));
     }
