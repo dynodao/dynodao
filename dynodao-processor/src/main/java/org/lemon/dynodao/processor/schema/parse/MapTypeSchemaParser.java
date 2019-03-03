@@ -82,8 +82,9 @@ class MapTypeSchemaParser implements SchemaParser {
                 .endControlFlow()
                 .addStatement("return new $T().withM(attrValueMap)", attributeValue());
 
+        String mapType = processors.asElement(typeMirror).getSimpleName().toString();
         return SerializationMappingMethod.builder()
-                .methodName("serializeMapOf" + valueSerializationMethod.replaceFirst("serialize", ""))
+                .methodName(String.format("serialize%sOf%s", mapType, valueSerializationMethod.replaceFirst("serialize", "")))
                 .parameter(map)
                 .coreMethodBody(body.build())
                 .build();
@@ -110,8 +111,9 @@ class MapTypeSchemaParser implements SchemaParser {
                 .endControlFlow()
                 .addStatement("return map");
 
+        String mapType = processors.asElement(typeMirror).getSimpleName().toString();
         return DeserializationMappingMethod.builder()
-                .methodName("deserializeMapOf" + valueDeserializationMethod.replaceFirst("deserialize", ""))
+                .methodName(String.format("deserialize%sOf%s", mapType, valueDeserializationMethod.replaceFirst("deserialize", "")))
                 .returnType(TypeName.get(typeMirror))
                 .coreMethodBody(body.build())
                 .build();
