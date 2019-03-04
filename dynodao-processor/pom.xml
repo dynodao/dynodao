@@ -16,8 +16,10 @@
     <name>DynoDao Processor</name>
 
     <properties>
+        <javax.inject.version>1</javax.inject.version>
         <dagger.version>2.12</dagger.version>
         <auto.service.version>1.0-rc3</auto.service.version>
+        <java.poet.version>1.11.1</java.poet.version>
     </properties>
 
     <build>
@@ -70,11 +72,17 @@
             <artifactId>lombok</artifactId>
             <scope>provided</scope>
         </dependency>
+        <dependency>
+            <groupId>com.google.auto.service</groupId>
+            <artifactId>auto-service</artifactId>
+            <version>${auto.service.version}</version>
+            <scope>provided</scope>
+        </dependency>
 
         <dependency>
             <groupId>javax.inject</groupId>
             <artifactId>javax.inject</artifactId>
-            <version>1</version>
+            <version>${javax.inject.version}</version>
         </dependency>
         <dependency>
             <groupId>com.google.dagger</groupId>
@@ -91,12 +99,11 @@
         <dependency>
             <groupId>com.squareup</groupId>
             <artifactId>javapoet</artifactId>
-            <version>1.11.1</version>
+            <version>${java.poet.version}</version>
         </dependency>
         <dependency>
-            <groupId>com.google.auto.service</groupId>
-            <artifactId>auto-service</artifactId>
-            <version>${auto.service.version}</version>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
             <scope>provided</scope>
         </dependency>
 

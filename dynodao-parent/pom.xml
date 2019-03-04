@@ -28,6 +28,7 @@
         <javac.target>1.8</javac.target>
 
         <aws.sdk.version>1.11.255</aws.sdk.version>
+        <guava.version>21.0</guava.version>
         <lombok.version>1.16.18</lombok.version>
         <junit.version>4.12</junit.version>
         <junit.jupiter.version>5.4.0</junit.jupiter.version>
@@ -70,6 +71,12 @@
                 <groupId>org.projectlombok</groupId>
                 <artifactId>lombok</artifactId>
                 <version>${lombok.version}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>com.google.guava</groupId>
+                <artifactId>guava</artifactId>
+                <version>${guava.version}</version>
             </dependency>
 
             <dependency>
