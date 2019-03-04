@@ -5,7 +5,7 @@ import com.google.testing.compile.Compiler;
 import com.squareup.javapoet.JavaFile;
 import com.squareup.javapoet.TypeSpec;
 import lombok.SneakyThrows;
-import org.junit.Ignore;
+import org.junit.jupiter.api.Disabled;
 import org.lemon.dynodao.processor.DynoDaoProcessor;
 import org.lemon.dynodao.processor.test.AbstractUnitTest;
 
@@ -19,7 +19,7 @@ import javax.tools.ToolProvider;
 /**
  * Base unit test which provides access to compiler tools.
  */
-@Ignore
+@Disabled
 public abstract class AbstractCompilingTest extends AbstractUnitTest {
 
     protected static final JavaCompiler COMPILER = ToolProvider.getSystemJavaCompiler();

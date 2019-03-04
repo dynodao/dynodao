@@ -2,7 +2,7 @@ package org.lemon.dynodao.processor.schema.attribute;
 
 import com.jparams.verifier.tostring.ToStringVerifier;
 import nl.jqno.equalsverifier.EqualsVerifier;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.lemon.dynodao.processor.test.AbstractUnitTest;
 import org.mockito.Mock;
 
@@ -11,7 +11,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
-public class DocumentDynamoAttributeTest extends AbstractUnitTest {
+class DocumentDynamoAttributeTest extends AbstractUnitTest {
 
     private static final Object VISITOR_RETURN = new Object();
     private static final Object VISITOR_ARG = new Object();
@@ -24,12 +24,12 @@ public class DocumentDynamoAttributeTest extends AbstractUnitTest {
     }
 
     @Test
-    public void getAttributeType_onlyUseCase_returnsMap() {
+    void getAttributeType_onlyUseCase_returnsMap() {
         assertThat(createInstance().getAttributeType()).isEqualTo(DynamoAttributeType.MAP);
     }
 
     @Test
-    public void accept_noArg_invokesVisitDocumentWithNull() {
+    void accept_noArg_invokesVisitDocumentWithNull() {
         DocumentDynamoAttribute classUnderTest = createInstance();
         when(dynamoAttributeVisitorMock.visitDocument(classUnderTest, null)).thenReturn(VISITOR_RETURN);
         Object accept = classUnderTest.accept(dynamoAttributeVisitorMock);
@@ -39,7 +39,7 @@ public class DocumentDynamoAttributeTest extends AbstractUnitTest {
     }
 
     @Test
-    public void accept_withArg_invokesVisitDocument() {
+    void accept_withArg_invokesVisitDocument() {
         DocumentDynamoAttribute classUnderTest = createInstance();
         when(dynamoAttributeVisitorMock.visitDocument(classUnderTest, VISITOR_ARG)).thenReturn(VISITOR_RETURN);
         Object accept = classUnderTest.accept(dynamoAttributeVisitorMock, VISITOR_ARG);
@@ -49,12 +49,12 @@ public class DocumentDynamoAttributeTest extends AbstractUnitTest {
     }
 
     @Test
-    public void toString_typicalUseCase_includesAllFields() {
+    void toString_typicalUseCase_includesAllFields() {
         ToStringVerifier.forClass(DocumentDynamoAttribute.class).verify();
     }
 
     @Test
-    public void equals_typicalUseCase_correct() {
+    void equals_typicalUseCase_correct() {
         EqualsVerifier.forClass(DocumentDynamoAttribute.class).verify();
     }
 

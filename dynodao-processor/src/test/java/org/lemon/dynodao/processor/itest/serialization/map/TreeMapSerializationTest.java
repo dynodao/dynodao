@@ -1,7 +1,7 @@
 package org.lemon.dynodao.processor.itest.serialization.map;
 
 import com.amazonaws.services.dynamodbv2.model.AttributeValue;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.lemon.dynodao.processor.itest.AbstractSourceCompilingTest;
 
 import java.util.Map;
@@ -12,34 +12,34 @@ import static java.util.Collections.singletonMap;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.entry;
 
-public class TreeMapSerializationTest extends AbstractSourceCompilingTest {
+class TreeMapSerializationTest extends AbstractSourceCompilingTest {
 
     @Test
-    public void serializeTreeMapOfString_null_returnsNullAttributeValue() {
+    void serializeTreeMapOfString_null_returnsNullAttributeValue() {
         AttributeValue value = SchemaAttributeValueSerializer.serializeTreeMapOfString(null);
         assertThat(value).isEqualTo(new AttributeValue().withNULL(true));
     }
 
     @Test
-    public void serializeTreeMapOfString_emptyMap_returnsAttributeValueWithEmptyMap() {
+    void serializeTreeMapOfString_emptyMap_returnsAttributeValueWithEmptyMap() {
         AttributeValue value = SchemaAttributeValueSerializer.serializeTreeMapOfString(mapOf());
         assertThat(value).isEqualTo(new AttributeValue().withM(emptyMap()));
     }
 
     @Test
-    public void serializeTreeMapOfString_singletonMapWithValue_returnsAttributeValueWithSingleValueSerializedMap() {
+    void serializeTreeMapOfString_singletonMapWithValue_returnsAttributeValueWithSingleValueSerializedMap() {
         AttributeValue value = SchemaAttributeValueSerializer.serializeTreeMapOfString(mapOf("key", "value"));
         assertThat(value).isEqualTo(new AttributeValue().withM(singletonMap("key", new AttributeValue("value"))));
     }
 
     @Test
-    public void serializeTreeMapOfString_singletonMapWithNullValue_returnsAttributeValueWithSingleNullAttributeValue() {
+    void serializeTreeMapOfString_singletonMapWithNullValue_returnsAttributeValueWithSingleNullAttributeValue() {
         AttributeValue value = SchemaAttributeValueSerializer.serializeTreeMapOfString(mapOf("key", null));
         assertThat(value).isEqualTo(new AttributeValue().withM(singletonMap("key", new AttributeValue().withNULL(true))));
     }
 
     @Test
-    public void serializeTreeMapOfString_mapWithMultipleValues_returnsAttributeValueWithSerializedMap() {
+    void serializeTreeMapOfString_mapWithMultipleValues_returnsAttributeValueWithSerializedMap() {
         AttributeValue value = SchemaAttributeValueSerializer.serializeTreeMapOfString(mapOf("key1", "value1", "key2", "value2"));
         assertThat(value).isEqualTo(new AttributeValue().withM(mapOf(
                 "key1", new AttributeValue("value1"),
@@ -47,7 +47,7 @@ public class TreeMapSerializationTest extends AbstractSourceCompilingTest {
     }
 
     @Test
-    public void serializeTreeMapOfString_mapWithMultipleValuesSomeNull_returnsAttributeValueWithSerializedMap() {
+    void serializeTreeMapOfString_mapWithMultipleValuesSomeNull_returnsAttributeValueWithSerializedMap() {
         AttributeValue value = SchemaAttributeValueSerializer.serializeTreeMapOfString(mapOf("key1", "value1", "key2", null));
         assertThat(value).isEqualTo(new AttributeValue().withM(mapOf(
                 "key1", new AttributeValue("value1"),
@@ -55,7 +55,7 @@ public class TreeMapSerializationTest extends AbstractSourceCompilingTest {
     }
 
     @Test
-    public void serializeTreeMapOfString_mapWithMultipleValuesAllNull_returnsAttributeValueWithSerializedMap() {
+    void serializeTreeMapOfString_mapWithMultipleValuesAllNull_returnsAttributeValueWithSerializedMap() {
         AttributeValue value = SchemaAttributeValueSerializer.serializeTreeMapOfString(mapOf("key1", null, "key2", null));
         assertThat(value).isEqualTo(new AttributeValue().withM(mapOf(
                 "key1", new AttributeValue().withNULL(true),
@@ -63,25 +63,25 @@ public class TreeMapSerializationTest extends AbstractSourceCompilingTest {
     }
 
     @Test
-    public void deserializeTreeMapOfString_null_returnsNull() {
+    void deserializeTreeMapOfString_null_returnsNull() {
         Map<String, String> value = SchemaAttributeValueSerializer.deserializeTreeMapOfString(null);
         assertThat(value).isNull();
     }
 
     @Test
-    public void deserializeTreeMapOfString_nullAttributeValue_returnsNull() {
+    void deserializeTreeMapOfString_nullAttributeValue_returnsNull() {
         Map<String, String> value = SchemaAttributeValueSerializer.deserializeTreeMapOfString(new AttributeValue().withNULL(true));
         assertThat(value).isNull();
     }
 
     @Test
-    public void deserializeTreeMapOfString_mapValueNull_returnsNull() {
+    void deserializeTreeMapOfString_mapValueNull_returnsNull() {
         Map<String, String> value = SchemaAttributeValueSerializer.deserializeTreeMapOfString(new AttributeValue().withS("string"));
         assertThat(value).isNull();
     }
 
     @Test
-    public void deserializeTreeMapOfString_emptyMap_returnsEmptyTreeMap() {
+    void deserializeTreeMapOfString_emptyMap_returnsEmptyTreeMap() {
         Map<String, String> value = SchemaAttributeValueSerializer.deserializeTreeMapOfString(new AttributeValue().withM(emptyMap()));
         assertThat(value)
                 .isInstanceOf(TreeMap.class)
@@ -89,7 +89,7 @@ public class TreeMapSerializationTest extends AbstractSourceCompilingTest {
     }
 
     @Test
-    public void deserializeTreeMapOfString_singletonMapWithValue_returnsSingletonTreeMap() {
+    void deserializeTreeMapOfString_singletonMapWithValue_returnsSingletonTreeMap() {
         Map<String, String> value = SchemaAttributeValueSerializer.deserializeTreeMapOfString(new AttributeValue().withM(singletonMap("key", new AttributeValue("value"))));
         assertThat(value)
                 .isInstanceOf(TreeMap.class)
@@ -97,7 +97,7 @@ public class TreeMapSerializationTest extends AbstractSourceCompilingTest {
     }
 
     @Test
-    public void deserializeTreeMapOfString_singletonMapWithNull_returnsSingletonTreeMap() {
+    void deserializeTreeMapOfString_singletonMapWithNull_returnsSingletonTreeMap() {
         Map<String, String> value = SchemaAttributeValueSerializer.deserializeTreeMapOfString(new AttributeValue().withM(singletonMap("key", null)));
         assertThat(value)
                 .isInstanceOf(TreeMap.class)
@@ -105,7 +105,7 @@ public class TreeMapSerializationTest extends AbstractSourceCompilingTest {
     }
 
     @Test
-    public void deserializeTreeMapOfString_singletonMapWithNullAttributeValue_returnsSingletonTreeMap() {
+    void deserializeTreeMapOfString_singletonMapWithNullAttributeValue_returnsSingletonTreeMap() {
         Map<String, String> value = SchemaAttributeValueSerializer.deserializeTreeMapOfString(new AttributeValue().withM(singletonMap("key", new AttributeValue().withNULL(true))));
         assertThat(value)
                 .isInstanceOf(TreeMap.class)
@@ -113,7 +113,7 @@ public class TreeMapSerializationTest extends AbstractSourceCompilingTest {
     }
 
     @Test
-    public void deserializeTreeMapOfString_mapWithMultipleValues_returnsTreeMapWithValues() {
+    void deserializeTreeMapOfString_mapWithMultipleValues_returnsTreeMapWithValues() {
         Map<String, String> value = SchemaAttributeValueSerializer.deserializeTreeMapOfString(new AttributeValue().withM(mapOf(
                 "key1", new AttributeValue("value1"),
                 "key2", new AttributeValue("value2"))));
@@ -123,7 +123,7 @@ public class TreeMapSerializationTest extends AbstractSourceCompilingTest {
     }
 
     @Test
-    public void deserializeTreeMapOfString_mapWithMultipleValuesSomeNull_returnsTreeMapWithValueAndNull() {
+    void deserializeTreeMapOfString_mapWithMultipleValuesSomeNull_returnsTreeMapWithValueAndNull() {
         Map<String, String> value = SchemaAttributeValueSerializer.deserializeTreeMapOfString(new AttributeValue().withM(mapOf(
                 "key1", new AttributeValue("value1"),
                 "key2", null)));
@@ -133,7 +133,7 @@ public class TreeMapSerializationTest extends AbstractSourceCompilingTest {
     }
 
     @Test
-    public void deserializeTreeMapOfString_mapWithMultipleValuesSomeNullAttributeValue_returnsTreeMapWithValueAndNull() {
+    void deserializeTreeMapOfString_mapWithMultipleValuesSomeNullAttributeValue_returnsTreeMapWithValueAndNull() {
         Map<String, String> value = SchemaAttributeValueSerializer.deserializeTreeMapOfString(new AttributeValue().withM(mapOf(
                 "key1", new AttributeValue("value1"),
                 "key2", new AttributeValue().withNULL(true))));
@@ -143,7 +143,7 @@ public class TreeMapSerializationTest extends AbstractSourceCompilingTest {
     }
 
     @Test
-    public void deserializeTreeMapOfString_mapWithMultipleValuesAllNull_returnsTreeMapAllNull() {
+    void deserializeTreeMapOfString_mapWithMultipleValuesAllNull_returnsTreeMapAllNull() {
         Map<String, String> value = SchemaAttributeValueSerializer.deserializeTreeMapOfString(new AttributeValue().withM(mapOf(
                 "key1", null,
                 "key2", null)));
@@ -153,7 +153,7 @@ public class TreeMapSerializationTest extends AbstractSourceCompilingTest {
     }
 
     @Test
-    public void deserializeTreeMapOfString_mapWithMultipleValuesAllNullAttributeValue_returnsTreeMapAllNull() {
+    void deserializeTreeMapOfString_mapWithMultipleValuesAllNullAttributeValue_returnsTreeMapAllNull() {
         Map<String, String> value = SchemaAttributeValueSerializer.deserializeTreeMapOfString(new AttributeValue().withM(mapOf(
                 "key1", new AttributeValue().withNULL(true),
                 "key2", new AttributeValue().withNULL(true))));
@@ -163,7 +163,7 @@ public class TreeMapSerializationTest extends AbstractSourceCompilingTest {
     }
 
     @Test
-    public void deserializeTreeMapOfString_mapWithMultipleValuesAllMixedNulls_returnsTreeMapAllNull() {
+    void deserializeTreeMapOfString_mapWithMultipleValuesAllMixedNulls_returnsTreeMapAllNull() {
         Map<String, String> value = SchemaAttributeValueSerializer.deserializeTreeMapOfString(new AttributeValue().withM(mapOf(
                 "key1", null,
                 "key2", new AttributeValue().withNULL(true))));

@@ -1,14 +1,14 @@
 package org.lemon.dynodao.processor.itest;
 
 import com.google.testing.compile.JavaFileObjects;
-import org.junit.Ignore;
+import org.junit.jupiter.api.Disabled;
 
 import javax.tools.JavaFileObject;
 
 /**
  * Base class for compiling a class from test resources.
  */
-@Ignore
+@Disabled
 public abstract class AbstractResourceCompilingTest extends AbstractCompilingTest {
 
     /**

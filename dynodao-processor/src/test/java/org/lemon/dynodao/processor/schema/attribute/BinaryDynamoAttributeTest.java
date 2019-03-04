@@ -2,7 +2,7 @@ package org.lemon.dynodao.processor.schema.attribute;
 
 import com.jparams.verifier.tostring.ToStringVerifier;
 import nl.jqno.equalsverifier.EqualsVerifier;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.lemon.dynodao.processor.test.AbstractUnitTest;
 import org.mockito.Mock;
 
@@ -11,7 +11,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
-public class BinaryDynamoAttributeTest extends AbstractUnitTest {
+class BinaryDynamoAttributeTest extends AbstractUnitTest {
 
     private static final Object VISITOR_RETURN = new Object();
     private static final Object VISITOR_ARG = new Object();
@@ -23,12 +23,12 @@ public class BinaryDynamoAttributeTest extends AbstractUnitTest {
     }
 
     @Test
-    public void getAttributeType_onlyUseCase_returnsBinary() {
+    void getAttributeType_onlyUseCase_returnsBinary() {
         assertThat(createInstance().getAttributeType()).isEqualTo(DynamoAttributeType.BINARY);
     }
 
     @Test
-    public void accept_noArg_invokesVisitBinaryWithNull() {
+    void accept_noArg_invokesVisitBinaryWithNull() {
         BinaryDynamoAttribute classUnderTest = createInstance();
         when(dynamoAttributeVisitorMock.visitBinary(classUnderTest, null)).thenReturn(VISITOR_RETURN);
         Object accept = classUnderTest.accept(dynamoAttributeVisitorMock);
@@ -38,7 +38,7 @@ public class BinaryDynamoAttributeTest extends AbstractUnitTest {
     }
 
     @Test
-    public void accept_withArg_invokesVisitBinary() {
+    void accept_withArg_invokesVisitBinary() {
         BinaryDynamoAttribute classUnderTest = createInstance();
         when(dynamoAttributeVisitorMock.visitBinary(classUnderTest, VISITOR_ARG)).thenReturn(VISITOR_RETURN);
         Object accept = classUnderTest.accept(dynamoAttributeVisitorMock, VISITOR_ARG);
@@ -48,12 +48,12 @@ public class BinaryDynamoAttributeTest extends AbstractUnitTest {
     }
 
     @Test
-    public void toString_typicalUseCase_includesAllFields() {
+    void toString_typicalUseCase_includesAllFields() {
         ToStringVerifier.forClass(BinaryDynamoAttribute.class).verify();
     }
 
     @Test
-    public void equals_typicalUseCase_correct() {
+    void equals_typicalUseCase_correct() {
         EqualsVerifier.forClass(BinaryDynamoAttribute.class).verify();
     }
 

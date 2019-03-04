@@ -1,8 +1,8 @@
 package org.lemon.dynodao.processor.context;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.lemon.dynodao.processor.test.AbstractUnitTest;
 import org.mockito.Mock;
 
@@ -33,12 +33,13 @@ import java.util.Map;
 import static java.util.Collections.singletonList;
 import static java.util.Collections.singletonMap;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
-public class ProcessorsTest extends AbstractUnitTest {
+class ProcessorsTest extends AbstractUnitTest {
 
     @Mock private TypeMirror typeMirrorMock;
     @Mock private Element elementMock;
@@ -65,21 +66,21 @@ public class ProcessorsTest extends AbstractUnitTest {
 
     private Processors classUnderTest;
 
-    @Before
-    public void setup() {
+    @BeforeEach
+    void setup() {
         ProcessorContext context = new ProcessorContext(processingEnvironmentMock);
         when(processingEnvironmentMock.getElementUtils()).thenReturn(elementsMock);
         when(processingEnvironmentMock.getTypeUtils()).thenReturn(typesMock);
         classUnderTest = new Processors(context);
     }
 
-    @After
-    public void verifyNoMoreUtilsInteractions() {
+    @AfterEach
+    void verifyNoMoreUtilsInteractions() {
         verifyNoMoreInteractions(typesMock, elementsMock);
     }
 
     @Test
-    public void getTypeElement_class_returnsTypeByCanonicalName() {
+    void getTypeElement_class_returnsTypeByCanonicalName() {
         String canonicalName = ProcessorsTest.class.getCanonicalName();
         when(elementsMock.getTypeElement(canonicalName)).thenReturn(typeElementMock);
         TypeElement typeElement = classUnderTest.getTypeElement(ProcessorsTest.class);
@@ -88,7 +89,7 @@ public class ProcessorsTest extends AbstractUnitTest {
     }
 
     @Test
-    public void getDeclaredType_classes_returnsTypeByCanonicalNames() {
+    void getDeclaredType_classes_returnsTypeByCanonicalNames() {
         String canonicalName = ProcessorsTest.class.getCanonicalName();
         String typeArg = Object.class.getCanonicalName();
         when(elementsMock.getTypeElement(canonicalName)).thenReturn(typeElementMock);
@@ -103,7 +104,7 @@ public class ProcessorsTest extends AbstractUnitTest {
     }
 
     @Test
-    public void isSameType_classes_comparesTypeByCanonicalNames() {
+    void isSameType_classes_comparesTypeByCanonicalNames() {
         String canonicalName = ProcessorsTest.class.getCanonicalName();
         String typeArg = Object.class.getCanonicalName();
         when(elementsMock.getTypeElement(canonicalName)).thenReturn(typeElementMock);
@@ -120,7 +121,7 @@ public class ProcessorsTest extends AbstractUnitTest {
     }
 
     @Test
-    public void getMethodByName_methodExists_returnsExecutableElement() {
+    void getMethodByName_methodExists_returnsExecutableElement() {
         doReturn(singletonList(executableElementMock)).when(typeElementMock).getEnclosedElements();
         when(executableElementMock.getKind()).thenReturn(ElementKind.METHOD);
         when(executableElementMock.getSimpleName()).thenReturn(nameMock);
@@ -129,20 +130,22 @@ public class ProcessorsTest extends AbstractUnitTest {
         assertThat(method).isEqualTo(executableElementMock);
     }
 
-    @Test(expected = IllegalArgumentException.class)
-    public void getMethodByName_noMethodByName_throwsIllegalArgumentException() {
+    @Test
+    void getMethodByName_noMethodByName_throwsIllegalArgumentException() {
         doReturn(singletonList(executableElementMock)).when(typeElementMock).getEnclosedElements();
         when(executableElementMock.getKind()).thenReturn(ElementKind.METHOD);
         when(executableElementMock.getSimpleName()).thenReturn(nameMock);
         when(nameMock.contentEquals("differentMethodName")).thenReturn(true);
-        classUnderTest.getMethodByName(typeElementMock, "methodName");
+        assertThatThrownBy(() -> classUnderTest.getMethodByName(typeElementMock, "methodName"))
+                .isInstanceOf(IllegalArgumentException.class);
     }
 
-    @Test(expected = IllegalArgumentException.class)
-    public void getMethodByName_noMethods_throwsIllegalArgumentException() {
+    @Test
+    void getMethodByName_noMethods_throwsIllegalArgumentException() {
         doReturn(singletonList(elementMock)).when(typeElementMock).getEnclosedElements();
         when(elementMock.getKind()).thenReturn(ElementKind.FIELD);
-        classUnderTest.getMethodByName(typeElementMock, "methodName");
+        assertThatThrownBy(() -> classUnderTest.getMethodByName(typeElementMock, "methodName"))
+                .isInstanceOf(IllegalArgumentException.class);
     }
 
     /**
@@ -150,7 +153,7 @@ public class ProcessorsTest extends AbstractUnitTest {
      */
 
     @Test
-    public void ctor_onlyUseCase_pullsUtilsFromProcessingEnvironment() {
+    void ctor_onlyUseCase_pullsUtilsFromProcessingEnvironment() {
         // ctor invoked in setup()
         verify(processingEnvironmentMock).getElementUtils();
         verify(processingEnvironmentMock).getTypeUtils();
@@ -158,7 +161,7 @@ public class ProcessorsTest extends AbstractUnitTest {
     }
 
     @Test
-    public void asElement_delegate_returnsAsElement() {
+    void asElement_delegate_returnsAsElement() {
         when(typesMock.asElement(typeMirrorMock)).thenReturn(elementMock);
         Element element = classUnderTest.asElement(typeMirrorMock);
         assertThat(element).isEqualTo(elementMock);
@@ -166,7 +169,7 @@ public class ProcessorsTest extends AbstractUnitTest {
     }
 
     @Test
-    public void asMemberOf_delegate_returnsAsMemberOf() {
+    void asMemberOf_delegate_returnsAsMemberOf() {
         when(typesMock.asMemberOf(declaredTypeMock, elementMock)).thenReturn(typeMirrorMock);
         TypeMirror typeMirror = classUnderTest.asMemberOf(declaredTypeMock, elementMock);
         assertThat(typeMirror).isEqualTo(typeMirrorMock);
@@ -174,7 +177,7 @@ public class ProcessorsTest extends AbstractUnitTest {
     }
 
     @Test
-    public void boxedClass_delegate_returnsBoxedClass() {
+    void boxedClass_delegate_returnsBoxedClass() {
         when(typesMock.boxedClass(primitiveTypeMock)).thenReturn(typeElementMock);
         TypeElement typeElement = classUnderTest.boxedClass(primitiveTypeMock);
         assertThat(typeElement).isEqualTo(typeElementMock);
@@ -182,7 +185,7 @@ public class ProcessorsTest extends AbstractUnitTest {
     }
 
     @Test
-    public void capture_delegate_returnsCapture() {
+    void capture_delegate_returnsCapture() {
         when(typesMock.capture(typeMirrorMock)).thenReturn(typeMirrorMock);
         TypeMirror typeMirror = classUnderTest.capture(typeMirrorMock);
         assertThat(typeMirror).isEqualTo(typeMirrorMock);
@@ -190,7 +193,7 @@ public class ProcessorsTest extends AbstractUnitTest {
     }
 
     @Test
-    public void contains_delegate_returnsContains() {
+    void contains_delegate_returnsContains() {
         when(typesMock.contains(typeMirrorMock, typeMirrorMock)).thenReturn(true);
         boolean contains = classUnderTest.contains(typeMirrorMock, typeMirrorMock);
         assertThat(contains).isTrue();
@@ -198,7 +201,7 @@ public class ProcessorsTest extends AbstractUnitTest {
     }
 
     @Test
-    public void directSupertypes_delegate_returnsDirectSupertypes() {
+    void directSupertypes_delegate_returnsDirectSupertypes() {
         doReturn(singletonList(typeMirrorMock)).when(typesMock).directSupertypes(typeMirrorMock);
         List<? extends TypeMirror> supertypes = classUnderTest.directSupertypes(typeMirrorMock);
         assertThat(supertypes).isEqualTo(singletonList(typeMirrorMock));
@@ -206,7 +209,7 @@ public class ProcessorsTest extends AbstractUnitTest {
     }
 
     @Test
-    public void erasure_delegate_returnsErasure() {
+    void erasure_delegate_returnsErasure() {
         when(typesMock.erasure(typeMirrorMock)).thenReturn(typeMirrorMock);
         TypeMirror erasure = classUnderTest.erasure(typeMirrorMock);
         assertThat(erasure).isEqualTo(typeMirrorMock);
@@ -214,7 +217,7 @@ public class ProcessorsTest extends AbstractUnitTest {
     }
 
     @Test
-    public void getArrayType_delegate_returnsGetArrayType() {
+    void getArrayType_delegate_returnsGetArrayType() {
         when(typesMock.getArrayType(typeMirrorMock)).thenReturn(arrayTypeMock);
         ArrayType arrayType = classUnderTest.getArrayType(typeMirrorMock);
         assertThat(arrayType).isEqualTo(arrayTypeMock);
@@ -222,7 +225,7 @@ public class ProcessorsTest extends AbstractUnitTest {
     }
 
     @Test
-    public void getDeclaredType_delegateWithContaining_returnsGetDeclaredType() {
+    void getDeclaredType_delegateWithContaining_returnsGetDeclaredType() {
         when(typesMock.getDeclaredType(declaredTypeMock, typeElementMock, typeMirrorMock)).thenReturn(declaredTypeMock);
         DeclaredType declaredType = classUnderTest.getDeclaredType(declaredTypeMock, typeElementMock, typeMirrorMock);
         assertThat(declaredType).isEqualTo(declaredTypeMock);
@@ -230,7 +233,7 @@ public class ProcessorsTest extends AbstractUnitTest {
     }
 
     @Test
-    public void getDeclaredType_delegate_returnsGetDeclaredType() {
+    void getDeclaredType_delegate_returnsGetDeclaredType() {
         when(typesMock.getDeclaredType(typeElementMock, typeMirrorMock)).thenReturn(declaredTypeMock);
         DeclaredType declaredType = classUnderTest.getDeclaredType(typeElementMock, typeMirrorMock);
         assertThat(declaredType).isEqualTo(declaredTypeMock);
@@ -238,7 +241,7 @@ public class ProcessorsTest extends AbstractUnitTest {
     }
 
     @Test
-    public void getNoType_delegate_returnsGetNoType() {
+    void getNoType_delegate_returnsGetNoType() {
         when(typesMock.getNoType(TypeKind.NONE)).thenReturn(noTypeMock);
         NoType noType = classUnderTest.getNoType(TypeKind.NONE);
         assertThat(noType).isEqualTo(noTypeMock);
@@ -246,7 +249,7 @@ public class ProcessorsTest extends AbstractUnitTest {
     }
 
     @Test
-    public void getNullType_delegate_returnsGetNullType() {
+    void getNullType_delegate_returnsGetNullType() {
         when(typesMock.getNullType()).thenReturn(nullTypeMock);
         NullType nullType = classUnderTest.getNullType();
         assertThat(nullType).isEqualTo(nullTypeMock);
@@ -254,7 +257,7 @@ public class ProcessorsTest extends AbstractUnitTest {
     }
 
     @Test
-    public void getPrimitiveType_delegate_returnsGetPrimitiveType() {
+    void getPrimitiveType_delegate_returnsGetPrimitiveType() {
         when(typesMock.getPrimitiveType(TypeKind.NONE)).thenReturn(primitiveTypeMock);
         PrimitiveType primitiveType = classUnderTest.getPrimitiveType(TypeKind.NONE);
         assertThat(primitiveType).isEqualTo(primitiveTypeMock);
@@ -262,7 +265,7 @@ public class ProcessorsTest extends AbstractUnitTest {
     }
 
     @Test
-    public void getWildcardType_delegate_returnsGetWildcardType() {
+    void getWildcardType_delegate_returnsGetWildcardType() {
         when(typesMock.getWildcardType(typeMirrorMock, typeMirrorMock)).thenReturn(wildcardTypeMock);
         WildcardType wildcardType = classUnderTest.getWildcardType(typeMirrorMock, typeMirrorMock);
         assertThat(wildcardType).isEqualTo(wildcardTypeMock);
@@ -270,7 +273,7 @@ public class ProcessorsTest extends AbstractUnitTest {
     }
 
     @Test
-    public void isAssignable_delegate_returnsIsAssignable() {
+    void isAssignable_delegate_returnsIsAssignable() {
         when(typesMock.isAssignable(typeMirrorMock, typeMirrorMock)).thenReturn(true);
         boolean isAssignable = classUnderTest.isAssignable(typeMirrorMock, typeMirrorMock);
         assertThat(isAssignable).isTrue();
@@ -278,7 +281,7 @@ public class ProcessorsTest extends AbstractUnitTest {
     }
 
     @Test
-    public void isSameType_delegate_returnsIsSameType() {
+    void isSameType_delegate_returnsIsSameType() {
         when(typesMock.isSameType(typeMirrorMock, typeMirrorMock)).thenReturn(true);
         boolean isSameType = classUnderTest.isSameType(typeMirrorMock, typeMirrorMock);
         assertThat(isSameType).isTrue();
@@ -286,7 +289,7 @@ public class ProcessorsTest extends AbstractUnitTest {
     }
 
     @Test
-    public void isSubsignature_delegate_returnsIsSubsignature() {
+    void isSubsignature_delegate_returnsIsSubsignature() {
         when(typesMock.isSubsignature(executableTypeMock, executableTypeMock)).thenReturn(true);
         boolean isSubsignature = classUnderTest.isSubsignature(executableTypeMock, executableTypeMock);
         assertThat(isSubsignature).isTrue();
@@ -294,7 +297,7 @@ public class ProcessorsTest extends AbstractUnitTest {
     }
 
     @Test
-    public void isSubtype_delegate_returnsIsSubtype() {
+    void isSubtype_delegate_returnsIsSubtype() {
         when(typesMock.isSubtype(typeMirrorMock, typeMirrorMock)).thenReturn(true);
         boolean isSubtype = classUnderTest.isSubtype(typeMirrorMock, typeMirrorMock);
         assertThat(isSubtype).isTrue();
@@ -302,7 +305,7 @@ public class ProcessorsTest extends AbstractUnitTest {
     }
 
     @Test
-    public void unboxedType_delegate_returnsUnboxedType() {
+    void unboxedType_delegate_returnsUnboxedType() {
         when(typesMock.unboxedType(typeMirrorMock)).thenReturn(primitiveTypeMock);
         PrimitiveType unboxedType = classUnderTest.unboxedType(typeMirrorMock);
         assertThat(unboxedType).isEqualTo(primitiveTypeMock);
@@ -314,7 +317,7 @@ public class ProcessorsTest extends AbstractUnitTest {
      */
 
     @Test
-    public void getAllAnnotationMirrors_delegate_returnsGetAllAnnotationMirrors() {
+    void getAllAnnotationMirrors_delegate_returnsGetAllAnnotationMirrors() {
         doReturn(singletonList(annotationMirrorMock)).when(elementsMock).getAllAnnotationMirrors(elementMock);
         List<? extends AnnotationMirror> annotationMirrors = classUnderTest.getAllAnnotationMirrors(elementMock);
         assertThat(annotationMirrors).isEqualTo(singletonList(annotationMirrorMock));
@@ -322,7 +325,7 @@ public class ProcessorsTest extends AbstractUnitTest {
     }
 
     @Test
-    public void getAllMembers_delegate_returnGetAllMembers() {
+    void getAllMembers_delegate_returnGetAllMembers() {
         doReturn(singletonList(elementMock)).when(elementsMock).getAllMembers(typeElementMock);
         List<? extends Element> members = classUnderTest.getAllMembers(typeElementMock);
         assertThat(members).isEqualTo(singletonList(elementMock));
@@ -330,7 +333,7 @@ public class ProcessorsTest extends AbstractUnitTest {
     }
 
     @Test
-    public void getBinaryName_delegate_returnsGetBinaryName() {
+    void getBinaryName_delegate_returnsGetBinaryName() {
         when(elementsMock.getBinaryName(typeElementMock)).thenReturn(nameMock);
         Name binaryName = classUnderTest.getBinaryName(typeElementMock);
         assertThat(binaryName).isEqualTo(nameMock);
@@ -338,7 +341,7 @@ public class ProcessorsTest extends AbstractUnitTest {
     }
 
     @Test
-    public void getConstantExpression_delegate_returnsGetConstantExpression() {
+    void getConstantExpression_delegate_returnsGetConstantExpression() {
         Object value = new Object();
         when(elementsMock.getConstantExpression(value)).thenReturn("getConstantExpression");
         String constantExpression = classUnderTest.getConstantExpression(value);
@@ -347,7 +350,7 @@ public class ProcessorsTest extends AbstractUnitTest {
     }
 
     @Test
-    public void getDocComment_delegate_returnsGetDocComment() {
+    void getDocComment_delegate_returnsGetDocComment() {
         when(elementsMock.getDocComment(elementMock)).thenReturn("getDocComment");
         String docComment = classUnderTest.getDocComment(elementMock);
         assertThat(docComment).isEqualTo("getDocComment");
@@ -355,7 +358,7 @@ public class ProcessorsTest extends AbstractUnitTest {
     }
 
     @Test
-    public void getElementValuesWithDefaults_delegate_returnGetElementValuesWithDefaults() {
+    void getElementValuesWithDefaults_delegate_returnGetElementValuesWithDefaults() {
         doReturn(singletonMap(executableElementMock, annotationValueMock)).when(elementsMock).getElementValuesWithDefaults(annotationMirrorMock);
         Map<? extends ExecutableElement,? extends AnnotationValue> elementValues = classUnderTest.getElementValuesWithDefaults(annotationMirrorMock);
         assertThat(elementValues).isEqualTo(singletonMap(executableElementMock, annotationValueMock));
@@ -363,7 +366,7 @@ public class ProcessorsTest extends AbstractUnitTest {
     }
 
     @Test
-    public void getName_delegate_returnsGetName() {
+    void getName_delegate_returnsGetName() {
         when(elementsMock.getName("name")).thenReturn(nameMock);
         Name name = classUnderTest.getName("name");
         assertThat(name).isEqualTo(nameMock);
@@ -371,7 +374,7 @@ public class ProcessorsTest extends AbstractUnitTest {
     }
 
     @Test
-    public void getPackageElement_delegate_returnsGetPackageElement() {
+    void getPackageElement_delegate_returnsGetPackageElement() {
         when(elementsMock.getPackageElement("package")).thenReturn(packageElementMock);
         PackageElement packageElement = classUnderTest.getPackageElement("package");
         assertThat(packageElement).isEqualTo(packageElementMock);
@@ -379,7 +382,7 @@ public class ProcessorsTest extends AbstractUnitTest {
     }
 
     @Test
-    public void getPackageOf_delegate_returnsGetPackageOf() {
+    void getPackageOf_delegate_returnsGetPackageOf() {
         when(elementsMock.getPackageOf(elementMock)).thenReturn(packageElementMock);
         PackageElement packageElement = classUnderTest.getPackageOf(elementMock);
         assertThat(packageElement).isEqualTo(packageElementMock);
@@ -387,7 +390,7 @@ public class ProcessorsTest extends AbstractUnitTest {
     }
 
     @Test
-    public void getTypeElement_delegate_returnsGetTypeElement() {
+    void getTypeElement_delegate_returnsGetTypeElement() {
         when(elementsMock.getTypeElement("name")).thenReturn(typeElementMock);
         TypeElement typeElement = classUnderTest.getTypeElement("name");
         assertThat(typeElement).isEqualTo(typeElementMock);
@@ -395,7 +398,7 @@ public class ProcessorsTest extends AbstractUnitTest {
     }
 
     @Test
-    public void hides_delegate_returnsHides() {
+    void hides_delegate_returnsHides() {
         when(elementsMock.hides(elementMock, elementMock)).thenReturn(true);
         boolean hides = classUnderTest.hides(elementMock, elementMock);
         assertThat(hides).isTrue();
@@ -403,7 +406,7 @@ public class ProcessorsTest extends AbstractUnitTest {
     }
 
     @Test
-    public void isDeprecated_delegate_returnsIsDeprecated() {
+    void isDeprecated_delegate_returnsIsDeprecated() {
         when(elementsMock.isDeprecated(elementMock)).thenReturn(true);
         boolean isDeprecated = classUnderTest.isDeprecated(elementMock);
         assertThat(isDeprecated).isTrue();
@@ -411,7 +414,7 @@ public class ProcessorsTest extends AbstractUnitTest {
     }
 
     @Test
-    public void isFunctionalInterface_delegate_returnsIsFunctionalInterface() {
+    void isFunctionalInterface_delegate_returnsIsFunctionalInterface() {
         when(elementsMock.isFunctionalInterface(typeElementMock)).thenReturn(true);
         boolean isFunctionalInterface = classUnderTest.isFunctionalInterface(typeElementMock);
         assertThat(isFunctionalInterface).isTrue();
@@ -419,7 +422,7 @@ public class ProcessorsTest extends AbstractUnitTest {
     }
 
     @Test
-    public void overrides_delegate_returnsOverrides() {
+    void overrides_delegate_returnsOverrides() {
         when(elementsMock.overrides(executableElementMock, executableElementMock, typeElementMock)).thenReturn(true);
         boolean overrides = classUnderTest.overrides(executableElementMock, executableElementMock, typeElementMock);
         assertThat(overrides).isTrue();
@@ -427,7 +430,7 @@ public class ProcessorsTest extends AbstractUnitTest {
     }
 
     @Test
-    public void printElements_delegate_printsElements() {
+    void printElements_delegate_printsElements() {
         classUnderTest.printElements(writerMock, elementMock);
         verify(elementsMock).printElements(writerMock, elementMock);
     }

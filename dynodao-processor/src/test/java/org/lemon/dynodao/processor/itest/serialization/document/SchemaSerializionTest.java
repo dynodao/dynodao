@@ -1,7 +1,7 @@
 package org.lemon.dynodao.processor.itest.serialization.document;
 
 import com.amazonaws.services.dynamodbv2.model.AttributeValue;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.lemon.dynodao.processor.itest.AbstractSourceCompilingTest;
 
 import java.util.Map;
@@ -12,76 +12,76 @@ import static java.util.Collections.emptyMap;
 import static java.util.Collections.singletonMap;
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class SchemaSerializerTest extends AbstractSourceCompilingTest {
+class SchemaSerializionTest extends AbstractSourceCompilingTest {
 
     @Test
-    public void serializeSchema_null_returnsNullAttributeValue() {
+    void serializeSchema_null_returnsNullAttributeValue() {
         AttributeValue value = SchemaAttributeValueSerializer.serializeSchema(null);
         assertThat(value).isEqualTo(new AttributeValue().withNULL(true));
     }
 
     @Test
-    public void serializeSchema_allFieldsPresent_returnsMapAttributeValueWithOverrideAttributeNames() {
+    void serializeSchema_allFieldsPresent_returnsMapAttributeValueWithOverrideAttributeNames() {
         AttributeValue value = SchemaAttributeValueSerializer.serializeSchema(schema("key", true, true, "a", document("a1", "a2", "a3")));
         assertThat(value).isEqualTo(schemaAttributeValue("key", true, true, "a", document("a1", "a2", "a3")));
     }
 
     @Test
-    public void serializeSchema_someFieldsNull_returnsMapAttributeValueWithNulls() {
+    void serializeSchema_someFieldsNull_returnsMapAttributeValueWithNulls() {
         AttributeValue value = SchemaAttributeValueSerializer.serializeSchema(schema("key", true, null, null, null));
         assertThat(value).isEqualTo(schemaAttributeValue("key", true, null, null, null));
     }
 
     @Test
-    public void serializeSchema_allObjectFieldsNull_returnsMapAttributeValueWithNulls() {
+    void serializeSchema_allObjectFieldsNull_returnsMapAttributeValueWithNulls() {
         AttributeValue value = SchemaAttributeValueSerializer.serializeSchema(schema(null, true, null, null, null));
         assertThat(value).isEqualTo(schemaAttributeValue(null, true, null, null, null));
     }
 
     @Test
-    public void deserializeSchema_null_returnsNull() {
+    void deserializeSchema_null_returnsNull() {
         Schema value = SchemaAttributeValueSerializer.deserializeSchema(null);
         assertThat(value).isNull();
     }
 
     @Test
-    public void deserializeSchema_nullAttributeValue_returnsNull() {
+    void deserializeSchema_nullAttributeValue_returnsNull() {
         Schema value = SchemaAttributeValueSerializer.deserializeSchema(new AttributeValue().withNULL(true));
         assertThat(value).isNull();
     }
 
     @Test
-    public void deserializeSchema_mapValueNull_returnsNull() {
+    void deserializeSchema_mapValueNull_returnsNull() {
         Schema value = SchemaAttributeValueSerializer.deserializeSchema(new AttributeValue().withS("not map"));
         assertThat(value).isNull();
     }
 
     @Test
-    public void deserializeSchema_mapAttributeValue_returnsSchema() {
+    void deserializeSchema_mapAttributeValue_returnsSchema() {
         Schema value = SchemaAttributeValueSerializer.deserializeSchema(schemaAttributeValue("key", true, true, "a", document("a1", "a2", "a3")));
         assertThat(value).isEqualTo(schema("key", true, true, "a", document("a1", "a2", "a3")));
     }
 
     @Test
-    public void deserializeSchema_emptyMap_returnsDocumentWithNullFields() {
+    void deserializeSchema_emptyMap_returnsDocumentWithNullFields() {
         Schema value = SchemaAttributeValueSerializer.deserializeSchema(new AttributeValue().withM(emptyMap()));
         assertThat(value).isEqualTo(schema(null, false, null, null, null));
     }
 
     @Test
-    public void deserializeSchema_valueHaveWrongKeys_returnsDocumentWithNullFields() {
+    void deserializeSchema_valueHaveWrongKeys_returnsDocumentWithNullFields() {
         Schema value = SchemaAttributeValueSerializer.deserializeSchema(new AttributeValue().withM(singletonMap("dynamoNameIsAttribute", new AttributeValue("a"))));
         assertThat(value).isEqualTo(schema(null, false, null, null, null));
     }
 
     @Test
-    public void deserializeSchema_someKeysCorrect_returnsDocumentWithNullForMissingFieldsOnly() {
+    void deserializeSchema_someKeysCorrect_returnsDocumentWithNullForMissingFieldsOnly() {
         Schema value = SchemaAttributeValueSerializer.deserializeSchema(new AttributeValue().withM(singletonMap("hashKey", new AttributeValue("key"))));
         assertThat(value).isEqualTo(schema("key", false, null, null, null));
     }
 
     @Test
-    public void deserializeSchema_keysHaveWrongTypes_returnsDocumentWithNullFields() {
+    void deserializeSchema_keysHaveWrongTypes_returnsDocumentWithNullFields() {
         Schema value = SchemaAttributeValueSerializer.deserializeSchema(new AttributeValue().withM(singletonMap("hashKey", new AttributeValue().withM(emptyMap()))));
         assertThat(value).isEqualTo(schema(null, false, null, null, null));
     }

@@ -1,17 +1,17 @@
 package org.lemon.dynodao.processor.itest.validation.no_hash_key;
 
 import com.google.testing.compile.Compilation;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.lemon.dynodao.processor.itest.AbstractResourceCompilingTest;
 
 import javax.tools.JavaFileObject;
 
 import static com.google.testing.compile.CompilationSubject.assertThat;
 
-public class NoTableHashKeyTest extends AbstractResourceCompilingTest {
+class NoTableHashKeyTest extends AbstractResourceCompilingTest {
 
     @Test
-    public void compile_schemaHasNoHashKeySpecified_errorIssuedOnDynoDaoAnnotation() {
+    void compile_schemaHasNoHashKeySpecified_errorIssuedOnDynoDaoAnnotation() {
         JavaFileObject schema = getSchema("NoTableHashKey");
         Compilation compilation = compile(schema);
         assertThat(compilation).failed();

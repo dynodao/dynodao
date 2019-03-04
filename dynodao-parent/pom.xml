@@ -30,6 +30,7 @@
         <aws.sdk.version>1.11.255</aws.sdk.version>
         <lombok.version>1.16.18</lombok.version>
         <junit.version>4.12</junit.version>
+        <junit.jupiter.version>5.4.0</junit.jupiter.version>
         <mockito.version>2.0.2-beta</mockito.version>
         <assertj.version>3.8.0</assertj.version>
         <compile.testing.version>0.15</compile.testing.version>
@@ -77,6 +78,21 @@
                 <version>${junit.version}</version>
             </dependency>
             <dependency>
+                <groupId>org.junit.jupiter</groupId>
+                <artifactId>junit-jupiter-api</artifactId>
+                <version>${junit.jupiter.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.junit.jupiter</groupId>
+                <artifactId>junit-jupiter-params</artifactId>
+                <version>${junit.jupiter.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.junit.jupiter</groupId>
+                <artifactId>junit-jupiter-engine</artifactId>
+                <version>${junit.jupiter.version}</version>
+            </dependency>
+            <dependency>
                 <groupId>org.mockito</groupId>
                 <artifactId>mockito-all</artifactId>
                 <version>${mockito.version}</version>
@@ -109,5 +125,14 @@
             </dependency>
         </dependencies>
     </dependencyManagement>
+
+    <build>
+        <plugins>
+            <plugin>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>2.22.1</version>
+            </plugin>
+        </plugins>
+    </build>
     
 </project>

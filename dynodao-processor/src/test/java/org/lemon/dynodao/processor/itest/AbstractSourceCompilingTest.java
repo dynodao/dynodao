@@ -7,8 +7,10 @@ import lombok.experimental.UtilityClass;
 import nl.jqno.equalsverifier.EqualsVerifier;
 import nl.jqno.equalsverifier.EqualsVerifierApi;
 import nl.jqno.equalsverifier.Warning;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.DynamicTest;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestFactory;
 
 import javax.tools.JavaFileObject;
 import java.io.File;
@@ -25,6 +27,7 @@ import static com.google.testing.compile.CompilationSubject.assertThat;
 import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonList;
 import static java.util.stream.Collectors.toList;
+import static org.junit.jupiter.api.DynamicTest.dynamicTest;
 
 /**
  * Base class for a successful compilation test, ie the compilation unit under test is already compiled, and sources
@@ -32,7 +35,7 @@ import static java.util.stream.Collectors.toList;
  * <p>
  * This class re-compiles the compilation unit under test to account for the code coverage.
  */
-@Ignore
+@Disabled
 public abstract class AbstractSourceCompilingTest extends AbstractCompilingTest {
 
     // only run the recompile test once, since it takes quite a while
@@ -65,7 +68,7 @@ public abstract class AbstractSourceCompilingTest extends AbstractCompilingTest 
      * This allows for us to actually get code coverage metrics during integration tests.
      */
     @Test
-    public void recompileSchemaClass_onlyUseCase_countTowardCodeCoverage() {
+    void recompileSchemaClass_onlyUseCase_countTowardCodeCoverage() {
         if (COMPILE_ONCE.add(getCompilationUnitUnderTest())) {
             JavaFileObject schema = FILE_MANAGER.getJavaFileObjects(getFileName(getCompilationUnitUnderTest())).iterator().next();
             Compilation compilation = compile(schema);
@@ -81,25 +84,26 @@ public abstract class AbstractSourceCompilingTest extends AbstractCompilingTest 
     /**
      * Asserts all generated sources have a valid {@code toString} implementation.
      */
-    @Test
-    public void toString_allGeneratedSources_validToString() {
-        ToStringVerifier.forPackage(getCompilationUnitUnderTest().getPackage().getName(), false,
-                clazz -> !clazz.isAnonymousClass()).verify();
+    @TestFactory
+    Stream<DynamicTest> toString_allGeneratedSources_validToString() {
+        return PackageScanner.findClasses(this).stream()
+                .map(clazz -> dynamicTest(clazz.getCanonicalName() + "#toString", () -> ToStringVerifier.forClass(clazz).verify()));
     }
 
     /**
      * Asserts all generated sources have a valid {@code equals} and {@code hashCode} implementation.
      * For the serializer class, we check it is inherited from {@link Object}.
      */
-    @Test
-    public void equalsAndHashCode_allGeneratedSources_validEquals() {
-        for (Class<?> clazz : PackageScanner.findClasses(this)) {
-            EqualsVerifierApi<?> verifier = EqualsVerifier.forClass(clazz);
-            if (clazz.getName().endsWith("Serializer")) {
-                verifier.suppress(Warning.INHERITED_DIRECTLY_FROM_OBJECT);
-            }
-            verifier.verify();
-        }
+    @TestFactory
+    Stream<DynamicTest> equalsAndHashCode_allGeneratedSources_validEquals() {
+        return PackageScanner.findClasses(this).stream()
+                .map(clazz -> dynamicTest(clazz.getCanonicalName() + "#equals", () -> {
+                    EqualsVerifierApi<?> verifier = EqualsVerifier.forClass(clazz);
+                    if (clazz.getName().endsWith("Serializer")) {
+                        verifier.suppress(Warning.INHERITED_DIRECTLY_FROM_OBJECT);
+                    }
+                    verifier.verify();
+                }));
     }
 
 }

@@ -2,7 +2,7 @@ package org.lemon.dynodao.processor.schema.attribute;
 
 import com.jparams.verifier.tostring.ToStringVerifier;
 import nl.jqno.equalsverifier.EqualsVerifier;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.lemon.dynodao.processor.test.AbstractUnitTest;
 import org.mockito.Mock;
 
@@ -11,7 +11,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
-public class BooleanDynamoAttributeTest extends AbstractUnitTest {
+class BooleanDynamoAttributeTest extends AbstractUnitTest {
 
     private static final Object VISITOR_RETURN = new Object();
     private static final Object VISITOR_ARG = new Object();
@@ -24,12 +24,12 @@ public class BooleanDynamoAttributeTest extends AbstractUnitTest {
     }
 
     @Test
-    public void getAttributeType_onlyUseCase_returnsBoolean() {
+    void getAttributeType_onlyUseCase_returnsBoolean() {
         assertThat(createInstance().getAttributeType()).isEqualTo(DynamoAttributeType.BOOLEAN);
     }
 
     @Test
-    public void accept_noArg_invokesVisitBooleanWithNull() {
+    void accept_noArg_invokesVisitBooleanWithNull() {
         BooleanDynamoAttribute classUnderTest = createInstance();
         when(dynamoAttributeVisitorMock.visitBoolean(classUnderTest, null)).thenReturn(VISITOR_RETURN);
         Object accept = classUnderTest.accept(dynamoAttributeVisitorMock);
@@ -39,7 +39,7 @@ public class BooleanDynamoAttributeTest extends AbstractUnitTest {
     }
 
     @Test
-    public void accept_withArg_invokesVisitBoolean() {
+    void accept_withArg_invokesVisitBoolean() {
         BooleanDynamoAttribute classUnderTest = createInstance();
         when(dynamoAttributeVisitorMock.visitBoolean(classUnderTest, VISITOR_ARG)).thenReturn(VISITOR_RETURN);
         Object accept = classUnderTest.accept(dynamoAttributeVisitorMock, VISITOR_ARG);
@@ -49,12 +49,12 @@ public class BooleanDynamoAttributeTest extends AbstractUnitTest {
     }
 
     @Test
-    public void toString_typicalUseCase_includesAllFields() {
+    void toString_typicalUseCase_includesAllFields() {
         ToStringVerifier.forClass(BooleanDynamoAttribute.class).verify();
     }
 
     @Test
-    public void equals_typicalUseCase_correct() {
+    void equals_typicalUseCase_correct() {
         EqualsVerifier.forClass(BooleanDynamoAttribute.class).verify();
     }
 

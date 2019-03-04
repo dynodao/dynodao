@@ -1,7 +1,7 @@
 package org.lemon.dynodao.processor.itest.serialization.map;
 
 import com.amazonaws.services.dynamodbv2.model.AttributeValue;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.lemon.dynodao.processor.itest.AbstractSourceCompilingTest;
 
 import java.util.LinkedHashMap;
@@ -12,34 +12,34 @@ import static java.util.Collections.singletonMap;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.entry;
 
-public class MapSerializationTest extends AbstractSourceCompilingTest {
+class MapSerializationTest extends AbstractSourceCompilingTest {
 
     @Test
-    public void serializeMapOfString_null_returnsNullAttributeValue() {
+    void serializeMapOfString_null_returnsNullAttributeValue() {
         AttributeValue value = SchemaAttributeValueSerializer.serializeMapOfString(null);
         assertThat(value).isEqualTo(new AttributeValue().withNULL(true));
     }
 
     @Test
-    public void serializeMapOfString_emptyMap_returnsAttributeValueWithEmptyMap() {
+    void serializeMapOfString_emptyMap_returnsAttributeValueWithEmptyMap() {
         AttributeValue value = SchemaAttributeValueSerializer.serializeMapOfString(emptyMap());
         assertThat(value).isEqualTo(new AttributeValue().withM(emptyMap()));
     }
 
     @Test
-    public void serializeMapOfString_singletonMapWithValue_returnsAttributeValueWithSingleValueSerializedMap() {
+    void serializeMapOfString_singletonMapWithValue_returnsAttributeValueWithSingleValueSerializedMap() {
         AttributeValue value = SchemaAttributeValueSerializer.serializeMapOfString(singletonMap("key", "value"));
         assertThat(value).isEqualTo(new AttributeValue().withM(singletonMap("key", new AttributeValue("value"))));
     }
 
     @Test
-    public void serializeMapOfString_singletonMapWithNullValue_returnsAttributeValueWithSingleNullAttributeValue() {
+    void serializeMapOfString_singletonMapWithNullValue_returnsAttributeValueWithSingleNullAttributeValue() {
         AttributeValue value = SchemaAttributeValueSerializer.serializeMapOfString(singletonMap("key", null));
         assertThat(value).isEqualTo(new AttributeValue().withM(singletonMap("key", new AttributeValue().withNULL(true))));
     }
 
     @Test
-    public void serializeMapOfString_mapWithMultipleValues_returnsAttributeValueWithSerializedMap() {
+    void serializeMapOfString_mapWithMultipleValues_returnsAttributeValueWithSerializedMap() {
         AttributeValue value = SchemaAttributeValueSerializer.serializeMapOfString(mapOf("key1", "value1", "key2", "value2"));
         assertThat(value).isEqualTo(new AttributeValue().withM(mapOf(
                 "key1", new AttributeValue("value1"),
@@ -47,7 +47,7 @@ public class MapSerializationTest extends AbstractSourceCompilingTest {
     }
 
     @Test
-    public void serializeMapOfString_mapWithMultipleValuesSomeNull_returnsAttributeValueWithSerializedMap() {
+    void serializeMapOfString_mapWithMultipleValuesSomeNull_returnsAttributeValueWithSerializedMap() {
         AttributeValue value = SchemaAttributeValueSerializer.serializeMapOfString(mapOf("key1", "value1", "key2", null));
         assertThat(value).isEqualTo(new AttributeValue().withM(mapOf(
                 "key1", new AttributeValue("value1"),
@@ -55,7 +55,7 @@ public class MapSerializationTest extends AbstractSourceCompilingTest {
     }
 
     @Test
-    public void serializeMapOfString_mapWithMultipleValuesAllNull_returnsAttributeValueWithSerializedMap() {
+    void serializeMapOfString_mapWithMultipleValuesAllNull_returnsAttributeValueWithSerializedMap() {
         AttributeValue value = SchemaAttributeValueSerializer.serializeMapOfString(mapOf("key1", null, "key2", null));
         assertThat(value).isEqualTo(new AttributeValue().withM(mapOf(
                 "key1", new AttributeValue().withNULL(true),
@@ -63,25 +63,25 @@ public class MapSerializationTest extends AbstractSourceCompilingTest {
     }
 
     @Test
-    public void deserializeMapOfString_null_returnsNull() {
+    void deserializeMapOfString_null_returnsNull() {
         Map<String, String> value = SchemaAttributeValueSerializer.deserializeMapOfString(null);
         assertThat(value).isNull();
     }
 
     @Test
-    public void deserializeMapOfString_nullAttributeValue_returnsNull() {
+    void deserializeMapOfString_nullAttributeValue_returnsNull() {
         Map<String, String> value = SchemaAttributeValueSerializer.deserializeMapOfString(new AttributeValue().withNULL(true));
         assertThat(value).isNull();
     }
 
     @Test
-    public void deserializeMapOfString_mapValueNull_returnsNull() {
+    void deserializeMapOfString_mapValueNull_returnsNull() {
         Map<String, String> value = SchemaAttributeValueSerializer.deserializeMapOfString(new AttributeValue().withS("string"));
         assertThat(value).isNull();
     }
 
     @Test
-    public void deserializeMapOfString_emptyMap_returnsEmptyLinkedHashMap() {
+    void deserializeMapOfString_emptyMap_returnsEmptyLinkedHashMap() {
         Map<String, String> value = SchemaAttributeValueSerializer.deserializeMapOfString(new AttributeValue().withM(emptyMap()));
         assertThat(value)
                 .isInstanceOf(LinkedHashMap.class)
@@ -89,7 +89,7 @@ public class MapSerializationTest extends AbstractSourceCompilingTest {
     }
 
     @Test
-    public void deserializeMapOfString_singletonMapWithValue_returnsSingletonLinkedHashMap() {
+    void deserializeMapOfString_singletonMapWithValue_returnsSingletonLinkedHashMap() {
         Map<String, String> value = SchemaAttributeValueSerializer.deserializeMapOfString(new AttributeValue().withM(singletonMap("key", new AttributeValue("value"))));
         assertThat(value)
                 .isInstanceOf(LinkedHashMap.class)
@@ -97,7 +97,7 @@ public class MapSerializationTest extends AbstractSourceCompilingTest {
     }
 
     @Test
-    public void deserializeMapOfString_singletonMapWithNull_returnsSingletonLinkedHashMap() {
+    void deserializeMapOfString_singletonMapWithNull_returnsSingletonLinkedHashMap() {
         Map<String, String> value = SchemaAttributeValueSerializer.deserializeMapOfString(new AttributeValue().withM(singletonMap("key", null)));
         assertThat(value)
                 .isInstanceOf(LinkedHashMap.class)
@@ -105,7 +105,7 @@ public class MapSerializationTest extends AbstractSourceCompilingTest {
     }
 
     @Test
-    public void deserializeMapOfString_singletonMapWithNullAttributeValue_returnsSingletonLinkedHashMap() {
+    void deserializeMapOfString_singletonMapWithNullAttributeValue_returnsSingletonLinkedHashMap() {
         Map<String, String> value = SchemaAttributeValueSerializer.deserializeMapOfString(new AttributeValue().withM(singletonMap("key", new AttributeValue().withNULL(true))));
         assertThat(value)
                 .isInstanceOf(LinkedHashMap.class)
@@ -113,7 +113,7 @@ public class MapSerializationTest extends AbstractSourceCompilingTest {
     }
 
     @Test
-    public void deserializeMapOfString_mapWithMultipleValues_returnsLinkedHashMapWithValues() {
+    void deserializeMapOfString_mapWithMultipleValues_returnsLinkedHashMapWithValues() {
         Map<String, String> value = SchemaAttributeValueSerializer.deserializeMapOfString(new AttributeValue().withM(mapOf(
                 "key1", new AttributeValue("value1"),
                 "key2", new AttributeValue("value2"))));
@@ -123,7 +123,7 @@ public class MapSerializationTest extends AbstractSourceCompilingTest {
     }
 
     @Test
-    public void deserializeMapOfString_mapWithMultipleValuesSomeNull_returnsLinkedHashMapWithValueAndNull() {
+    void deserializeMapOfString_mapWithMultipleValuesSomeNull_returnsLinkedHashMapWithValueAndNull() {
         Map<String, String> value = SchemaAttributeValueSerializer.deserializeMapOfString(new AttributeValue().withM(mapOf(
                 "key1", new AttributeValue("value1"),
                 "key2", null)));
@@ -133,7 +133,7 @@ public class MapSerializationTest extends AbstractSourceCompilingTest {
     }
 
     @Test
-    public void deserializeMapOfString_mapWithMultipleValuesSomeNullAttributeValue_returnsLinkedHashMapWithValueAndNull() {
+    void deserializeMapOfString_mapWithMultipleValuesSomeNullAttributeValue_returnsLinkedHashMapWithValueAndNull() {
         Map<String, String> value = SchemaAttributeValueSerializer.deserializeMapOfString(new AttributeValue().withM(mapOf(
                 "key1", new AttributeValue("value1"),
                 "key2", new AttributeValue().withNULL(true))));
@@ -143,7 +143,7 @@ public class MapSerializationTest extends AbstractSourceCompilingTest {
     }
 
     @Test
-    public void deserializeMapOfString_mapWithMultipleValuesAllNull_returnsLinkedHashMapAllNull() {
+    void deserializeMapOfString_mapWithMultipleValuesAllNull_returnsLinkedHashMapAllNull() {
         Map<String, String> value = SchemaAttributeValueSerializer.deserializeMapOfString(new AttributeValue().withM(mapOf(
                 "key1", null,
                 "key2", null)));
@@ -153,7 +153,7 @@ public class MapSerializationTest extends AbstractSourceCompilingTest {
     }
 
     @Test
-    public void deserializeMapOfString_mapWithMultipleValuesAllNullAttributeValue_returnsLinkedHashMapAllNull() {
+    void deserializeMapOfString_mapWithMultipleValuesAllNullAttributeValue_returnsLinkedHashMapAllNull() {
         Map<String, String> value = SchemaAttributeValueSerializer.deserializeMapOfString(new AttributeValue().withM(mapOf(
                 "key1", new AttributeValue().withNULL(true),
                 "key2", new AttributeValue().withNULL(true))));
@@ -163,7 +163,7 @@ public class MapSerializationTest extends AbstractSourceCompilingTest {
     }
 
     @Test
-    public void deserializeMapOfString_mapWithMultipleValuesAllMixedNulls_returnsLinkedHashMapAllNull() {
+    void deserializeMapOfString_mapWithMultipleValuesAllMixedNulls_returnsLinkedHashMapAllNull() {
         Map<String, String> value = SchemaAttributeValueSerializer.deserializeMapOfString(new AttributeValue().withM(mapOf(
                 "key1", null,
                 "key2", new AttributeValue().withNULL(true))));

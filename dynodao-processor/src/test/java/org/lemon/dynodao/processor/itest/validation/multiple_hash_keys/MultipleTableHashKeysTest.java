@@ -1,17 +1,17 @@
 package org.lemon.dynodao.processor.itest.validation.multiple_hash_keys;
 
 import com.google.testing.compile.Compilation;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.lemon.dynodao.processor.itest.AbstractResourceCompilingTest;
 
 import javax.tools.JavaFileObject;
 
 import static com.google.testing.compile.CompilationSubject.assertThat;
 
-public class MultipleTableHashKeysTest extends AbstractResourceCompilingTest {
+class MultipleTableHashKeysTest extends AbstractResourceCompilingTest {
 
     @Test
-    public void compile_schemaHasMultipleHashKeysSpecified_errorsIssuedOnEachDynoDaoHashKeyAnnotation() {
+    void compile_schemaHasMultipleHashKeysSpecified_errorsIssuedOnEachDynoDaoHashKeyAnnotation() {
         JavaFileObject schema = getSchema("MultipleTableHashKeys");
         Compilation compilation = compile(schema);
         assertThat(compilation).failed();
