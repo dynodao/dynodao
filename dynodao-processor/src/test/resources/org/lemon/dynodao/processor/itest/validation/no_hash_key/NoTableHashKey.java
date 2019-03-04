@@ -4,7 +4,7 @@ import org.lemon.dynodao.annotation.DynoDaoRangeKey;
 import org.lemon.dynodao.annotation.DynoDaoSchema;
 
 @DynoDaoSchema(tableName = "things")
-public class Schema {
+public class NoTableHashKey {
 
     private String hashKey;
 

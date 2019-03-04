@@ -19,7 +19,6 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.List;
@@ -27,6 +26,7 @@ import java.util.Set;
 
 import static com.google.testing.compile.CompilationSubject.assertThat;
 import static java.util.Collections.emptyList;
+import static java.util.Collections.singletonList;
 import static java.util.stream.Collectors.toList;
 
 /**
@@ -63,7 +63,7 @@ public abstract class AbstractSourceCompilingTest extends AbstractCompilingTest 
      * @return the set of classes to ignore equality checks for
      */
     protected Set<Class<?>> ignoreTestEqualsClasses() {
-        return new HashSet<>(Arrays.asList(getCompilationUnitUnderTest()));
+        return new HashSet<>(singletonList(getCompilationUnitUnderTest()));
     }
 
     @Test
