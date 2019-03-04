@@ -10,11 +10,7 @@ import nl.jqno.equalsverifier.Warning;
 import org.junit.Ignore;
 import org.junit.Test;
 
-import javax.tools.DiagnosticCollector;
-import javax.tools.JavaCompiler;
 import javax.tools.JavaFileObject;
-import javax.tools.StandardJavaFileManager;
-import javax.tools.ToolProvider;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
@@ -23,6 +19,7 @@ import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Stream;
 
 import static com.google.testing.compile.CompilationSubject.assertThat;
 import static java.util.Collections.emptyList;
@@ -37,9 +34,6 @@ import static java.util.stream.Collectors.toList;
  */
 @Ignore
 public abstract class AbstractSourceCompilingTest extends AbstractCompilingTest {
-
-    private static final JavaCompiler COMPILER = ToolProvider.getSystemJavaCompiler();
-    private static final StandardJavaFileManager FILE_MANAGER = COMPILER.getStandardFileManager(new DiagnosticCollector<>(), null, null);
 
     // only run the recompile test once, since it takes quite a while
     private static final Set<Class<?>> COMPILE_ONCE = new HashSet<>();
@@ -66,6 +60,10 @@ public abstract class AbstractSourceCompilingTest extends AbstractCompilingTest 
         return new HashSet<>(singletonList(getCompilationUnitUnderTest()));
     }
 
+    /**
+     * Recompiles the {@code compilationUnitUnderTest} and asserts the compilation succeeds (which, it must have).
+     * This allows for us to actually get code coverage metrics during integration tests.
+     */
     @Test
     public void recompileSchemaClass_onlyUseCase_countTowardCodeCoverage() {
         if (COMPILE_ONCE.add(getCompilationUnitUnderTest())) {
@@ -80,12 +78,19 @@ public abstract class AbstractSourceCompilingTest extends AbstractCompilingTest 
         return clazz.getProtectionDomain().getCodeSource().getLocation().getPath() + "../../src/test/java/" + name;
     }
 
+    /**
+     * Asserts all generated sources have a valid {@code toString} implementation.
+     */
     @Test
     public void toString_allGeneratedSources_validToString() {
         ToStringVerifier.forPackage(getCompilationUnitUnderTest().getPackage().getName(), false,
                 clazz -> !clazz.isAnonymousClass()).verify();
     }
 
+    /**
+     * Asserts all generated sources have a valid {@code equals} and {@code hashCode} implementation.
+     * For the serializer class, we check it is inherited from {@link Object}.
+     */
     @Test
     public void equalsAndHashCode_allGeneratedSources_validEquals() {
         for (Class<?> clazz : PackageScanner.findClasses(this)) {
@@ -100,30 +105,26 @@ public abstract class AbstractSourceCompilingTest extends AbstractCompilingTest 
 }
 
 /**
- * Scans package and identifies classes
+ * Scans package and identifies classes which match some criteria.
  */
 @UtilityClass
 class PackageScanner {
 
     /**
-     * Scan for all classes in the same package as the test class
-     * @param testClass package to scan
-     * @return classes
+     * Scan for all classes in the same package as the test class, excluding tests, anonymous classes
+     * and those classes which the test class says to ignore.
+     * @param testClass the test class
+     * @return classes matching criteria
      */
     static List<Class<?>> findClasses(AbstractSourceCompilingTest testClass) {
-        return findClasses(testClass.getClass().getPackage().getName()).stream()
+        return findClasses(testClass.getClass().getPackage().getName())
                 .filter(clazz -> !testClass.ignoreTestEqualsClasses().contains(clazz))
                 .filter(clazz -> !AbstractSourceCompilingTest.class.isAssignableFrom(clazz))
                 .filter(clazz -> !clazz.isAnonymousClass())
                 .collect(toList());
     }
 
-    /**
-     * Scan for all classes in the given package
-     * @param packageName package to scan
-     * @return classes
-     */
-    private static List<Class<?>> findClasses(String packageName) {
+    private static Stream<Class<?>> findClasses(String packageName) {
         String path = packageName.replace('.', '/');
         Enumeration<URL> resources = getResources(path);
 
@@ -134,8 +135,7 @@ class PackageScanner {
 
         return rootDirectories.stream()
                 .map(rootDirectory -> findClasses(rootDirectory, packageName))
-                .flatMap(List::stream)
-                .collect(toList());
+                .flatMap(List::stream);
     }
 
     @SneakyThrows(IOException.class)
@@ -161,4 +161,5 @@ class PackageScanner {
         }
         return classes;
     }
+
 }

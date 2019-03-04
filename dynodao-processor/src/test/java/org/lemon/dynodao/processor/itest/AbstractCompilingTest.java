@@ -10,13 +10,20 @@ import org.lemon.dynodao.processor.DynoDaoProcessor;
 import org.lemon.dynodao.processor.test.AbstractUnitTest;
 
 import javax.annotation.processing.Processor;
+import javax.tools.DiagnosticCollector;
+import javax.tools.JavaCompiler;
 import javax.tools.JavaFileObject;
+import javax.tools.StandardJavaFileManager;
+import javax.tools.ToolProvider;
 
 /**
  * Base unit test which provides access to compiler tools.
  */
 @Ignore
 public abstract class AbstractCompilingTest extends AbstractUnitTest {
+
+    protected static final JavaCompiler COMPILER = ToolProvider.getSystemJavaCompiler();
+    protected static final StandardJavaFileManager FILE_MANAGER = COMPILER.getStandardFileManager(new DiagnosticCollector<>(), null, null);
 
     /**
      * Places the type into the default package and compiles the resultant file.
@@ -41,6 +48,8 @@ public abstract class AbstractCompilingTest extends AbstractUnitTest {
 
     /**
      * Compiles the java file object, returning the compilation result.
+     * <p>
+     * Uses only {@link DynoDaoProcessor} and lombok for annotation processors.
      * @param javaFileObject the file to compile
      * @return the compilation result, for assertions
      */

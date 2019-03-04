@@ -5,6 +5,9 @@ import org.junit.Ignore;
 
 import javax.tools.JavaFileObject;
 
+/**
+ * Base class for compiling a class from test resources.
+ */
 @Ignore
 public abstract class AbstractResourceCompilingTest extends AbstractCompilingTest {
 
