@@ -19,6 +19,7 @@ public class NodeTypeSpecMutators implements Streamable<NodeTypeSpecMutator> {
     @Inject CtorNodeTypeSpecMutator ctorNodeTypeSpecMutator;
     @Inject WitherNodeTypeSpecMutator witherNodeTypeSpecMutator;
     @Inject UserNodeTypeSpecMutator userNodeTypeSpecMutator;
+    @Inject CreateTableRequestTypeSpecMutator createTableRequestTypeSpecMutator;
     @Inject DocumentLoadNodeTypeSpecMutator documentLoadNodeTypeSpecMutator;
     @Inject DocumentQueryNodeTypeSpecMutator documentQueryNodeTypeSpecMutator;
     @Inject EqualsNodeTypeSpecMutator equalsNodeTypeSpecMutator;
@@ -43,6 +44,7 @@ public class NodeTypeSpecMutators implements Streamable<NodeTypeSpecMutator> {
         nodeTypeSpecMutators.add(witherNodeTypeSpecMutator);
         nodeTypeSpecMutators.add(userNodeTypeSpecMutator);
 
+        nodeTypeSpecMutators.add(createTableRequestTypeSpecMutator);
         nodeTypeSpecMutators.add(documentLoadNodeTypeSpecMutator);
         nodeTypeSpecMutators.add(documentQueryNodeTypeSpecMutator);
 

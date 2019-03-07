@@ -1,4 +1,4 @@
-package org.lemon.dynodao.processor.itest.hash_key_only;
+package org.lemon.dynodao.processor.itest.table.hash_key;
 
 import lombok.Data;
 import org.lemon.dynodao.annotation.DynoDaoHashKey;

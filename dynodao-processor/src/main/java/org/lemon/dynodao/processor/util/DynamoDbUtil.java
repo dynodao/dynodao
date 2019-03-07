@@ -51,4 +51,74 @@ public class DynamoDbUtil {
         return ClassName.get("com.amazonaws.services.dynamodbv2.model", "QueryResult");
     }
 
+    /**
+     * @return the {@link com.amazonaws.services.dynamodbv2.model.CreateTableRequest} type
+     */
+    public static ClassName createTableRequest() {
+        return ClassName.get("com.amazonaws.services.dynamodbv2.model", "CreateTableRequest");
+    }
+
+    /**
+     * @return the {@link com.amazonaws.services.dynamodbv2.model.ScalarAttributeType} type
+     */
+    public static ClassName scalarAttributeType() {
+        return ClassName.get("com.amazonaws.services.dynamodbv2.model", "ScalarAttributeType");
+    }
+
+    /**
+     * @return the {@link com.amazonaws.services.dynamodbv2.model.KeySchemaElement} type
+     */
+    public static ClassName keySchemaElement() {
+        return ClassName.get("com.amazonaws.services.dynamodbv2.model", "KeySchemaElement");
+    }
+
+    /**
+     * @return the {@link com.amazonaws.services.dynamodbv2.model.KeyType} type
+     */
+    public static ClassName keyType() {
+        return ClassName.get("com.amazonaws.services.dynamodbv2.model", "KeyType");
+    }
+
+    /**
+     * @return the {@link com.amazonaws.services.dynamodbv2.model.AttributeDefinition} type
+     */
+    public static ClassName attributeDefinition() {
+        return ClassName.get("com.amazonaws.services.dynamodbv2.model", "AttributeDefinition");
+    }
+
+    /**
+     * @return the {@link com.amazonaws.services.dynamodbv2.model.ProvisionedThroughput} type
+     */
+    public static ClassName provisionedThroughput() {
+        return ClassName.get("com.amazonaws.services.dynamodbv2.model", "ProvisionedThroughput");
+    }
+
+    /**
+     * @return the {@link com.amazonaws.services.dynamodbv2.model.Projection} type
+     */
+    public static ClassName projection() {
+        return ClassName.get("com.amazonaws.services.dynamodbv2.model", "Projection");
+    }
+
+    /**
+     * @return the {@link com.amazonaws.services.dynamodbv2.model.ProjectionType} type
+     */
+    public static ClassName projectionType() {
+        return ClassName.get("com.amazonaws.services.dynamodbv2.model", "ProjectionType");
+    }
+
+    /**
+     * @return the {@link com.amazonaws.services.dynamodbv2.model.LocalSecondaryIndex} type
+     */
+    public static ClassName localSecondaryIndex() {
+        return ClassName.get("com.amazonaws.services.dynamodbv2.model", "LocalSecondaryIndex");
+    }
+
+    /**
+     * @return the {@link com.amazonaws.services.dynamodbv2.model.GlobalSecondaryIndex} type
+     */
+    public static ClassName globalSecondaryIndex() {
+        return ClassName.get("com.amazonaws.services.dynamodbv2.model", "GlobalSecondaryIndex");
+    }
+
 }

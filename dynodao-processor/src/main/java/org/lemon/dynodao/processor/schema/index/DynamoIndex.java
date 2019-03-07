@@ -2,8 +2,10 @@ package org.lemon.dynodao.processor.schema.index;
 
 import lombok.Builder;
 import lombok.Value;
+import org.lemon.dynodao.processor.node.KeyLengthType;
 import org.lemon.dynodao.processor.schema.attribute.DynamoAttribute;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
@@ -20,5 +22,13 @@ public class DynamoIndex {
     private final DynamoAttribute hashKey;
     private final Optional<DynamoAttribute> rangeKey;
     private final Set<DynamoAttribute> projectedAttributes;
+
+    /**
+     * Returns the keys present in this index.
+     * @return the keys in this index
+     */
+    public List<DynamoAttribute> getKeys() {
+        return KeyLengthType.lengthOf(this).getKeyAttributes(this);
+    }
 
 }

@@ -6,11 +6,15 @@ import com.amazonaws.services.dynamodbv2.local.main.ServerRunner;
 import com.amazonaws.services.dynamodbv2.local.server.DynamoDBProxyServer;
 import com.amazonaws.services.dynamodbv2.model.CreateTableRequest;
 import com.amazonaws.services.dynamodbv2.model.ProvisionedThroughput;
+import lombok.SneakyThrows;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
+
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Method;
 
 /**
  * Base class to provide access to in memory DynamoDB operations.
@@ -36,9 +40,24 @@ public abstract class AbstractIntegrationTest extends AbstractSourceCompilingTes
 
     /**
      * Returns the {@link CreateTableRequest} for the table that should be created before each test.
+     * By default, the staged dynamo builder for {@link AbstractSourceCompilingTest#getCompilationUnitUnderTest()}
+     * is reflectively created, and the {@code asCreateTableRequest} is used.
      * @return the {@link CreateTableRequest} for the table to create
      */
-    protected abstract CreateTableRequest getCreateTableRequest();
+    protected CreateTableRequest getCreateTableRequest() {
+        return createTableRequest();
+    }
+
+    @SneakyThrows(ReflectiveOperationException.class)
+    private CreateTableRequest createTableRequest() {
+        Class<?> clazz = getCompilationUnitUnderTest();
+        Class<?> stagedBuilder = Class.forName(clazz.getCanonicalName() + "StagedDynamoBuilder");
+        Constructor<?> ctor = stagedBuilder.getDeclaredConstructor();
+        Method asCreateTableRequest = stagedBuilder.getDeclaredMethod("asCreateTableRequest");
+        ctor.setAccessible(true);
+        asCreateTableRequest.setAccessible(true);
+        return (CreateTableRequest) asCreateTableRequest.invoke(ctor.newInstance());
+    }
 
     @BeforeEach
     void createTable() {

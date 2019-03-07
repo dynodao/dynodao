@@ -1,11 +1,6 @@
-package org.lemon.dynodao.processor.itest.hash_key_only;
+package org.lemon.dynodao.processor.itest.table.hash_key;
 
-import com.amazonaws.services.dynamodbv2.model.AttributeDefinition;
 import com.amazonaws.services.dynamodbv2.model.AttributeValue;
-import com.amazonaws.services.dynamodbv2.model.CreateTableRequest;
-import com.amazonaws.services.dynamodbv2.model.KeySchemaElement;
-import com.amazonaws.services.dynamodbv2.model.KeyType;
-import com.amazonaws.services.dynamodbv2.model.ScalarAttributeType;
 import org.junit.jupiter.api.Test;
 import org.lemon.dynodao.processor.itest.AbstractIntegrationTest;
 
@@ -14,13 +9,13 @@ import java.util.stream.Stream;
 import static java.util.Collections.singletonMap;
 import static org.assertj.core.api.Assertions.assertThat;
 
-public class HashKeyOnlyTest extends AbstractIntegrationTest {
+class HashKeyTest extends AbstractIntegrationTest {
 
     private static final String TABLE = "things";
     private static final String HASH_KEY = "hashKey";
 
     @Test
-    public void load_itemExists_returnsDeserializedItem() {
+    void load_itemExists_returnsDeserializedItem() {
         Schema item = schema("value");
         put(item);
 
@@ -32,7 +27,7 @@ public class HashKeyOnlyTest extends AbstractIntegrationTest {
     }
 
     @Test
-    public void load_itemDoesNotExist_returnsEmptyStream() {
+    void load_itemDoesNotExist_returnsEmptyStream() {
         Stream<Schema> load = new SchemaStagedDynamoBuilder()
                 .usingTable()
                 .withHashKey("no-such-value")
@@ -48,14 +43,6 @@ public class HashKeyOnlyTest extends AbstractIntegrationTest {
         Schema schema = new Schema();
         schema.setHashKey(hashKeyValue);
         return schema;
-    }
-
-    @Override
-    protected CreateTableRequest getCreateTableRequest() {
-        return new CreateTableRequest()
-                .withTableName(TABLE)
-                .withKeySchema(new KeySchemaElement(HASH_KEY, KeyType.HASH))
-                .withAttributeDefinitions(new AttributeDefinition(HASH_KEY, ScalarAttributeType.S));
     }
 
 }

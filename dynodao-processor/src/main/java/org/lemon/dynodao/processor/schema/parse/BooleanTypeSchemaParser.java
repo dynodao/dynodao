@@ -6,16 +6,11 @@ import com.squareup.javapoet.TypeName;
 import org.lemon.dynodao.processor.context.Processors;
 import org.lemon.dynodao.processor.schema.SchemaContext;
 import org.lemon.dynodao.processor.schema.attribute.BooleanDynamoAttribute;
-import org.lemon.dynodao.processor.schema.attribute.DynamoAttribute;
-import org.lemon.dynodao.processor.schema.attribute.NumberDynamoAttribute;
-import org.lemon.dynodao.processor.schema.attribute.StringDynamoAttribute;
 import org.lemon.dynodao.processor.schema.serialize.DeserializationMappingMethod;
 import org.lemon.dynodao.processor.schema.serialize.SerializationMappingMethod;
 
 import javax.inject.Inject;
 import javax.lang.model.element.Element;
-import javax.lang.model.element.TypeElement;
-import javax.lang.model.type.PrimitiveType;
 import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
 

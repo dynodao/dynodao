@@ -32,6 +32,15 @@ public class StringUtil {
     }
 
     /**
+     * Returns string with the first letter lower case.
+     * @param str the string
+     * @return the string with the first letter made lower case
+     */
+    public static String uncapitalize(String str) {
+        return str.substring(0, 1).toLowerCase() + str.substring(1);
+    }
+
+    /**
      * Returns the string as a valid class name, removing spaces, dashes, etc. Any time there is an invalid
      * character, it is removed and the next letter is capitalized.
      * @param str the string to transform into a class name
