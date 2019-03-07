@@ -21,7 +21,7 @@ import static java.util.stream.Collectors.toList;
  */
 @Data
 @Setter(AccessLevel.NONE)
-public class NodeClassData {
+public final class NodeClassData {
 
     private final DynamoSchema schema;
     private final SerializerTypeSpec serializer;

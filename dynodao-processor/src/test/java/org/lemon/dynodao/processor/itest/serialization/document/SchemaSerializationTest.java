@@ -12,7 +12,7 @@ import static java.util.Collections.emptyMap;
 import static java.util.Collections.singletonMap;
 import static org.assertj.core.api.Assertions.assertThat;
 
-class SchemaSerializionTest extends AbstractSourceCompilingTest {
+class SchemaSerializationTest extends AbstractSourceCompilingTest {
 
     @Test
     void serializeSchema_null_returnsNullAttributeValue() {

@@ -4,6 +4,7 @@ import lombok.Data;
 import org.lemon.dynodao.annotation.DynoDaoAttribute;
 import org.lemon.dynodao.annotation.DynoDaoDocument;
 import org.lemon.dynodao.annotation.DynoDaoHashKey;
+import org.lemon.dynodao.annotation.DynoDaoIgnore;
 import org.lemon.dynodao.annotation.DynoDaoSchema;
 
 @Data
@@ -28,6 +29,9 @@ class Schema {
 
     private Document document;
 
+    @DynoDaoIgnore
+    private Object ifNotIgnoredThisFailsToCompile;
+
 }
 
 @Data
@@ -39,5 +43,8 @@ class Document {
 
     @DynoDaoAttribute("attribute3")
     private String dynamoNameIsAttribute3;
+
+    @DynoDaoIgnore
+    private Object ifNotIgnoredThisFailsToCompile;
 
 }
