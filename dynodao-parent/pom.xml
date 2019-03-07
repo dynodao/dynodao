@@ -10,7 +10,6 @@
     <modules>
         <module>../dynodao-api</module>
         <module>../dynodao-processor</module>
-        <module>../dynodao-integration-test</module>
         <module>../dynodao-benchmark</module>
         <module>../dynodao-playground</module>
     </modules>

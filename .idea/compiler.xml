@@ -8,7 +8,6 @@
         <outputRelativeToContentRoot value="true" />
         <module name="dynodao-api" />
         <module name="dynodao-benchmark" />
-        <module name="dynodao-integration-test" />
         <module name="dynodao-playground" />
         <module name="dynodao-processor" />
       </profile>
@@ -16,7 +15,6 @@
     <bytecodeTargetLevel>
       <module name="dynodao-api" target="1.8" />
       <module name="dynodao-benchmark" target="1.8" />
-      <module name="dynodao-integration-test" target="1.8" />
       <module name="dynodao-parent" target="1.8" />
       <module name="dynodao-playground" target="1.8" />
       <module name="dynodao-processor" target="1.8" />
