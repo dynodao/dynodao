@@ -1,3 +1,6 @@
+# we copy maven dependencies to a local dir in order to run dynamodblocal
+dependencies/
+
 # Compiled class file
 *.class
 

@@ -17,6 +17,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.List;
@@ -115,7 +116,7 @@ public abstract class AbstractSourceCompilingTest extends AbstractCompilingTest 
 class PackageScanner {
 
     /**
-     * Scan for all classes in the same package as the test class, excluding tests, anonymous classes
+     * Scan for all classes in the same package as the test class, excluding tests, anonymous classes, lombok builders
      * and those classes which the test class says to ignore.
      * @param testClass the test class
      * @return classes matching criteria
@@ -124,8 +125,20 @@ class PackageScanner {
         return findClasses(testClass.getClass().getPackage().getName())
                 .filter(clazz -> !testClass.ignoreTestEqualsClasses().contains(clazz))
                 .filter(clazz -> !AbstractSourceCompilingTest.class.isAssignableFrom(clazz))
+                .filter(clazz -> !isLombokBuilder(clazz))
                 .filter(clazz -> !clazz.isAnonymousClass())
                 .collect(toList());
+    }
+
+    private boolean isLombokBuilder(Class<?> clazz) {
+        if (clazz.getSimpleName().endsWith("Builder")) {
+            String[] parts = clazz.getCanonicalName().split("\\.");
+            int len = parts.length;
+            return len >= 2
+                    && parts[len - 1].replaceAll("Builder$", "").equals(parts[len - 2]);
+        } else {
+            return false;
+        }
     }
 
     private static Stream<Class<?>> findClasses(String packageName) {
