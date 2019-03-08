@@ -3,8 +3,8 @@ package org.lemon.dynodao.processor.stage.generate;
 import com.squareup.javapoet.FieldSpec;
 import com.squareup.javapoet.MethodSpec;
 import com.squareup.javapoet.TypeSpec;
-import org.lemon.dynodao.processor.stage.Stage;
 import org.lemon.dynodao.processor.schema.attribute.DynamoAttribute;
+import org.lemon.dynodao.processor.stage.Stage;
 
 import javax.inject.Inject;
 import javax.lang.model.element.Modifier;

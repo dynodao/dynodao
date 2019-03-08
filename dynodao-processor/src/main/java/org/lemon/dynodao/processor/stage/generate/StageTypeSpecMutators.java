@@ -20,6 +20,7 @@ public class StageTypeSpecMutators implements Streamable<StageTypeSpecMutator> {
     @Inject WitherStageTypeSpecMutator witherStageTypeSpecMutator;
     @Inject UserStageTypeSpecMutator userStageTypeSpecMutator;
     @Inject CreateTableStageTypeSpecMutator createTableStageTypeSpecMutator;
+    @Inject ScanStageTypeSpecMutator scanStageTypeSpecMutator;
     @Inject LoadStageTypeSpecMutator loadStageTypeSpecMutator;
     @Inject QueryStageTypeSpecMutator queryStageTypeSpecMutator;
     @Inject EqualsStageTypeSpecMutator equalsStageTypeSpecMutator;
@@ -45,6 +46,7 @@ public class StageTypeSpecMutators implements Streamable<StageTypeSpecMutator> {
         stageTypeSpecMutators.add(userStageTypeSpecMutator);
 
         stageTypeSpecMutators.add(createTableStageTypeSpecMutator);
+        stageTypeSpecMutators.add(scanStageTypeSpecMutator);
         stageTypeSpecMutators.add(loadStageTypeSpecMutator);
         stageTypeSpecMutators.add(queryStageTypeSpecMutator);
 

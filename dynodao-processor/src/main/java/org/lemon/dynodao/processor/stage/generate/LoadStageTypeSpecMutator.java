@@ -8,9 +8,9 @@ import com.squareup.javapoet.TypeName;
 import com.squareup.javapoet.TypeSpec;
 import org.lemon.dynodao.internal.GetItemReadResult;
 import org.lemon.dynodao.processor.context.Processors;
+import org.lemon.dynodao.processor.schema.attribute.DynamoAttribute;
 import org.lemon.dynodao.processor.stage.InterfaceType;
 import org.lemon.dynodao.processor.stage.Stage;
-import org.lemon.dynodao.processor.schema.attribute.DynamoAttribute;
 
 import javax.inject.Inject;
 import javax.lang.model.element.ExecutableElement;
@@ -35,7 +35,7 @@ class LoadStageTypeSpecMutator implements StageTypeSpecMutator {
     private final MethodSpec asRequestWithNoBody;
 
     @Inject LoadStageTypeSpecMutator(Processors processors) {
-        TypeElement interfaceType = processors.getTypeElement(InterfaceType.LOAD.getInterfaceClass().get());
+        TypeElement interfaceType = processors.getTypeElement(InterfaceType.LOAD.getInterfaceClass());
         ExecutableElement load = processors.getMethodByName(interfaceType, "load");
         loadWithNoReturnOrBody = MethodSpec.methodBuilder(load.getSimpleName().toString())
                 .addAnnotation(Override.class)
@@ -59,7 +59,7 @@ class LoadStageTypeSpecMutator implements StageTypeSpecMutator {
     }
 
     private boolean isLoad(Stage stage) {
-        return stage.getInterfaceType().equals(InterfaceType.LOAD);
+        return stage.getInterfaceTypes().contains(InterfaceType.LOAD);
     }
 
     private MethodSpec buildAsRequest(Stage stage) {

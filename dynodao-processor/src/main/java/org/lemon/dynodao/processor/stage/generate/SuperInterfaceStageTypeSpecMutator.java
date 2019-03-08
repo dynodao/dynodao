@@ -4,6 +4,7 @@ import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.ParameterizedTypeName;
 import com.squareup.javapoet.TypeName;
 import com.squareup.javapoet.TypeSpec;
+import org.lemon.dynodao.processor.stage.InterfaceType;
 import org.lemon.dynodao.processor.stage.Stage;
 
 import javax.inject.Inject;
@@ -18,10 +19,12 @@ class SuperInterfaceStageTypeSpecMutator implements StageTypeSpecMutator {
 
     @Override
     public void mutate(TypeSpec.Builder typeSpec, Stage stage) {
-        stage.getInterfaceType().getInterfaceClass().ifPresent(interfaceClass -> {
-            TypeName superType = ParameterizedTypeName.get(ClassName.get(interfaceClass), TypeName.get(stage.getSchema().getDocument().getTypeMirror()));
-            typeSpec.addSuperinterface(superType);
-        });
+        stage.getInterfaceTypes().stream()
+                .map(InterfaceType::getInterfaceClass)
+                .forEach(interfaceClass -> {
+                    TypeName superType = ParameterizedTypeName.get(ClassName.get(interfaceClass), TypeName.get(stage.getSchema().getDocument().getTypeMirror()));
+                    typeSpec.addSuperinterface(superType);
+                });
     }
 
 }

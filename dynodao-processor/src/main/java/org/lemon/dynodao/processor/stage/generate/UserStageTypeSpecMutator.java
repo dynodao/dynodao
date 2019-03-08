@@ -4,9 +4,9 @@ import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.MethodSpec;
 import com.squareup.javapoet.ParameterSpec;
 import com.squareup.javapoet.TypeSpec;
+import org.lemon.dynodao.processor.schema.attribute.DynamoAttribute;
 import org.lemon.dynodao.processor.stage.Stage;
 import org.lemon.dynodao.processor.stage.StageTypeSpec;
-import org.lemon.dynodao.processor.schema.attribute.DynamoAttribute;
 
 import javax.inject.Inject;
 import javax.lang.model.element.Modifier;

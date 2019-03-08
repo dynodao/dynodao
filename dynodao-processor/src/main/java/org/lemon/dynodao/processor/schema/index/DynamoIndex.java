@@ -2,8 +2,8 @@ package org.lemon.dynodao.processor.schema.index;
 
 import lombok.Builder;
 import lombok.Value;
-import org.lemon.dynodao.processor.stage.KeyLengthType;
 import org.lemon.dynodao.processor.schema.attribute.DynamoAttribute;
+import org.lemon.dynodao.processor.stage.KeyLengthType;
 
 import java.util.List;
 import java.util.Optional;

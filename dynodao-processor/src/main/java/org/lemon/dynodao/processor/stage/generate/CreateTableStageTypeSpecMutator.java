@@ -7,9 +7,9 @@ import com.squareup.javapoet.ParameterSpec;
 import com.squareup.javapoet.ParameterizedTypeName;
 import com.squareup.javapoet.TypeSpec.Builder;
 import org.lemon.dynodao.processor.context.Processors;
+import org.lemon.dynodao.processor.schema.index.DynamoIndex;
 import org.lemon.dynodao.processor.stage.InterfaceType;
 import org.lemon.dynodao.processor.stage.Stage;
-import org.lemon.dynodao.processor.schema.index.DynamoIndex;
 
 import javax.inject.Inject;
 import javax.lang.model.element.ExecutableElement;
@@ -50,7 +50,7 @@ class CreateTableStageTypeSpecMutator implements StageTypeSpecMutator {
     private final MethodSpec asRequestWithNoBody;
 
     @Inject CreateTableStageTypeSpecMutator(Processors processors) {
-        TypeElement interfaceType = processors.getTypeElement(InterfaceType.CREATE.getInterfaceClass().get());
+        TypeElement interfaceType = processors.getTypeElement(InterfaceType.CREATE.getInterfaceClass());
         ExecutableElement load = processors.getMethodByName(interfaceType, "createTable");
         createTableWithNoBody = MethodSpec.methodBuilder(load.getSimpleName().toString())
                 .addAnnotation(Override.class)
@@ -75,7 +75,7 @@ class CreateTableStageTypeSpecMutator implements StageTypeSpecMutator {
     }
 
     private boolean isCreateTable(Stage stage) {
-        return stage.isStagedBuilder() || stage.getInterfaceType().equals(InterfaceType.CREATE);
+        return stage.isStagedBuilder() || stage.getInterfaceTypes().contains(InterfaceType.CREATE);
     }
 
     private MethodSpec buildAsRequest(Stage stage) {

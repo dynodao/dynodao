@@ -4,6 +4,7 @@ import org.junit.jupiter.api.Test;
 import org.lemon.dynodao.DynoDaoCreateTable;
 import org.lemon.dynodao.DynoDaoLoad;
 import org.lemon.dynodao.DynoDaoQuery;
+import org.lemon.dynodao.DynoDaoScan;
 import org.lemon.dynodao.processor.schema.attribute.DocumentDynamoAttribute;
 import org.lemon.dynodao.processor.schema.index.DynamoIndex;
 import org.lemon.dynodao.processor.schema.index.IndexType;
@@ -21,9 +22,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 class InterfaceTypeTest extends AbstractUnitTest {
 
     @Test
-    void typeOf_none_returnsNone() {
+    void typeOf_none_returnsScan() {
         InterfaceType interfaceType = InterfaceType.typeOf(null, KeyLengthType.NONE);
-        assertThat(interfaceType).isEqualTo(InterfaceType.NONE);
+        assertThat(interfaceType).isEqualTo(InterfaceType.SCAN);
     }
 
     @Test
@@ -57,13 +58,13 @@ class InterfaceTypeTest extends AbstractUnitTest {
 
     @Test
     void getInterfaceClass_onlyUseCase_returnsCorrectClass() {
-        Map<InterfaceType, Optional<Class<?>>> expectedInterfaceClasses = new EnumMap<>(InterfaceType.class);
-        expectedInterfaceClasses.put(InterfaceType.NONE, Optional.empty());
-        expectedInterfaceClasses.put(InterfaceType.CREATE, Optional.of(DynoDaoCreateTable.class));
-        expectedInterfaceClasses.put(InterfaceType.LOAD, Optional.of(DynoDaoLoad.class));
-        expectedInterfaceClasses.put(InterfaceType.QUERY, Optional.of(DynoDaoQuery.class));
+        Map<InterfaceType, Class<?>> expectedInterfaceClasses = new EnumMap<>(InterfaceType.class);
+        expectedInterfaceClasses.put(InterfaceType.CREATE, DynoDaoCreateTable.class);
+        expectedInterfaceClasses.put(InterfaceType.SCAN, DynoDaoScan.class);
+        expectedInterfaceClasses.put(InterfaceType.LOAD, DynoDaoLoad.class);
+        expectedInterfaceClasses.put(InterfaceType.QUERY, DynoDaoQuery.class);
 
-        Map<InterfaceType, Optional<Class<?>>> interfaceClasses = Arrays.stream(InterfaceType.values())
+        Map<InterfaceType, Class<?>> interfaceClasses = Arrays.stream(InterfaceType.values())
                 .collect(toMap(Function.identity(), InterfaceType::getInterfaceClass));
 
         assertThat(interfaceClasses).isEqualTo(expectedInterfaceClasses);

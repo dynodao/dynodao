@@ -11,7 +11,9 @@ import org.lemon.dynodao.processor.serialize.SerializerTypeSpec;
 
 import javax.lang.model.element.TypeElement;
 import java.util.ArrayList;
+import java.util.EnumSet;
 import java.util.List;
+import java.util.Set;
 
 import static java.util.stream.Collectors.toList;
 
@@ -29,7 +31,7 @@ public final class Stage {
 
     private DynamoIndex dynamoIndex;
     private KeyLengthType keyLengthType = KeyLengthType.NONE;
-    private InterfaceType interfaceType = InterfaceType.NONE;
+    private Set<InterfaceType> interfaceTypes = EnumSet.noneOf(InterfaceType.class);
 
     private final List<StageTypeSpec> targetWithers = new ArrayList<>();
     private final List<StageTypeSpec> targetUsingIndexes = new ArrayList<>();
@@ -44,7 +46,7 @@ public final class Stage {
         this.keyLengthType = keyLengthType;
 
         this.attributes.addAll(keyLengthType.getKeyAttributes(index));
-        this.interfaceType = InterfaceType.typeOf(index, keyLengthType);
+        interfaceTypes.add(InterfaceType.typeOf(index, keyLengthType));
         return this;
     }
 
@@ -64,7 +66,7 @@ public final class Stage {
      * @return <tt>this</tt>
      */
     public Stage addUser(StageTypeSpec stage) {
-        interfaceType = InterfaceType.CREATE;
+        interfaceTypes.add(InterfaceType.CREATE);
         targetUsingIndexes.add(stage);
         return this;
     }

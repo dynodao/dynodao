@@ -52,6 +52,20 @@ public class DynamoDbUtil {
     }
 
     /**
+     * @return the {@link com.amazonaws.services.dynamodbv2.model.ScanRequest} type
+     */
+    public static ClassName scanRequest() {
+        return ClassName.get("com.amazonaws.services.dynamodbv2.model", "ScanRequest");
+    }
+
+    /**
+     * @return the {@link com.amazonaws.services.dynamodbv2.model.ScanResult} type
+     */
+    public static ClassName scanResult() {
+        return ClassName.get("com.amazonaws.services.dynamodbv2.model", "ScanResult");
+    }
+
+    /**
      * @return the {@link com.amazonaws.services.dynamodbv2.model.CreateTableRequest} type
      */
     public static ClassName createTableRequest() {
