@@ -9,7 +9,7 @@ import java.util.stream.Stream;
 import static java.util.Collections.singletonMap;
 import static org.assertj.core.api.Assertions.assertThat;
 
-class HashKeyTest extends AbstractIntegrationTest {
+class HashKeyLoadTest extends AbstractIntegrationTest {
 
     private static final String TABLE = "things";
     private static final String HASH_KEY = "hashKey";

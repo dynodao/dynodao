@@ -15,6 +15,7 @@ import org.junit.jupiter.api.Disabled;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
+import java.nio.file.Paths;
 
 /**
  * Base class to provide access to in memory DynamoDB operations.
@@ -28,7 +29,13 @@ public abstract class AbstractIntegrationTest extends AbstractSourceCompilingTes
 
     @BeforeAll
     static void startSqlServer() throws Exception {
-        System.setProperty("sqlite4java.library.path", "dependencies");
+        String userDir = System.getProperty("user.dir");
+        if (userDir != null && !userDir.contains("dynodao-processor")) {
+            System.setProperty("sqlite4java.library.path", Paths.get(userDir, "dynodao-processor", "dependencies").toAbsolutePath().toString());
+        } else {
+            System.setProperty("sqlite4java.library.path", "dependencies");
+        }
+
         dynamoDbProxyServer = ServerRunner.createServerFromCommandLineArgs(new String[]{ "-inMemory", "-port", "8000" });
         dynamoDbProxyServer.start();
     }
