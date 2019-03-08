@@ -1,6 +1,7 @@
 package org.lemon.dynodao.processor.node;
 
 import org.junit.jupiter.api.Test;
+import org.lemon.dynodao.DynoDaoCreateTable;
 import org.lemon.dynodao.DynoDaoLoad;
 import org.lemon.dynodao.DynoDaoQuery;
 import org.lemon.dynodao.processor.schema.attribute.DocumentDynamoAttribute;
@@ -58,6 +59,7 @@ class InterfaceTypeTest extends AbstractUnitTest {
     void getInterfaceClass_onlyUseCase_returnsCorrectClass() {
         Map<InterfaceType, Optional<Class<?>>> expectedInterfaceClasses = new EnumMap<>(InterfaceType.class);
         expectedInterfaceClasses.put(InterfaceType.NONE, Optional.empty());
+        expectedInterfaceClasses.put(InterfaceType.CREATE, Optional.of(DynoDaoCreateTable.class));
         expectedInterfaceClasses.put(InterfaceType.LOAD, Optional.of(DynoDaoLoad.class));
         expectedInterfaceClasses.put(InterfaceType.QUERY, Optional.of(DynoDaoQuery.class));
 

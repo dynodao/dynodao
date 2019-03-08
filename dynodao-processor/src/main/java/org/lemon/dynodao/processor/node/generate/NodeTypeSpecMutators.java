@@ -19,9 +19,9 @@ public class NodeTypeSpecMutators implements Streamable<NodeTypeSpecMutator> {
     @Inject CtorNodeTypeSpecMutator ctorNodeTypeSpecMutator;
     @Inject WitherNodeTypeSpecMutator witherNodeTypeSpecMutator;
     @Inject UserNodeTypeSpecMutator userNodeTypeSpecMutator;
-    @Inject CreateTableRequestTypeSpecMutator createTableRequestTypeSpecMutator;
-    @Inject DocumentLoadNodeTypeSpecMutator documentLoadNodeTypeSpecMutator;
-    @Inject DocumentQueryNodeTypeSpecMutator documentQueryNodeTypeSpecMutator;
+    @Inject CreateTableTypeSpecMutator createTableTypeSpecMutator;
+    @Inject LoadNodeTypeSpecMutator loadNodeTypeSpecMutator;
+    @Inject QueryNodeTypeSpecMutator queryNodeTypeSpecMutator;
     @Inject EqualsNodeTypeSpecMutator equalsNodeTypeSpecMutator;
     @Inject HashCodeNodeTypeSpecMutator hashCodeNodeTypeSpecMutator;
     @Inject ToStringNodeTypeSpecMutator toStringNodeTypeSpecMutator;
@@ -44,9 +44,9 @@ public class NodeTypeSpecMutators implements Streamable<NodeTypeSpecMutator> {
         nodeTypeSpecMutators.add(witherNodeTypeSpecMutator);
         nodeTypeSpecMutators.add(userNodeTypeSpecMutator);
 
-        nodeTypeSpecMutators.add(createTableRequestTypeSpecMutator);
-        nodeTypeSpecMutators.add(documentLoadNodeTypeSpecMutator);
-        nodeTypeSpecMutators.add(documentQueryNodeTypeSpecMutator);
+        nodeTypeSpecMutators.add(createTableTypeSpecMutator);
+        nodeTypeSpecMutators.add(loadNodeTypeSpecMutator);
+        nodeTypeSpecMutators.add(queryNodeTypeSpecMutator);
 
         nodeTypeSpecMutators.add(equalsNodeTypeSpecMutator);
         nodeTypeSpecMutators.add(hashCodeNodeTypeSpecMutator);

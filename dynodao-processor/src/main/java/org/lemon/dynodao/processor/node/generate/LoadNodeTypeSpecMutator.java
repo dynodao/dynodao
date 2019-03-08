@@ -27,14 +27,14 @@ import static org.lemon.dynodao.processor.util.DynamoDbUtil.getItemResult;
  * Implements all methods defined in the {@link org.lemon.dynodao.DynoDaoLoad} interface.
  * If the type being built does not implement the interface, then nothing is added.
  */
-class DocumentLoadNodeTypeSpecMutator implements NodeTypeSpecMutator {
+class LoadNodeTypeSpecMutator implements NodeTypeSpecMutator {
 
     private static final ParameterSpec AMAZON_DYNAMO_DB_PARAMETER = ParameterSpec.builder(amazonDynamoDb(), "amazonDynamoDb").build();
 
     private final MethodSpec loadWithNoReturnOrBody;
     private final MethodSpec asRequestWithNoBody;
 
-    @Inject DocumentLoadNodeTypeSpecMutator(Processors processors) {
+    @Inject LoadNodeTypeSpecMutator(Processors processors) {
         TypeElement interfaceType = processors.getTypeElement(InterfaceType.LOAD.getInterfaceClass().get());
         ExecutableElement load = processors.getMethodByName(interfaceType, "load");
         loadWithNoReturnOrBody = MethodSpec.methodBuilder(load.getSimpleName().toString())
@@ -43,13 +43,13 @@ class DocumentLoadNodeTypeSpecMutator implements NodeTypeSpecMutator {
                 .addParameter(AMAZON_DYNAMO_DB_PARAMETER)
                 .build();
 
-        ExecutableElement asRequest = processors.getMethodByName(interfaceType, "asRequest");
+        ExecutableElement asRequest = processors.getMethodByName(interfaceType, "asGetItemRequest");
         asRequestWithNoBody = MethodSpec.overriding(asRequest).build();
     }
 
     @Override
     public void mutate(TypeSpec.Builder typeSpec, NodeClassData node) {
-        if (isDocumentLoad(node)) {
+        if (isLoad(node)) {
             MethodSpec asRequest = buildAsRequest(node);
             typeSpec.addMethod(asRequest);
 
@@ -58,7 +58,7 @@ class DocumentLoadNodeTypeSpecMutator implements NodeTypeSpecMutator {
         }
     }
 
-    private boolean isDocumentLoad(NodeClassData node) {
+    private boolean isLoad(NodeClassData node) {
         return node.getInterfaceType().equals(InterfaceType.LOAD);
     }
 

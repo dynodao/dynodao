@@ -8,6 +8,7 @@ import java.util.stream.Stream;
 /**
  * A DynamoDB <tt>query</tt> operation, getting a collection of documents of type <tt>T</tt>.
  * @param <T> the type of document stored in DynamoDB
+ * @see <a href="https://docs.aws.amazon.com/amazondynamodb/latest/APIReference/API_Query.html">AWS Documentation</a>
  */
 public interface DynoDaoQuery<T> {
 
@@ -22,6 +23,6 @@ public interface DynoDaoQuery<T> {
      * Returns the {@link QueryRequest} which will be used in the query operation.
      * @return the {@link QueryRequest}
      */
-    QueryRequest asRequest();
+    QueryRequest asQueryRequest();
 
 }

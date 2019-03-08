@@ -3,6 +3,7 @@ package org.lemon.dynodao.processor.node;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.lemon.dynodao.DynoDaoCreateTable;
 import org.lemon.dynodao.DynoDaoLoad;
 import org.lemon.dynodao.DynoDaoQuery;
 import org.lemon.dynodao.processor.schema.index.DynamoIndex;
@@ -19,6 +20,7 @@ import java.util.Optional;
 public enum InterfaceType {
 
     NONE(Optional.empty()),
+    CREATE(Optional.of(DynoDaoCreateTable.class)),
     LOAD(Optional.of(DynoDaoLoad.class)),
     QUERY(Optional.of(DynoDaoQuery.class));
 

@@ -70,7 +70,7 @@ public abstract class AbstractIntegrationTest extends AbstractSourceCompilingTes
     void createTable() {
         amazonDynamoDb = DynamoDBEmbedded.create().amazonDynamoDB();
         CreateTableRequest createTableRequest = getCreateTableRequest()
-                .withProvisionedThroughput(new ProvisionedThroughput(1000L, 1000L));
+                .withProvisionedThroughput(new ProvisionedThroughput(40000L, 40000L));
         amazonDynamoDb.createTable(createTableRequest);
     }
 

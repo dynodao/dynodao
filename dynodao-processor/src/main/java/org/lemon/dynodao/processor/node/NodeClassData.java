@@ -64,6 +64,7 @@ public final class NodeClassData {
      * @return <tt>this</tt>
      */
     public NodeClassData addUser(NodeTypeSpec pojo) {
+        interfaceType = InterfaceType.CREATE;
         targetUsingIndexes.add(pojo);
         return this;
     }

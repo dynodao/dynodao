@@ -54,8 +54,6 @@ public class NodeTypeSpecFactory {
         }
 
         name.append(node.getDocumentElement().getSimpleName());
-
-        node.getInterfaceType().getInterfaceClass().ifPresent(clazz -> name.append(clazz.getSimpleName()));
         return name.toString();
     }
 

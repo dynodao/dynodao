@@ -35,10 +35,10 @@ class TableSchemaTest extends AbstractSourceCompilingTest {
 
     @Test
     void withHashKey_onlyUseCase_returnsLoadNode() {
-        TableHashKeySchemaDynoDaoLoad load = new SchemaStagedDynamoBuilder()
+        TableHashKeySchema load = new SchemaStagedDynamoBuilder()
                 .usingTable()
                 .withHashKey("value");
-        assertThat(load).isEqualTo(new TableHashKeySchemaDynoDaoLoad("value"));
+        assertThat(load).isEqualTo(new TableHashKeySchema("value"));
     }
 
 }

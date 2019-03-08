@@ -30,14 +30,14 @@ import static org.lemon.dynodao.processor.util.DynamoDbUtil.queryResult;
  * Implements all methods defined in the {@link org.lemon.dynodao.DynoDaoQuery} interface.
  * If the type being built does not implement the interface, then nothing is added.
  */
-class DocumentQueryNodeTypeSpecMutator implements NodeTypeSpecMutator {
+class QueryNodeTypeSpecMutator implements NodeTypeSpecMutator {
 
     private static final ParameterSpec AMAZON_DYNAMO_DB_PARAMETER = ParameterSpec.builder(amazonDynamoDb(), "amazonDynamoDb").build();
 
     private final MethodSpec queryWithNoReturnOrBody;
     private final MethodSpec asRequestWithNoBody;
 
-    @Inject DocumentQueryNodeTypeSpecMutator(Processors processors) {
+    @Inject QueryNodeTypeSpecMutator(Processors processors) {
         TypeElement interfaceType = processors.getTypeElement(InterfaceType.QUERY.getInterfaceClass().get());
         ExecutableElement query = processors.getMethodByName(interfaceType, "query");
         queryWithNoReturnOrBody = MethodSpec.methodBuilder(query.getSimpleName().toString())
@@ -46,13 +46,13 @@ class DocumentQueryNodeTypeSpecMutator implements NodeTypeSpecMutator {
                 .addParameter(AMAZON_DYNAMO_DB_PARAMETER)
                 .build();
 
-        ExecutableElement asRequest = processors.getMethodByName(interfaceType, "asRequest");
+        ExecutableElement asRequest = processors.getMethodByName(interfaceType, "asQueryRequest");
         asRequestWithNoBody = MethodSpec.overriding(asRequest).build();
     }
 
     @Override
     public void mutate(TypeSpec.Builder typeSpec, NodeClassData node) {
-        if (isDocumentQuery(node)) {
+        if (isQuery(node)) {
             MethodSpec asRequest = buildAsRequest(node);
             typeSpec.addMethod(asRequest);
 
@@ -61,7 +61,7 @@ class DocumentQueryNodeTypeSpecMutator implements NodeTypeSpecMutator {
         }
     }
 
-    private boolean isDocumentQuery(NodeClassData node) {
+    private boolean isQuery(NodeClassData node) {
         return node.getInterfaceType().equals(InterfaceType.QUERY);
     }
 

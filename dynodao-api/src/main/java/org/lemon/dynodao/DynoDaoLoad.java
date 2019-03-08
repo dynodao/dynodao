@@ -8,6 +8,7 @@ import java.util.stream.Stream;
 /**
  * A DynamoDB <tt>load</tt> operation, getting a single document of type <tt>T</tt>.
  * @param <T> the type of document stored in DynamoDB
+ * @see <a href="https://docs.aws.amazon.com/amazondynamodb/latest/APIReference/API_GetItem.html">AWS Documentation</a>
  */
 public interface DynoDaoLoad<T> {
 
@@ -22,6 +23,6 @@ public interface DynoDaoLoad<T> {
      * Returns the {@link GetItemRequest} which will be used in the load operation.
      * @return the {@link GetItemRequest}
      */
-    GetItemRequest asRequest();
+    GetItemRequest asGetItemRequest();
 
 }
