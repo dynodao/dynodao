@@ -24,7 +24,7 @@ class StagedDynamoBuilderTest extends AbstractSourceCompilingTest {
     }
 
     @Test
-    void usingTable_onlyUseCase_returnsIndexIntermediaryNode() {
+    void usingTable_onlyUseCase_returnsIndexIntermediaryStage() {
         TableSchema tableSchema = new SchemaStagedDynamoBuilder().usingTable();
         assertThat(tableSchema).isEqualTo(new TableSchema());
     }
@@ -34,7 +34,7 @@ class StagedDynamoBuilderTest extends AbstractSourceCompilingTest {
 class TableSchemaTest extends AbstractSourceCompilingTest {
 
     @Test
-    void withHashKey_onlyUseCase_returnsLoadNode() {
+    void withHashKey_onlyUseCase_returnsLoadStage() {
         TableHashKeySchema load = new SchemaStagedDynamoBuilder()
                 .usingTable()
                 .withHashKey("value");

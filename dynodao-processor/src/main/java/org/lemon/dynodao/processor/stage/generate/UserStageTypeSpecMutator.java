@@ -1,11 +1,11 @@
-package org.lemon.dynodao.processor.node.generate;
+package org.lemon.dynodao.processor.stage.generate;
 
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.MethodSpec;
 import com.squareup.javapoet.ParameterSpec;
 import com.squareup.javapoet.TypeSpec;
-import org.lemon.dynodao.processor.node.NodeClassData;
-import org.lemon.dynodao.processor.node.NodeTypeSpec;
+import org.lemon.dynodao.processor.stage.Stage;
+import org.lemon.dynodao.processor.stage.StageTypeSpec;
 import org.lemon.dynodao.processor.schema.attribute.DynamoAttribute;
 
 import javax.inject.Inject;
@@ -22,24 +22,24 @@ import static org.lemon.dynodao.processor.util.StringUtil.toClassCase;
  * Adds an user to type being built. The user (<tt>using*</tt>) is a factory which forwards the parameters to the
  * construct of a new type, which is returned.
  */
-class UserNodeTypeSpecMutator implements NodeTypeSpecMutator {
+class UserStageTypeSpecMutator implements StageTypeSpecMutator {
 
-    @Inject UserNodeTypeSpecMutator() { }
+    @Inject UserStageTypeSpecMutator() { }
 
     @Override
-    public void mutate(TypeSpec.Builder typeSpec, NodeClassData node) {
-        for (NodeTypeSpec usingTarget : node.getTargetUsingIndexes()) {
-            MethodSpec user = buildUser(node, usingTarget);
+    public void mutate(TypeSpec.Builder typeSpec, Stage stage) {
+        for (StageTypeSpec usingTarget : stage.getTargetUsingIndexes()) {
+            MethodSpec user = buildUser(stage, usingTarget);
             typeSpec.addMethod(user);
         }
     }
 
-    private MethodSpec buildUser(NodeClassData node, NodeTypeSpec usingTarget) {
-        List<ParameterSpec> params = getRequiredParameters(node, usingTarget);
+    private MethodSpec buildUser(Stage stage, StageTypeSpec usingTarget) {
+        List<ParameterSpec> params = getRequiredParameters(stage, usingTarget);
         ClassName type = ClassName.bestGuess(usingTarget.getTypeSpec().name);
 
-        String argsFormat = repeat(node.getAttributes().size() + params.size(), "$N", ", ");
-        Object[] args = concat(type, node.getAttributes(), params).toArray();
+        String argsFormat = repeat(stage.getAttributes().size() + params.size(), "$N", ", ");
+        Object[] args = concat(type, stage.getAttributes(), params).toArray();
 
         return MethodSpec.methodBuilder(getMethodName(usingTarget))
                 .addModifiers(Modifier.PUBLIC)
@@ -49,16 +49,16 @@ class UserNodeTypeSpecMutator implements NodeTypeSpecMutator {
                 .build();
     }
 
-    private List<ParameterSpec> getRequiredParameters(NodeClassData node, NodeTypeSpec usingTarget) {
-        List<DynamoAttribute> attributes = new ArrayList<>(usingTarget.getNode().getAttributes());
-        attributes.removeAll(node.getAttributes());
+    private List<ParameterSpec> getRequiredParameters(Stage stage, StageTypeSpec usingTarget) {
+        List<DynamoAttribute> attributes = new ArrayList<>(usingTarget.getStage().getAttributes());
+        attributes.removeAll(stage.getAttributes());
         return attributes.stream()
                 .map(DynamoAttribute::asParameterSpec)
                 .collect(toList());
     }
 
-    private String getMethodName(NodeTypeSpec usingTarget) {
-        return "using" + toClassCase(usingTarget.getNode().getDynamoIndex().getName());
+    private String getMethodName(StageTypeSpec usingTarget) {
+        return "using" + toClassCase(usingTarget.getStage().getDynamoIndex().getName());
     }
 
 }

@@ -1,11 +1,11 @@
-package org.lemon.dynodao.processor.node.generate;
+package org.lemon.dynodao.processor.stage.generate;
 
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.MethodSpec;
 import com.squareup.javapoet.ParameterSpec;
 import com.squareup.javapoet.TypeSpec;
-import org.lemon.dynodao.processor.node.NodeClassData;
-import org.lemon.dynodao.processor.node.NodeTypeSpec;
+import org.lemon.dynodao.processor.stage.Stage;
+import org.lemon.dynodao.processor.stage.StageTypeSpec;
 import org.lemon.dynodao.processor.schema.attribute.DynamoAttribute;
 
 import javax.inject.Inject;
@@ -23,24 +23,24 @@ import static org.lemon.dynodao.processor.util.StringUtil.repeat;
  * Adds a wither to type being built. The wither is a factory which forwards the fields in this type
  * plus wither method arguments to the construct of a new type, which is returned.
  */
-class WitherNodeTypeSpecMutator implements NodeTypeSpecMutator {
+class WitherStageTypeSpecMutator implements StageTypeSpecMutator {
 
-    @Inject WitherNodeTypeSpecMutator() { }
+    @Inject WitherStageTypeSpecMutator() { }
 
     @Override
-    public void mutate(TypeSpec.Builder typeSpec, NodeClassData node) {
-        for (NodeTypeSpec witherTarget : node.getTargetWithers()) {
-            MethodSpec wither = buildWither(node, witherTarget);
+    public void mutate(TypeSpec.Builder typeSpec, Stage stage) {
+        for (StageTypeSpec witherTarget : stage.getTargetWithers()) {
+            MethodSpec wither = buildWither(stage, witherTarget);
             typeSpec.addMethod(wither);
         }
     }
 
-    private MethodSpec buildWither(NodeClassData node, NodeTypeSpec witherTarget) {
-        List<ParameterSpec> params = getRequiredParameters(node, witherTarget);
+    private MethodSpec buildWither(Stage stage, StageTypeSpec witherTarget) {
+        List<ParameterSpec> params = getRequiredParameters(stage, witherTarget);
         ClassName type = ClassName.bestGuess(witherTarget.getTypeSpec().name);
 
-        String argsFormat = repeat(node.getAttributes().size() + params.size(), "$N", ", ");
-        Object[] args = concat(type, node.getAttributesAsFields(), params).toArray();
+        String argsFormat = repeat(stage.getAttributes().size() + params.size(), "$N", ", ");
+        Object[] args = concat(type, stage.getAttributesAsFields(), params).toArray();
 
         return MethodSpec.methodBuilder(getMethodName(params))
                 .addModifiers(Modifier.PUBLIC)
@@ -50,9 +50,9 @@ class WitherNodeTypeSpecMutator implements NodeTypeSpecMutator {
                 .build();
     }
 
-    private List<ParameterSpec> getRequiredParameters(NodeClassData node, NodeTypeSpec witherTarget) {
-        List<DynamoAttribute> attributes = new ArrayList<>(witherTarget.getNode().getAttributes());
-        attributes.removeAll(node.getAttributes());
+    private List<ParameterSpec> getRequiredParameters(Stage stage, StageTypeSpec witherTarget) {
+        List<DynamoAttribute> attributes = new ArrayList<>(witherTarget.getStage().getAttributes());
+        attributes.removeAll(stage.getAttributes());
         return attributes.stream()
                 .map(DynamoAttribute::asParameterSpec)
                 .collect(toList());

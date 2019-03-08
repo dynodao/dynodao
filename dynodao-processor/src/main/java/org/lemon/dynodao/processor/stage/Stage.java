@@ -1,4 +1,4 @@
-package org.lemon.dynodao.processor.node;
+package org.lemon.dynodao.processor.stage;
 
 import com.squareup.javapoet.FieldSpec;
 import lombok.AccessLevel;
@@ -16,12 +16,12 @@ import java.util.List;
 import static java.util.stream.Collectors.toList;
 
 /**
- * Data model for a node type to generate. Each model models a portion of a single dynamo index,
+ * Data model for a stage type to generate. Each model models a portion of a single dynamo index,
  * including the staged builder entry point to the chain.
  */
 @Data
 @Setter(AccessLevel.NONE)
-public final class NodeClassData {
+public final class Stage {
 
     private final DynamoSchema schema;
     private final SerializerTypeSpec serializer;
@@ -31,15 +31,15 @@ public final class NodeClassData {
     private KeyLengthType keyLengthType = KeyLengthType.NONE;
     private InterfaceType interfaceType = InterfaceType.NONE;
 
-    private final List<NodeTypeSpec> targetWithers = new ArrayList<>();
-    private final List<NodeTypeSpec> targetUsingIndexes = new ArrayList<>();
+    private final List<StageTypeSpec> targetWithers = new ArrayList<>();
+    private final List<StageTypeSpec> targetUsingIndexes = new ArrayList<>();
 
     /**
      * @param index the index to use
      * @param keyLengthType the number of fields to use from the index
      * @return <tt>this</tt>
      */
-    public NodeClassData withIndex(DynamoIndex index, KeyLengthType keyLengthType) {
+    public Stage withIndex(DynamoIndex index, KeyLengthType keyLengthType) {
         this.dynamoIndex = index;
         this.keyLengthType = keyLengthType;
 
@@ -50,22 +50,22 @@ public final class NodeClassData {
 
     /**
      * Adds the model which <tt>this</tt> model should have a <tt>with</tt> method for.
-     * @param pojo the existing model type this class should have a <tt>with</tt> method for
+     * @param stage the existing stage type this class should have a <tt>with</tt> method for
      * @return <tt>this</tt>
      */
-    public NodeClassData addWither(NodeTypeSpec pojo) {
-        targetWithers.add(pojo);
+    public Stage addWither(StageTypeSpec stage) {
+        targetWithers.add(stage);
         return this;
     }
 
     /**
      * Adds the model which <tt>this</tt> model should have an <tt>using</tt> method for.
-     * @param pojo the existing model type this class should have a <tt>using</tt> method for
+     * @param stage the existing stage type this class should have a <tt>using</tt> method for
      * @return <tt>this</tt>
      */
-    public NodeClassData addUser(NodeTypeSpec pojo) {
+    public Stage addUser(StageTypeSpec stage) {
         interfaceType = InterfaceType.CREATE;
-        targetUsingIndexes.add(pojo);
+        targetUsingIndexes.add(stage);
         return this;
     }
 

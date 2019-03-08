@@ -1,4 +1,4 @@
-package org.lemon.dynodao.processor.node.generate;
+package org.lemon.dynodao.processor.stage.generate;
 
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.MethodSpec;
@@ -8,8 +8,8 @@ import com.squareup.javapoet.TypeName;
 import com.squareup.javapoet.TypeSpec;
 import org.lemon.dynodao.internal.GetItemReadResult;
 import org.lemon.dynodao.processor.context.Processors;
-import org.lemon.dynodao.processor.node.InterfaceType;
-import org.lemon.dynodao.processor.node.NodeClassData;
+import org.lemon.dynodao.processor.stage.InterfaceType;
+import org.lemon.dynodao.processor.stage.Stage;
 import org.lemon.dynodao.processor.schema.attribute.DynamoAttribute;
 
 import javax.inject.Inject;
@@ -27,14 +27,14 @@ import static org.lemon.dynodao.processor.util.DynamoDbUtil.getItemResult;
  * Implements all methods defined in the {@link org.lemon.dynodao.DynoDaoLoad} interface.
  * If the type being built does not implement the interface, then nothing is added.
  */
-class LoadNodeTypeSpecMutator implements NodeTypeSpecMutator {
+class LoadStageTypeSpecMutator implements StageTypeSpecMutator {
 
     private static final ParameterSpec AMAZON_DYNAMO_DB_PARAMETER = ParameterSpec.builder(amazonDynamoDb(), "amazonDynamoDb").build();
 
     private final MethodSpec loadWithNoReturnOrBody;
     private final MethodSpec asRequestWithNoBody;
 
-    @Inject LoadNodeTypeSpecMutator(Processors processors) {
+    @Inject LoadStageTypeSpecMutator(Processors processors) {
         TypeElement interfaceType = processors.getTypeElement(InterfaceType.LOAD.getInterfaceClass().get());
         ExecutableElement load = processors.getMethodByName(interfaceType, "load");
         loadWithNoReturnOrBody = MethodSpec.methodBuilder(load.getSimpleName().toString())
@@ -48,27 +48,27 @@ class LoadNodeTypeSpecMutator implements NodeTypeSpecMutator {
     }
 
     @Override
-    public void mutate(TypeSpec.Builder typeSpec, NodeClassData node) {
-        if (isLoad(node)) {
-            MethodSpec asRequest = buildAsRequest(node);
+    public void mutate(TypeSpec.Builder typeSpec, Stage stage) {
+        if (isLoad(stage)) {
+            MethodSpec asRequest = buildAsRequest(stage);
             typeSpec.addMethod(asRequest);
 
-            MethodSpec load = buildLoad(node, asRequest);
+            MethodSpec load = buildLoad(stage, asRequest);
             typeSpec.addMethod(load);
         }
     }
 
-    private boolean isLoad(NodeClassData node) {
-        return node.getInterfaceType().equals(InterfaceType.LOAD);
+    private boolean isLoad(Stage stage) {
+        return stage.getInterfaceType().equals(InterfaceType.LOAD);
     }
 
-    private MethodSpec buildAsRequest(NodeClassData node) {
+    private MethodSpec buildAsRequest(Stage stage) {
         MethodSpec.Builder asRequest = asRequestWithNoBody.toBuilder()
                 .addStatement("$1T request = new $1T()", getItemRequest())
-                .addStatement("request.setTableName($S)", node.getSchema().getTableName());
+                .addStatement("request.setTableName($S)", stage.getSchema().getTableName());
 
-        String serializerClassName = node.getSerializer().getTypeSpec().name;
-        for (DynamoAttribute attribute : node.getAttributes()) {
+        String serializerClassName = stage.getSerializer().getTypeSpec().name;
+        for (DynamoAttribute attribute : stage.getAttributes()) {
             String serializeMethodName = attribute.getSerializationMethod().getMethodName();
             asRequest.addStatement("request.addKeyEntry($S, $L.$L($N))", attribute.getPath(), serializerClassName, serializeMethodName, attribute.asFieldSpec());
         }
@@ -78,12 +78,12 @@ class LoadNodeTypeSpecMutator implements NodeTypeSpecMutator {
                 .build();
     }
 
-    private MethodSpec buildLoad(NodeClassData node, MethodSpec asRequest) {
-        TypeName documentType = TypeName.get(node.getSchema().getDocument().getTypeMirror());
+    private MethodSpec buildLoad(Stage stage, MethodSpec asRequest) {
+        TypeName documentType = TypeName.get(stage.getSchema().getDocument().getTypeMirror());
 
         ParameterSpec attributeValue = ParameterSpec.builder(attributeValue(), "attributeValue").build();
-        String serializerClassName = node.getSerializer().getTypeSpec().name;
-        String deserializeMethodName = node.getSchema().getDocument().getDeserializationMethod().getMethodName();
+        String serializerClassName = stage.getSerializer().getTypeSpec().name;
+        String deserializeMethodName = stage.getSchema().getDocument().getDeserializationMethod().getMethodName();
         TypeSpec getItemResult = TypeSpec.anonymousClassBuilder("result")
                 .addSuperinterface(ParameterizedTypeName.get(ClassName.get(GetItemReadResult.class), documentType))
                 .addMethod(MethodSpec.methodBuilder("deserialize")

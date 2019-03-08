@@ -1,9 +1,9 @@
-package org.lemon.dynodao.processor.node.generate;
+package org.lemon.dynodao.processor.stage.generate;
 
 import com.squareup.javapoet.MethodSpec;
 import com.squareup.javapoet.ParameterSpec;
 import com.squareup.javapoet.TypeSpec;
-import org.lemon.dynodao.processor.node.NodeClassData;
+import org.lemon.dynodao.processor.stage.Stage;
 
 import javax.inject.Inject;
 import javax.lang.model.element.Modifier;
@@ -15,7 +15,7 @@ import static java.util.stream.Collectors.joining;
  * Adds a decent implementation of {@link Object#equals(Object)} to the type, delegating
  * to {@link Objects#equals(Object, Object)}, field by field.
  */
-class EqualsNodeTypeSpecMutator implements NodeTypeSpecMutator {
+class EqualsStageTypeSpecMutator implements StageTypeSpecMutator {
 
     private static final ParameterSpec OBJECT_PARAM = ParameterSpec.builder(Object.class, "obj").build();
 
@@ -26,21 +26,21 @@ class EqualsNodeTypeSpecMutator implements NodeTypeSpecMutator {
             .addParameter(OBJECT_PARAM)
             .build();
 
-    @Inject EqualsNodeTypeSpecMutator() { }
+    @Inject EqualsStageTypeSpecMutator() { }
 
     @Override
-    public void mutate(TypeSpec.Builder typeSpec, NodeClassData node) {
+    public void mutate(TypeSpec.Builder typeSpec, Stage stage) {
         // build the incomplete class in order to get the name, the builder provides no access
         String className = typeSpec.build().name;
-        MethodSpec equals = buildEquals(className, node);
+        MethodSpec equals = buildEquals(className, stage);
         typeSpec.addMethod(equals);
     }
 
-    private MethodSpec buildEquals(String className, NodeClassData node) {
-        if (node.getAttributes().isEmpty()) {
+    private MethodSpec buildEquals(String className, Stage stage) {
+        if (stage.getAttributes().isEmpty()) {
             return buildNoFieldsEquals(className);
         } else {
-            return buildPojoEquals(className, node);
+            return buildPojoEquals(className, stage);
         }
     }
 
@@ -50,17 +50,17 @@ class EqualsNodeTypeSpecMutator implements NodeTypeSpecMutator {
                 .build();
     }
 
-    private MethodSpec buildPojoEquals(String className, NodeClassData node) {
+    private MethodSpec buildPojoEquals(String className, Stage stage) {
         MethodSpec.Builder equals = EQUALS_WITH_NO_BODY.toBuilder()
                 .beginControlFlow("if (this == $N)", OBJECT_PARAM)
                 .addStatement("return true")
                 .nextControlFlow("else if ($N instanceof $L)", OBJECT_PARAM, className)
                 .addStatement("$L rhs = ($L) $N", className, className, OBJECT_PARAM);
 
-        String equal = node.getAttributesAsFields().stream()
+        String equal = stage.getAttributesAsFields().stream()
                 .map(field -> String.format("$T.equals(this.%s, rhs.%s)", field.name, field.name))
                 .collect(joining(" && "));
-        Object[] objects = node.getAttributes().stream().map(f -> Objects.class).toArray();
+        Object[] objects = stage.getAttributes().stream().map(f -> Objects.class).toArray();
 
         return equals
                 .addStatement("return " + equal, objects)

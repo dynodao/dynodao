@@ -1,4 +1,4 @@
-package org.lemon.dynodao.processor.node;
+package org.lemon.dynodao.processor.stage;
 
 import com.squareup.javapoet.TypeSpec;
 import lombok.Value;
@@ -11,14 +11,14 @@ import javax.lang.model.element.TypeElement;
  * of {@link org.lemon.dynodao.DynoDaoLoad} and {@link org.lemon.dynodao.DynoDaoQuery}.
  */
 @Value
-public class NodeTypeSpec implements BuiltTypeSpec {
+public class StageTypeSpec implements BuiltTypeSpec {
 
-    private final NodeClassData node;
+    private final Stage stage;
     private final TypeSpec typeSpec;
 
     @Override
     public TypeElement getDocumentElement() {
-        return node.getDocumentElement();
+        return stage.getDocumentElement();
     }
 
 }

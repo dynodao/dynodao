@@ -1,17 +1,14 @@
-package org.lemon.dynodao.processor.node.generate;
+package org.lemon.dynodao.processor.stage.generate;
 
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.CodeBlock;
 import com.squareup.javapoet.MethodSpec;
 import com.squareup.javapoet.ParameterSpec;
 import com.squareup.javapoet.ParameterizedTypeName;
-import com.squareup.javapoet.TypeName;
-import com.squareup.javapoet.TypeSpec;
 import com.squareup.javapoet.TypeSpec.Builder;
-import org.lemon.dynodao.internal.GetItemReadResult;
 import org.lemon.dynodao.processor.context.Processors;
-import org.lemon.dynodao.processor.node.InterfaceType;
-import org.lemon.dynodao.processor.node.NodeClassData;
+import org.lemon.dynodao.processor.stage.InterfaceType;
+import org.lemon.dynodao.processor.stage.Stage;
 import org.lemon.dynodao.processor.schema.index.DynamoIndex;
 
 import javax.inject.Inject;
@@ -23,14 +20,11 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
-import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.toMap;
 import static org.lemon.dynodao.processor.util.DynamoDbUtil.amazonDynamoDb;
 import static org.lemon.dynodao.processor.util.DynamoDbUtil.attributeDefinition;
-import static org.lemon.dynodao.processor.util.DynamoDbUtil.attributeValue;
 import static org.lemon.dynodao.processor.util.DynamoDbUtil.createTableRequest;
-import static org.lemon.dynodao.processor.util.DynamoDbUtil.getItemResult;
 import static org.lemon.dynodao.processor.util.DynamoDbUtil.globalSecondaryIndex;
 import static org.lemon.dynodao.processor.util.DynamoDbUtil.keySchemaElement;
 import static org.lemon.dynodao.processor.util.DynamoDbUtil.keyType;
@@ -45,16 +39,17 @@ import static org.lemon.dynodao.processor.util.StringUtil.toClassCase;
 import static org.lemon.dynodao.processor.util.StringUtil.uncapitalize;
 
 /**
- * Adds a {@code asCreateTableRequest} method to the staged builder class.
+ * Implements all methods defined in the {@link org.lemon.dynodao.DynoDaoCreateTable} interface.
+ * If the type being built does not implement the interface, then nothing is added.
  */
-class CreateTableTypeSpecMutator implements NodeTypeSpecMutator {
+class CreateTableStageTypeSpecMutator implements StageTypeSpecMutator {
 
     private static final ParameterSpec AMAZON_DYNAMO_DB_PARAMETER = ParameterSpec.builder(amazonDynamoDb(), "amazonDynamoDb").build();
 
     private final MethodSpec createTableWithNoBody;
     private final MethodSpec asRequestWithNoBody;
 
-    @Inject CreateTableTypeSpecMutator(Processors processors) {
+    @Inject CreateTableStageTypeSpecMutator(Processors processors) {
         TypeElement interfaceType = processors.getTypeElement(InterfaceType.CREATE.getInterfaceClass().get());
         ExecutableElement load = processors.getMethodByName(interfaceType, "createTable");
         createTableWithNoBody = MethodSpec.methodBuilder(load.getSimpleName().toString())
@@ -69,42 +64,42 @@ class CreateTableTypeSpecMutator implements NodeTypeSpecMutator {
     }
 
     @Override
-    public void mutate(Builder typeSpec, NodeClassData node) {
-        if (isCreateTable(node)) {
-            MethodSpec asRequest = buildAsRequest(node);
+    public void mutate(Builder typeSpec, Stage stage) {
+        if (isCreateTable(stage)) {
+            MethodSpec asRequest = buildAsRequest(stage);
             typeSpec.addMethod(asRequest);
 
-            MethodSpec createTable = buildCreateTable(node, asRequest);
+            MethodSpec createTable = buildCreateTable(stage, asRequest);
             typeSpec.addMethod(createTable);
         }
     }
 
-    private boolean isCreateTable(NodeClassData node) {
-        return node.isStagedBuilder() || node.getInterfaceType().equals(InterfaceType.CREATE);
+    private boolean isCreateTable(Stage stage) {
+        return stage.isStagedBuilder() || stage.getInterfaceType().equals(InterfaceType.CREATE);
     }
 
-    private MethodSpec buildAsRequest(NodeClassData node) {
+    private MethodSpec buildAsRequest(Stage stage) {
         MethodSpec.Builder asRequest = asRequestWithNoBody.toBuilder()
                 .addStatement("$1T request = new $1T()", createTableRequest())
-                .addStatement("request.setTableName($S)", node.getSchema().getTableName());
+                .addStatement("request.setTableName($S)", stage.getSchema().getTableName());
 
-        appendAttributeDefinitions(asRequest, node);
-        appendKeySchema(asRequest, node);
-        appendProvisionedThroughput(asRequest, node);
-        if (node.getSchema().hasLocalSecondaryIndexes()) {
-            appendLocalSecondaryIndexes(asRequest, node);
+        appendAttributeDefinitions(asRequest, stage);
+        appendKeySchema(asRequest, stage);
+        appendProvisionedThroughput(asRequest, stage);
+        if (stage.getSchema().hasLocalSecondaryIndexes()) {
+            appendLocalSecondaryIndexes(asRequest, stage);
         }
-        if (node.getSchema().hasGlobalSecondaryIndexes()) {
-            appendGlobalSecondaryIndexes(asRequest, node);
+        if (stage.getSchema().hasGlobalSecondaryIndexes()) {
+            appendGlobalSecondaryIndexes(asRequest, stage);
         }
         asRequest.addStatement("return request");
         return asRequest.build();
     }
 
-    private void appendAttributeDefinitions(MethodSpec.Builder asRequest, NodeClassData node) {
+    private void appendAttributeDefinitions(MethodSpec.Builder asRequest, Stage stage) {
         asRequest.addStatement("$T attributeDefinitions = new $T<>()", ParameterizedTypeName.get(ClassName.get(List.class), attributeDefinition()), ArrayList.class);
 
-        node.getSchema().getIndexes().stream()
+        stage.getSchema().getIndexes().stream()
                 .flatMap(index -> index.getKeys().stream())
                 .distinct()
                 .forEach(hashKey -> asRequest
@@ -113,8 +108,8 @@ class CreateTableTypeSpecMutator implements NodeTypeSpecMutator {
         asRequest.addStatement("request.setAttributeDefinitions(attributeDefinitions)");
     }
 
-    private void appendKeySchema(MethodSpec.Builder asRequest, NodeClassData node) {
-        addSetKeySchemaForIndex(asRequest, node.getSchema().getTableIndex(), "request");
+    private void appendKeySchema(MethodSpec.Builder asRequest, Stage stage) {
+        addSetKeySchemaForIndex(asRequest, stage.getSchema().getTableIndex(), "request");
     }
 
     private void addSetKeySchemaForIndex(MethodSpec.Builder asRequest, DynamoIndex index, String variableTarget) {
@@ -128,7 +123,7 @@ class CreateTableTypeSpecMutator implements NodeTypeSpecMutator {
         asRequest.addStatement(keys.build());
     }
 
-    private void appendProvisionedThroughput(MethodSpec.Builder asRequest, NodeClassData node) {
+    private void appendProvisionedThroughput(MethodSpec.Builder asRequest, Stage stage) {
         addSetProvisionedThroughputForIndex(asRequest, "request");
     }
 
@@ -136,15 +131,15 @@ class CreateTableTypeSpecMutator implements NodeTypeSpecMutator {
         asRequest.addStatement("$L.setProvisionedThroughput(new $T(5L, 5L))", variableTarget, provisionedThroughput());
     }
 
-    private void appendLocalSecondaryIndexes(MethodSpec.Builder asRequest, NodeClassData node) {
-        Map<DynamoIndex, String> variableNameByIndex = node.getSchema().getLocalSecondaryIndexes().stream()
+    private void appendLocalSecondaryIndexes(MethodSpec.Builder asRequest, Stage stage) {
+        Map<DynamoIndex, String> variableNameByIndex = stage.getSchema().getLocalSecondaryIndexes().stream()
                 .collect(toMap(Function.identity(), index -> uncapitalize(toClassCase(index.getName()))));
 
         variableNameByIndex.forEach((index, variableName) -> {
             asRequest.addStatement("$1T $2L = new $1T()", localSecondaryIndex(), variableName);
             asRequest.addStatement("$L.setIndexName($S)", variableName, index.getName());
             addSetKeySchemaForIndex(asRequest, index, variableName);
-            addSetProjectionForIndex(asRequest, node, index, variableName);
+            addSetProjectionForIndex(asRequest, stage, index, variableName);
         });
 
         String format = repeat(variableNameByIndex.size(), "$L", ", ");
@@ -152,8 +147,8 @@ class CreateTableTypeSpecMutator implements NodeTypeSpecMutator {
         asRequest.addStatement("request.setLocalSecondaryIndexes($T.asList(" + format + "))", args);
     }
 
-    private void addSetProjectionForIndex(MethodSpec.Builder asRequest, NodeClassData node, DynamoIndex index, String variableTarget) {
-        DynamoIndex table = node.getSchema().getTableIndex();
+    private void addSetProjectionForIndex(MethodSpec.Builder asRequest, Stage stage, DynamoIndex index, String variableTarget) {
+        DynamoIndex table = stage.getSchema().getTableIndex();
         if (index.getProjectedAttributes().containsAll(table.getProjectedAttributes())) {
             asRequest.addStatement("$L.setProjection(new $T().withProjectionType($T.ALL))", variableTarget, projection(), projectionType());
         } else if (index.getProjectedAttributes().containsAll(index.getKeys())) {
@@ -169,15 +164,15 @@ class CreateTableTypeSpecMutator implements NodeTypeSpecMutator {
         }
     }
 
-    private void appendGlobalSecondaryIndexes(MethodSpec.Builder asRequest, NodeClassData node) {
-        Map<DynamoIndex, String> variableNameByIndex = node.getSchema().getGlobalSecondaryIndexes().stream()
+    private void appendGlobalSecondaryIndexes(MethodSpec.Builder asRequest, Stage stage) {
+        Map<DynamoIndex, String> variableNameByIndex = stage.getSchema().getGlobalSecondaryIndexes().stream()
                 .collect(toMap(Function.identity(), index -> uncapitalize(toClassCase(index.getName()))));
 
         variableNameByIndex.forEach((index, variableName) -> {
             asRequest.addStatement("$1T $2L = new $1T()", globalSecondaryIndex(), variableName);
             asRequest.addStatement("$L.setIndexName($S)", variableName, index.getName());
             addSetKeySchemaForIndex(asRequest, index, variableName);
-            addSetProjectionForIndex(asRequest, node, index, variableName);
+            addSetProjectionForIndex(asRequest, stage, index, variableName);
             addSetProvisionedThroughputForIndex(asRequest, variableName);
         });
 
@@ -186,7 +181,7 @@ class CreateTableTypeSpecMutator implements NodeTypeSpecMutator {
         asRequest.addStatement("request.setGlobalSecondaryIndexes($T.asList(" + format + "))", args);
     }
 
-    private MethodSpec buildCreateTable(NodeClassData node, MethodSpec asRequest) {
+    private MethodSpec buildCreateTable(Stage stage, MethodSpec asRequest) {
         return createTableWithNoBody.toBuilder()
                 .addStatement("return $N.createTable($N()).getTableDescription().getTableArn()", AMAZON_DYNAMO_DB_PARAMETER, asRequest)
                 .build();

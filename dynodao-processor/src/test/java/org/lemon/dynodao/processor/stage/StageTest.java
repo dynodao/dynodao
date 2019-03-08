@@ -1,4 +1,4 @@
-package org.lemon.dynodao.processor.node;
+package org.lemon.dynodao.processor.stage;
 
 import com.jparams.verifier.tostring.ToStringVerifier;
 import com.squareup.javapoet.ClassName;
@@ -21,35 +21,35 @@ import java.util.Optional;
 import static com.google.common.truth.Truth.assertThat;
 import static java.util.Collections.emptySet;
 
-class NodeClassDataTest extends AbstractUnitTest {
+class StageTest extends AbstractUnitTest {
 
     @Mock private TypeElement typeElementMock;
 
     @Test
     void isStagedBuilder_noIndex_returnsTrue() {
-        assertThat(new NodeClassData(null, null).isStagedBuilder()).isTrue();
+        assertThat(new Stage(null, null).isStagedBuilder()).isTrue();
     }
 
     @Test
     void isStagedBuilder_withIndex_returnsFalse() {
-        NodeClassData node = new NodeClassData(null, null)
+        Stage stage = new Stage(null, null)
                 .withIndex(index().build(), KeyLengthType.HASH);
-        assertThat(node.isStagedBuilder()).isFalse();
+        assertThat(stage.isStagedBuilder()).isFalse();
     }
 
     @Test
     void getDocumentElement_onlyUseCase_returnsElementFromSchema() {
-        NodeClassData node = new NodeClassData(schema()
+        Stage stage = new Stage(schema()
                 .document(DocumentDynamoAttribute.builder()
                         .element(typeElementMock)
                         .build())
                 .build(), null);
-        assertThat(node.getDocumentElement()).isEqualTo(typeElementMock);
+        assertThat(stage.getDocumentElement()).isEqualTo(typeElementMock);
     }
 
     @Test
     void toString_typicalUseCase_includesAllFields() {
-        ToStringVerifier.forClass(NodeClassData.class)
+        ToStringVerifier.forClass(Stage.class)
                 .withPrefabValue(TypeSpec.class, TypeSpec.classBuilder("class1").build())
                 .verify();
     }
@@ -61,12 +61,12 @@ class NodeClassDataTest extends AbstractUnitTest {
         SerializerTypeSpec serializerTypeSpec1 = SerializerTypeSpec.builder().typeSpec(typeSpec1).build();
         SerializerTypeSpec serializerTypeSpec2 = SerializerTypeSpec.builder().typeSpec(typeSpec2).build();
 
-        EqualsVerifier.forClass(NodeClassData.class)
+        EqualsVerifier.forClass(Stage.class)
                 .suppress(Warning.NONFINAL_FIELDS)
-                .withPrefabValues(TypeName.class, ClassName.get(Object.class), ClassName.get(NodeClassData.class))
+                .withPrefabValues(TypeName.class, ClassName.get(Object.class), ClassName.get(Stage.class))
                 .withPrefabValues(SerializerTypeSpec.class, serializerTypeSpec1, serializerTypeSpec2)
                 .withPrefabValues(TypeSpec.class, typeSpec1, typeSpec2)
-                .withPrefabValues(NodeClassData.class, new NodeClassData(null, serializerTypeSpec1), new NodeClassData(null, serializerTypeSpec2))
+                .withPrefabValues(Stage.class, new Stage(null, serializerTypeSpec1), new Stage(null, serializerTypeSpec2))
                 .verify();
     }
 

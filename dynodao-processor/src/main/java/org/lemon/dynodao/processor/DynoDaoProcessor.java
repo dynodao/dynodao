@@ -3,10 +3,10 @@ package org.lemon.dynodao.processor;
 import com.google.auto.service.AutoService;
 import org.lemon.dynodao.processor.context.ProcessorContext;
 import org.lemon.dynodao.processor.context.ProcessorMessager;
-import org.lemon.dynodao.processor.node.KeyLengthType;
-import org.lemon.dynodao.processor.node.NodeClassData;
-import org.lemon.dynodao.processor.node.NodeTypeSpec;
-import org.lemon.dynodao.processor.node.NodeTypeSpecFactory;
+import org.lemon.dynodao.processor.stage.KeyLengthType;
+import org.lemon.dynodao.processor.stage.Stage;
+import org.lemon.dynodao.processor.stage.StageTypeSpec;
+import org.lemon.dynodao.processor.stage.StageTypeSpecFactory;
 import org.lemon.dynodao.processor.schema.DynamoSchema;
 import org.lemon.dynodao.processor.schema.DynamoSchemaParser;
 import org.lemon.dynodao.processor.schema.index.DynamoIndex;
@@ -42,7 +42,7 @@ public class DynoDaoProcessor extends AbstractProcessor {
     @Inject ProcessorMessager processorMessager;
     @Inject DynamoSchemaParser dynamoSchemaParser;
     @Inject SerializerTypeSpecFactory serializerTypeSpecFactory;
-    @Inject NodeTypeSpecFactory nodeTypeSpecFactory;
+    @Inject StageTypeSpecFactory stageTypeSpecFactory;
     @Inject TypeSpecWriter typeSpecWriter;
 
     @Override
@@ -91,13 +91,13 @@ public class DynoDaoProcessor extends AbstractProcessor {
         List<BuiltTypeSpec> builtTypes = new ArrayList<>();
         builtTypes.add(serializer);
 
-        NodeClassData stagedBuilder = new NodeClassData(schema, serializer);
+        Stage stagedBuilder = new Stage(schema, serializer);
         for (DynamoIndex index : schema.getIndexes()) {
             KeyLengthType keyLengthType = KeyLengthType.lengthOf(index);
 
-            Optional<NodeTypeSpec> indexRangeKeyPojo = getIndexRangeKeyNode(schema, serializer, index, keyLengthType);
-            NodeTypeSpec indexHashKeyPojo = getIndexHashKeyNode(schema, serializer, index, indexRangeKeyPojo);
-            NodeTypeSpec indexPojo = getIndexNode(schema, serializer, index, indexHashKeyPojo);
+            Optional<StageTypeSpec> indexRangeKeyPojo = getIndexRangeKeyStage(schema, serializer, index, keyLengthType);
+            StageTypeSpec indexHashKeyPojo = getIndexHashKeyStage(schema, serializer, index, indexRangeKeyPojo);
+            StageTypeSpec indexPojo = getIndexStage(schema, serializer, index, indexHashKeyPojo);
 
             stagedBuilder.addUser(indexPojo);
 
@@ -109,9 +109,9 @@ public class DynoDaoProcessor extends AbstractProcessor {
         typeSpecWriter.writeAll(builtTypes);
     }
 
-    private Optional<NodeTypeSpec> getIndexRangeKeyNode(DynamoSchema schema, SerializerTypeSpec serializer, DynamoIndex index, KeyLengthType keyLengthType) {
+    private Optional<StageTypeSpec> getIndexRangeKeyStage(DynamoSchema schema, SerializerTypeSpec serializer, DynamoIndex index, KeyLengthType keyLengthType) {
         if (keyLengthType.equals(KeyLengthType.RANGE)) {
-            NodeClassData pojo = new NodeClassData(schema, serializer)
+            Stage pojo = new Stage(schema, serializer)
                     .withIndex(index, keyLengthType);
             return Optional.of(toTypeSpec(pojo));
         } else {
@@ -119,22 +119,22 @@ public class DynoDaoProcessor extends AbstractProcessor {
         }
     }
 
-    private NodeTypeSpec getIndexHashKeyNode(DynamoSchema schema, SerializerTypeSpec serializer, DynamoIndex index, Optional<NodeTypeSpec> indexRangeKeyPojo) {
-        NodeClassData pojo = new NodeClassData(schema, serializer)
+    private StageTypeSpec getIndexHashKeyStage(DynamoSchema schema, SerializerTypeSpec serializer, DynamoIndex index, Optional<StageTypeSpec> indexRangeKeyStage) {
+        Stage pojo = new Stage(schema, serializer)
                 .withIndex(index, KeyLengthType.HASH);
-        indexRangeKeyPojo.ifPresent(pojo::addWither);
+        indexRangeKeyStage.ifPresent(pojo::addWither);
         return toTypeSpec(pojo);
     }
 
-    private NodeTypeSpec getIndexNode(DynamoSchema schema, SerializerTypeSpec serializer, DynamoIndex index, NodeTypeSpec indexHashKeyPojo) {
-        NodeClassData pojo = new NodeClassData(schema, serializer)
+    private StageTypeSpec getIndexStage(DynamoSchema schema, SerializerTypeSpec serializer, DynamoIndex index, StageTypeSpec indexHashKeyStage) {
+        Stage pojo = new Stage(schema, serializer)
                 .withIndex(index, KeyLengthType.NONE)
-                .addWither(indexHashKeyPojo);
+                .addWither(indexHashKeyStage);
         return toTypeSpec(pojo);
     }
 
-    private NodeTypeSpec toTypeSpec(NodeClassData pojo) {
-        return nodeTypeSpecFactory.build(pojo);
+    private StageTypeSpec toTypeSpec(Stage pojo) {
+        return stageTypeSpecFactory.build(pojo);
     }
 
 
