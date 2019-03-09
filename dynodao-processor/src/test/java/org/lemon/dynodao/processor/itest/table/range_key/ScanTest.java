@@ -12,58 +12,54 @@ import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-class HashKeyQueryTest extends AbstractIntegrationTest {
+class ScanTest extends AbstractIntegrationTest {
 
     private static final String TABLE = "things";
     private static final String HASH_KEY = "hashKey";
     private static final String RANGE_KEY = "rangeKey";
 
     @Test
-    void query_noItems_returnsEmptyStream() {
-        Stream<Schema> query = new SchemaStagedDynamoBuilder()
+    void scan_noResults_returnsEmptyStream() {
+        Stream<Schema> scan = new SchemaStagedDynamoBuilder()
                 .usingTable()
-                .withHashKey("no hash key")
-                .query(amazonDynamoDb);
-        assertThat(query).isEmpty();
+                .scan(amazonDynamoDb);
+        assertThat(scan).isEmpty();
     }
 
     @Test
-    void query_singleItemMatch_returnsSingletonStream() {
-        Schema item = schema("hashKey", 1);
-        put(item);
+    void scan_singleItem_returnsSingletonStream() {
+        Schema schema = schema("hash", 1);
+        put(schema);
 
-        Stream<Schema> query = new SchemaStagedDynamoBuilder()
+        Stream<Schema> scan = new SchemaStagedDynamoBuilder()
                 .usingTable()
-                .withHashKey("hashKey")
-                .query(amazonDynamoDb);
-        assertThat(query).containsExactly(item);
+                .scan(amazonDynamoDb);
+        assertThat(scan).containsExactly(schema);
     }
 
     @Test
-    void query_multipleItemsMatch_returnsStreamInOrder() {
-        Schema item1 = schema("hashKey", 1);
-        Schema item2 = schema("hashKey", 2);
-        put(item1, item2);
+    void scan_multipleItems_returnsAllItemsInAnyOrder() {
+        Schema schema1 = schema("1", 1);
+        Schema schema2 = schema("2", 2);
+        put(schema1, schema2);
 
-        Stream<Schema> query = new SchemaStagedDynamoBuilder()
+        Stream<Schema> scan = new SchemaStagedDynamoBuilder()
                 .usingTable()
-                .withHashKey("hashKey")
-                .query(amazonDynamoDb);
-        assertThat(query).containsExactly(item1, item2);
+                .scan(amazonDynamoDb);
+        assertThat(scan).containsExactlyInAnyOrder(schema1, schema2);
     }
 
     @Test
-    void query_largeData_returnsStreamInOrder() {
+    void scan_largeData_returnsAllItemsInAnyOrder() {
         Schema[] items = IntStream.range(0, 1000)
-                .mapToObj(i -> schema("hashKey", i))
+                .mapToObj(i -> schema(String.valueOf(i), i))
                 .toArray(Schema[]::new);
         put(items);
 
-        Stream<Schema> query = new SchemaStagedDynamoBuilder()
+        Stream<Schema> scan = new SchemaStagedDynamoBuilder()
                 .usingTable()
-                .withHashKey("hashKey")
-                .query(amazonDynamoDb);
-        assertThat(query).containsExactly(items);
+                .scan(amazonDynamoDb);
+        assertThat(scan).containsExactlyInAnyOrder(items);
     }
 
     private void put(Schema... items) {
