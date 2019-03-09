@@ -11,8 +11,11 @@ import java.util.Spliterator;
 import java.util.function.Consumer;
 
 /**
- * The result of a {@code scan} operation to DynamoDb.
- * <p>
+ * The result of a {@code scan} operation to DynamoDb. This class abstracts the pagination behaviour
+ * of a scan, automatically calling for additional items when required. Due ot the pagination,
+ * the result of a scan can only be iterated a single time, subsequent calls to {@link ScanReadResult#spliterator() spliterator()}
+ * will fail.
+ * @param <T> the type of item stored in DynamoDb, a {@link org.lemon.dynodao.annotation.DynoDaoSchema @DynoDaoSchema} class.
  * @see <a href="https://docs.aws.amazon.com/amazondynamodb/latest/APIReference/API_Scan.html">AWS Documentation</a>
  */
 public abstract class ScanReadResult<T> extends AbstractReadResult<T> {

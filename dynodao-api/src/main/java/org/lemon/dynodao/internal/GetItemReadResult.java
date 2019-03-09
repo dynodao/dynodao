@@ -1,15 +1,26 @@
 package org.lemon.dynodao.internal;
 
 import com.amazonaws.services.dynamodbv2.model.GetItemResult;
-import lombok.RequiredArgsConstructor;
 
 import java.util.Spliterator;
 import java.util.function.Consumer;
 
-@RequiredArgsConstructor
+/**
+ * The result of a {@code getItem} operation to DynamoDb.
+ * @param <T> the type of item stored in DynamoDb, a {@link org.lemon.dynodao.annotation.DynoDaoSchema @DynoDaoSchema} class.
+ * @see <a href="https://docs.aws.amazon.com/amazondynamodb/latest/APIReference/API_GetItem.html">AWS Documentation</a>
+ */
 public abstract class GetItemReadResult<T> extends AbstractReadResult<T> {
 
     private final GetItemResult getItemResult;
+
+    /**
+     * Sole ctor.
+     * @param getItemResult the result of the getItem operation
+     */
+    protected GetItemReadResult(GetItemResult getItemResult) {
+        this.getItemResult = getItemResult;
+    }
 
     private class GetItemReadResultSpliterator implements Spliterator<T> {
 
@@ -38,8 +49,9 @@ public abstract class GetItemReadResult<T> extends AbstractReadResult<T> {
 
         @Override
         public int characteristics() {
-            return Spliterator.SIZED | Spliterator.SUBSIZED | Spliterator.IMMUTABLE | Spliterator.DISTINCT | Spliterator.ORDERED | Spliterator.NONNULL;
+            return Spliterator.SIZED | Spliterator.SUBSIZED | Spliterator.DISTINCT | Spliterator.ORDERED | Spliterator.NONNULL;
         }
+
     }
 
     @Override
