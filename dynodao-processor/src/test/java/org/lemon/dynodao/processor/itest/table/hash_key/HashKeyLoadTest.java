@@ -15,7 +15,7 @@ class HashKeyLoadTest extends AbstractIntegrationTest {
     private static final String HASH_KEY = "hashKey";
 
     @Test
-    void load_itemExists_returnsDeserializedItem() {
+    void load_itemExists_returnsSingletonStream() {
         Schema item = schema("value");
         put(item);
 
