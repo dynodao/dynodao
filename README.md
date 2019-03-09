@@ -56,7 +56,7 @@ This then generates a bunch of classes in the same package as your schema class.
 * `MySchemaAttributeValueSerializer`
   * A utility classes for serializing each type in `MySchema` to and from `AttributeValue`. You shouldn't need to use it explicitly, it's just nice to know about in case you need it.
 
-To make a query, you use the staged builder entry point, specify the index to use and they key values. Call `get()` using your [AmazonDynamoDB](https://docs.aws.amazon.com/AWSJavaSDK/latest/javadoc/com/amazonaws/services/dynamodbv2/AmazonDynamoDB.html) instance. This results a class with a lazy stream which automatically performs the pagination for you, keeping only one page in memory at a time.
+To make a query you use the staged builder entry point and specify the index to use and then the keys. Pass that object to `DynoDao#get` which will make the appropriate read operation for you. This results a class with a lazy stream which automatically performs the pagination for you, keeping only one page in memory at a time.
 ```java
 DynoDao dynoDao = new DynoDao(amazonDynamoDbInstance);
 Stream<MySchema> queryResult = dynoDao.get(new MySchemaStagedDynamoBuilder()
@@ -87,6 +87,18 @@ do {
 } while (request.getExclusiveStartKey() != null);
 ```
 
+```java
+// -- or, using DynamoDBMapper (though it stores all results in memory) --
+DynamoDBQueryExpression<MySchema> query = new DynamoDBQueryExpression<>()
+        .withIndexName("index-name")
+        .withKeyConditionExpression(":hashKey = #hashKey AND :rangeKey = #rangeKey")
+        .addExpressionAttributeNamesEntry(":hashKey", "hashKey")
+        .addExpressionAttributeNamesEntry(":rangeKey", "rangeKey")
+        .addExpressionAttributeValuesEntry("#hashKey", new AttributeValue().withS("hashKey"))
+        .addExpressionAttributeValuesEntry("#rangeKey", new AttributeValue().withS("rangeKey"));
+List<MySchema> results = dynamoDbMapper.query(MySchema.class, query);
+```
+
 # Notes
 
 ## Additional Parameters to Query (etc)
@@ -111,4 +123,4 @@ Though, `equals()` is funky then. We could implement equals as `buildQuery().equ
 Another option is to store the request object in each stage, then the withers clone the request and mutate the corresponding field. Or, perhaps more simply, store each relevent field in each stage.
 
 ## Parallel Scan
-Scan and ParallelScan are both done using `ScanRequest`. How can we specify the number of segments seamlessly? Ideally, we can hide the parallel stuff inside of the spliterator, where each split has it's own segment to scan. Is it possible to choose how many times a spliterator splits?
+Scan and ParallelScan are both done using `ScanRequest`. How can we specify the number of segments seamlessly? Ideally, we can hide the parallel stuff inside of the spliterator, where each split has it's own segment to scan. It possible to choose how many times a spliterator splits by evaluating the stream in it's own `ForkJoinPool`. We'd have to ensure the stream cannot be made sequential and that each split has the proper `ScanRequest` segment provided.
