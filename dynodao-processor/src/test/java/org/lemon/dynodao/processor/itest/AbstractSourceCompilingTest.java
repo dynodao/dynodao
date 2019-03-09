@@ -9,18 +9,18 @@ import nl.jqno.equalsverifier.EqualsVerifierApi;
 import nl.jqno.equalsverifier.Warning;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DynamicTest;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestFactory;
 import org.lemon.dynodao.processor.test.AbstractUnitTest;
 
-import javax.tools.JavaFileObject;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Stream;
 
@@ -39,8 +39,8 @@ import static org.junit.jupiter.api.DynamicTest.dynamicTest;
 @Disabled
 public abstract class AbstractSourceCompilingTest extends AbstractCompilingTest {
 
-    // only run the recompile test once, since it takes quite a while
-    private static final Set<Class<?>> COMPILE_ONCE = new HashSet<>();
+    // only recompile once, since it takes quite a while
+    private static final Map<Class<?>, Compilation> COMPILATION_RESULTS = new HashMap<>();
 
     /**
      * Returns the compilation unit that was compiled for the purposes of this test.
@@ -65,16 +65,17 @@ public abstract class AbstractSourceCompilingTest extends AbstractCompilingTest 
     }
 
     /**
-     * Recompiles the {@code compilationUnitUnderTest} and asserts the compilation succeeds (which, it must have).
+     * Recompiles the {@code compilationUnitUnderTest} and asserts the compilation succeeds (which, it must have),
+     * and that the compilation generated the source files (which... it must have).
      * This allows for us to actually get code coverage metrics during integration tests.
      */
-    @Test
-    void recompileSchemaClass_onlyUseCase_countTowardCodeCoverage() {
-        if (COMPILE_ONCE.add(getCompilationUnitUnderTest())) {
-            JavaFileObject schema = FILE_MANAGER.getJavaFileObjects(getFileName(getCompilationUnitUnderTest())).iterator().next();
-            Compilation compilation = compile(schema);
-            assertThat(compilation).succeeded();
-        }
+    @TestFactory
+    Stream<DynamicTest> recompileSchemaClass_onlyUseCase_generatesFilesAndCountTowardCoverage() {
+        Class<?> compilationUnit = getCompilationUnitUnderTest();
+        COMPILATION_RESULTS.computeIfAbsent(compilationUnit, clazz -> compile(FILE_MANAGER.getJavaFileObjects(getFileName(clazz)).iterator().next()));
+        return PackageScanner.findClasses(this).stream()
+                .map(clazz -> dynamicTest("recompileSchema_" + clazz.getSimpleName() + "_wasGenerated", () ->
+                        assertThat(COMPILATION_RESULTS.get(getCompilationUnitUnderTest())).generatedSourceFile(clazz.getCanonicalName())));
     }
 
     private String getFileName(Class<?> clazz) {
