@@ -11,6 +11,7 @@ import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DynamicTest;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestFactory;
+import org.lemon.dynodao.processor.test.AbstractUnitTest;
 
 import javax.tools.JavaFileObject;
 import java.io.File;
@@ -123,7 +124,7 @@ class PackageScanner {
     static List<Class<?>> findClasses(AbstractSourceCompilingTest testClass) {
         return findClasses(testClass.getClass().getPackage().getName())
                 .filter(clazz -> !testClass.ignoreTestEqualsClasses().contains(clazz))
-                .filter(clazz -> !AbstractSourceCompilingTest.class.isAssignableFrom(clazz))
+                .filter(clazz -> !AbstractUnitTest.class.isAssignableFrom(clazz))
                 .filter(clazz -> !isLombokBuilder(clazz))
                 .filter(clazz -> !clazz.isAnonymousClass())
                 .collect(toList());

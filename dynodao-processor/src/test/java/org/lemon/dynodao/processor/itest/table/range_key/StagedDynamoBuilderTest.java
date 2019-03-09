@@ -1,4 +1,4 @@
-package org.lemon.dynodao.processor.itest.table.hash_key;
+package org.lemon.dynodao.processor.itest.table.range_key;
 
 import com.amazonaws.services.dynamodbv2.model.AttributeDefinition;
 import com.amazonaws.services.dynamodbv2.model.AttributeValue;
@@ -7,10 +7,13 @@ import com.amazonaws.services.dynamodbv2.model.GetItemRequest;
 import com.amazonaws.services.dynamodbv2.model.KeySchemaElement;
 import com.amazonaws.services.dynamodbv2.model.KeyType;
 import com.amazonaws.services.dynamodbv2.model.ProvisionedThroughput;
+import com.amazonaws.services.dynamodbv2.model.QueryRequest;
 import com.amazonaws.services.dynamodbv2.model.ScalarAttributeType;
 import com.amazonaws.services.dynamodbv2.model.ScanRequest;
 import org.junit.jupiter.api.Test;
 import org.lemon.dynodao.processor.test.AbstractUnitTest;
+
+import java.util.Arrays;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -21,8 +24,10 @@ class StagedDynamoBuilderTest extends AbstractUnitTest {
         CreateTableRequest request = new SchemaStagedDynamoBuilder().asCreateTableRequest();
         assertThat(request).isEqualTo(new CreateTableRequest()
                 .withTableName("things")
-                .withAttributeDefinitions(new AttributeDefinition("hashKey", ScalarAttributeType.S))
-                .withKeySchema(new KeySchemaElement("hashKey", KeyType.HASH))
+                .withAttributeDefinitions(Arrays.asList(
+                        new AttributeDefinition("hashKey", ScalarAttributeType.S),
+                        new AttributeDefinition("rangeKey", ScalarAttributeType.N)))
+                .withKeySchema(new KeySchemaElement("hashKey", KeyType.HASH), new KeySchemaElement("rangeKey", KeyType.RANGE))
                 .withProvisionedThroughput(new ProvisionedThroughput(5L, 5L)));
     }
 
@@ -46,7 +51,7 @@ class TableSchemaTest extends AbstractUnitTest {
     }
 
     @Test
-    void withHashKey_onlyUseCase_returnsLoadStage() {
+    void withHashKey_onlyUseCase_returnsQueryStage() {
         TableHashKeySchema load = new SchemaStagedDynamoBuilder()
                 .usingTable()
                 .withHashKey("value");
@@ -58,14 +63,42 @@ class TableSchemaTest extends AbstractUnitTest {
 class TableHashKeySchemaTest extends AbstractUnitTest {
 
     @Test
+    void asQueryRequest_onlyUseCase_returnsCorrectRequest() {
+        QueryRequest request = new SchemaStagedDynamoBuilder()
+                .usingTable()
+                .withHashKey("value")
+                .asQueryRequest();
+        assertThat(request).isEqualTo(new QueryRequest()
+                .withTableName("things")
+                .withKeyConditionExpression("#hashKey = :hashKey")
+                .addExpressionAttributeNamesEntry("#hashKey", "hashKey")
+                .addExpressionAttributeValuesEntry(":hashKey", new AttributeValue("value")));
+    }
+
+    @Test
+    void withRangeKey_onlyUseCase_returnsLoadStage() {
+        TableHashKeyRangeKeySchema load = new SchemaStagedDynamoBuilder()
+                .usingTable()
+                .withHashKey("value")
+                .withRangeKey(1);
+        assertThat(load).isEqualTo(new TableHashKeyRangeKeySchema("value", 1));
+    }
+
+}
+
+class TableHashKeyRangeKeySchemaTest extends AbstractUnitTest {
+
+    @Test
     void asGetItemRequest_onlyUseCase_returnsCorrectRequest() {
         GetItemRequest request = new SchemaStagedDynamoBuilder()
                 .usingTable()
                 .withHashKey("value")
+                .withRangeKey(1)
                 .asGetItemRequest();
         assertThat(request).isEqualTo(new GetItemRequest()
                 .withTableName("things")
-                .addKeyEntry("hashKey", new AttributeValue("value")));
+                .addKeyEntry("hashKey", new AttributeValue("value"))
+                .addKeyEntry("rangeKey", new AttributeValue().withN("1")));
     }
 
 }
