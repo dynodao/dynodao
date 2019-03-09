@@ -34,7 +34,7 @@ Dynodao takes a lot of inspiration from DynamoDBMapper. Compared to it, dynodao 
 * **Easily debuggable code** as there is no magic at runtime
 * **Real lazy pagination** as `PaginatedList` end up [storing all results](https://github.com/puppetlabs/aws-sdk-for-java/blob/master/src/main/java/com/amazonaws/services/dynamodb/datamodeling/PaginatedList.java#L121) from a read operation in memory
 
-To generate all of the classes, you must define a *schema* class. This is just a POJO (aka java-bean) which corresponds to the data you'd store in Dynamo.
+To generate all of the classes, you must define a *schema* class. This is just a POJO (aka java-bean) which corresponds to the data you'd store in Dynamo. This class must adhear to the [java-beans](https://en.wikipedia.org/wiki/JavaBeans) specification, ie needs a default contructor, and getters and setters.
 
 ```java
 @DynoDaoSchema(tableName = "things")
@@ -56,7 +56,7 @@ This then generates a bunch of classes in the same package as your schema class.
 * `MySchemaAttributeValueSerializer`
   * A utility classes for serializing each type in `MySchema` to and from `AttributeValue`. You shouldn't need to use it explicitly, it's just nice to know about in case you need it.
 
-To make a query, you use the staged builder entry point, specify the index to use and they key values. Call `get()` using your [AmazonDynamoDB](https://docs.aws.amazon.com/AWSJavaSDK/latest/javadoc/com/amazonaws/services/dynamodbv2/AmazonDynamoDB.html) instance. This results a class with a lazy stream which automatically performs the pagination for you.
+To make a query, you use the staged builder entry point, specify the index to use and they key values. Call `get()` using your [AmazonDynamoDB](https://docs.aws.amazon.com/AWSJavaSDK/latest/javadoc/com/amazonaws/services/dynamodbv2/AmazonDynamoDB.html) instance. This results a class with a lazy stream which automatically performs the pagination for you, keeping only one page in memory at a time.
 ```java
 DynoDao dynoDao = new DynoDao(amazonDynamoDbInstance);
 Stream<MySchema> queryResult = dynoDao.get(new MySchemaStagedDynamoBuilder()
