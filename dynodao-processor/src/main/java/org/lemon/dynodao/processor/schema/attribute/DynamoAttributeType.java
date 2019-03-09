@@ -33,8 +33,8 @@ public enum DynamoAttributeType {
     private final boolean scalar;
 
     /**
-     * Whether or not this type is allowed to be a hash key.
+     * Whether or not this type is allowed to be part of a key.
      */
-    private final boolean viableHashKey;
+    private final boolean viableKey;
 
 }
