@@ -28,13 +28,13 @@ Puns aside, the dinosaur wearing a top hat is spot on. Working with the DynamoDb
 Dynodao takes a lot of inspiration from DynamoDBMapper. Compared to it, dynodao offers:
 
 * **Fast execution** by using plain methods instead of reflective access
-* **Compile-time type safety** where possible
+* **Compile-time type safety** wherever possible
+  * The generated classes are specific to a *schema* which only contain operations allowed on the defined attributes and types
   * If an object cannot be mapped to an `AttributeValue`, you get a compilation error
-  * The generated classes are specific to a *schema* which only contain operations allowed on the defined types
 * **Easily debuggable code** as there is no magic at runtime
 * **Real lazy pagination** as `PaginatedList` end up [storing all results](https://github.com/puppetlabs/aws-sdk-for-java/blob/master/src/main/java/com/amazonaws/services/dynamodb/datamodeling/PaginatedList.java#L121) from a read operation in memory
 
-To generate all of the classes, you must define a *schema* class. This is just a POJO (aka java-bean) which corresponds to the data you'd store in Dynamo. This class must adhear to the [java-beans](https://en.wikipedia.org/wiki/JavaBeans) specification, ie needs a default contructor, and getters and setters.
+To generate all of the classes, you must define a *schema* class. This is just an annotated POJO (aka java-bean) which corresponds to the data you'd store in Dynamo. This class must adhear to the [java-beans](https://en.wikipedia.org/wiki/JavaBeans) specification, ie needs a default contructor, and getters and setters.
 
 ```java
 @DynoDaoSchema(tableName = "things")
@@ -52,13 +52,13 @@ class MySchema {
 This then generates a bunch of classes in the same package as your schema class. You don't really need to care about most of them (ctrl+space is your friend!). The main ones are:
 * `MySchemaStagedDynamoBuilder`
   * Your main entry point to the suite of classes.
-  * Has `using` methods to specify an index or table to operate on. The returns have `with` methods to specify keys.
+  * Has `using` methods to specify the index to operate on. The classes returned have `with` methods to specify keys or filters.
 * `MySchemaAttributeValueSerializer`
   * A utility classes for serializing each type in `MySchema` to and from `AttributeValue`. You shouldn't need to use it explicitly, it's just nice to know about in case you need it.
 
 To make a query you use the staged builder entry point and specify the index to use and then the keys. Pass that object to `DynoDao#get` which will make the appropriate read operation for you. This results a class with a lazy stream which automatically performs the pagination for you, keeping only one page in memory at a time.
 ```java
-DynoDao dynoDao = new DynoDao(amazonDynamoDbInstance);
+DynoDao dynoDao = new DynoDao(amazonDynamoDb);
 Stream<MySchema> queryResult = dynoDao.get(new MySchemaStagedDynamoBuilder()
         .usingIndexName()
         .withHashKey("hashKey")
