@@ -25,6 +25,9 @@ import static java.util.Collections.emptyList;
 @UtilityClass
 public class PackageScanner {
 
+    /**
+     * Marks this class and all subclasses of it as ignored while scanning packages for dynodao generated classes.
+     */
     @Inherited
     @Target(ElementType.TYPE)
     @Retention(RetentionPolicy.RUNTIME)
@@ -49,8 +52,7 @@ public class PackageScanner {
         if (clazz.getSimpleName().endsWith("Builder")) {
             String[] parts = clazz.getCanonicalName().split("\\.");
             int len = parts.length;
-            return len >= 2
-                    && parts[len - 1].replaceAll("Builder$", "").equals(parts[len - 2]);
+            return len >= 2 && parts[len - 1].replaceAll("Builder$", "").equals(parts[len - 2]);
         } else {
             return false;
         }
