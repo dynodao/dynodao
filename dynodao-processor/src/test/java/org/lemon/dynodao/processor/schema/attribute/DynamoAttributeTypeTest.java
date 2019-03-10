@@ -1,8 +1,6 @@
 package org.lemon.dynodao.processor.schema.attribute;
 
-import com.amazonaws.services.dynamodbv2.model.ScalarAttributeType;
 import org.junit.jupiter.api.Test;
-import org.lemon.dynodao.processor.stage.InterfaceType;
 import org.lemon.dynodao.processor.test.AbstractUnitTest;
 
 import java.util.Arrays;
