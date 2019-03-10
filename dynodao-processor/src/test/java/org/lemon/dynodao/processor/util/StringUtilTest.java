@@ -38,12 +38,12 @@ class StringUtilTest extends AbstractUnitTest {
 
     @Test
     void uncapitalize_upperCaseLetter_lowerCasesFirstLetter() {
-        assertThat(StringUtil.capitalize("string")).isEqualTo("String");
+        assertThat(StringUtil.uncapitalize("String")).isEqualTo("string");
     }
 
     @Test
     void uncapitalize_lowerCaseLetter_returnsSameString() {
-        assertThat(StringUtil.capitalize("String")).isEqualTo("String");
+        assertThat(StringUtil.uncapitalize("string")).isEqualTo("string");
     }
 
     @Test
