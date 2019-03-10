@@ -39,7 +39,7 @@ class DynamoAttributeTest extends AbstractUnitTest {
 
     @Test
     void accept_onlyUseCase_callsOverloadWithNullArgument() {
-        DynamoAttribute classUnderTestSpy = spy(new DynamoAttributeStub());
+        DynamoAttribute classUnderTestSpy = spy(new DynamoAttributeStub()); // spy to verify arguments explicitly
         Object expectedAccept = new Object();
         when(visitorMock.visit(classUnderTestSpy, null)).thenReturn(expectedAccept);
         Object accept = classUnderTestSpy.accept(visitorMock);
