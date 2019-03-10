@@ -18,7 +18,6 @@ import org.lemon.dynodao.processor.test.AbstractUnitTest;
 import org.mockito.Mock;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 

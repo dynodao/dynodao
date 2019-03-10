@@ -1,4 +1,4 @@
-package org.lemon.dynodao.processor.itest.validation.no_table_hash_key_test;
+package org.lemon.dynodao.processor.itest.validation.no_hash_key;
 
 import org.lemon.dynodao.annotation.DynoDaoRangeKey;
 import org.lemon.dynodao.annotation.DynoDaoSchema;
@@ -10,4 +10,5 @@ public class NoTableHashKey {
 
     @DynoDaoRangeKey
     private String rangeKey;
+
 }

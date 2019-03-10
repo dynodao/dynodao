@@ -1,4 +1,4 @@
-package org.lemon.dynodao.processor.itest.validation.multiple_table_hash_keys_test;
+package org.lemon.dynodao.processor.itest.validation.multiple_hash_keys;
 
 import org.lemon.dynodao.annotation.DynoDaoHashKey;
 import org.lemon.dynodao.annotation.DynoDaoSchema;
