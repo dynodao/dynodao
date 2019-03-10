@@ -4,7 +4,6 @@ import com.amazonaws.services.dynamodbv2.model.AttributeValue;
 import org.junit.jupiter.api.Test;
 import org.lemon.dynodao.processor.itest.AbstractSourceCompilingTest;
 
-import java.util.Map;
 import java.util.TreeMap;
 
 import static java.util.Collections.emptyMap;
@@ -64,112 +63,92 @@ class TreeMapSerializationTest extends AbstractSourceCompilingTest {
 
     @Test
     void deserializeTreeMapOfString_null_returnsNull() {
-        Map<String, String> value = SchemaAttributeValueSerializer.deserializeTreeMapOfString(null);
+        TreeMap<String, String> value = SchemaAttributeValueSerializer.deserializeTreeMapOfString(null);
         assertThat(value).isNull();
     }
 
     @Test
     void deserializeTreeMapOfString_nullAttributeValue_returnsNull() {
-        Map<String, String> value = SchemaAttributeValueSerializer.deserializeTreeMapOfString(new AttributeValue().withNULL(true));
+        TreeMap<String, String> value = SchemaAttributeValueSerializer.deserializeTreeMapOfString(new AttributeValue().withNULL(true));
         assertThat(value).isNull();
     }
 
     @Test
     void deserializeTreeMapOfString_mapValueNull_returnsNull() {
-        Map<String, String> value = SchemaAttributeValueSerializer.deserializeTreeMapOfString(new AttributeValue().withS("string"));
+        TreeMap<String, String> value = SchemaAttributeValueSerializer.deserializeTreeMapOfString(new AttributeValue().withS("string"));
         assertThat(value).isNull();
     }
 
     @Test
     void deserializeTreeMapOfString_emptyMap_returnsEmptyTreeMap() {
-        Map<String, String> value = SchemaAttributeValueSerializer.deserializeTreeMapOfString(new AttributeValue().withM(emptyMap()));
-        assertThat(value)
-                .isInstanceOf(TreeMap.class)
-                .isEmpty();
+        TreeMap<String, String> value = SchemaAttributeValueSerializer.deserializeTreeMapOfString(new AttributeValue().withM(emptyMap()));
+        assertThat(value).isEmpty();
     }
 
     @Test
     void deserializeTreeMapOfString_singletonMapWithValue_returnsSingletonTreeMap() {
-        Map<String, String> value = SchemaAttributeValueSerializer.deserializeTreeMapOfString(new AttributeValue().withM(singletonMap("key", new AttributeValue("value"))));
-        assertThat(value)
-                .isInstanceOf(TreeMap.class)
-                .containsExactly(entry("key", "value"));
+        TreeMap<String, String> value = SchemaAttributeValueSerializer.deserializeTreeMapOfString(new AttributeValue().withM(singletonMap("key", new AttributeValue("value"))));
+        assertThat(value).containsExactly(entry("key", "value"));
     }
 
     @Test
     void deserializeTreeMapOfString_singletonMapWithNull_returnsSingletonTreeMap() {
-        Map<String, String> value = SchemaAttributeValueSerializer.deserializeTreeMapOfString(new AttributeValue().withM(singletonMap("key", null)));
-        assertThat(value)
-                .isInstanceOf(TreeMap.class)
-                .containsExactly(entry("key", null));
+        TreeMap<String, String> value = SchemaAttributeValueSerializer.deserializeTreeMapOfString(new AttributeValue().withM(singletonMap("key", null)));
+        assertThat(value).containsExactly(entry("key", null));
     }
 
     @Test
     void deserializeTreeMapOfString_singletonMapWithNullAttributeValue_returnsSingletonTreeMap() {
-        Map<String, String> value = SchemaAttributeValueSerializer.deserializeTreeMapOfString(new AttributeValue().withM(singletonMap("key", new AttributeValue().withNULL(true))));
-        assertThat(value)
-                .isInstanceOf(TreeMap.class)
-                .containsExactly(entry("key", null));
+        TreeMap<String, String> value = SchemaAttributeValueSerializer.deserializeTreeMapOfString(new AttributeValue().withM(singletonMap("key", new AttributeValue().withNULL(true))));
+        assertThat(value).containsExactly(entry("key", null));
     }
 
     @Test
     void deserializeTreeMapOfString_mapWithMultipleValues_returnsTreeMapWithValues() {
-        Map<String, String> value = SchemaAttributeValueSerializer.deserializeTreeMapOfString(new AttributeValue().withM(mapOf(
+        TreeMap<String, String> value = SchemaAttributeValueSerializer.deserializeTreeMapOfString(new AttributeValue().withM(mapOf(
                 "key1", new AttributeValue("value1"),
                 "key2", new AttributeValue("value2"))));
-        assertThat(value)
-                .isInstanceOf(TreeMap.class)
-                .containsExactly(entry("key1", "value1"), entry("key2", "value2"));
+        assertThat(value).containsExactly(entry("key1", "value1"), entry("key2", "value2"));
     }
 
     @Test
     void deserializeTreeMapOfString_mapWithMultipleValuesSomeNull_returnsTreeMapWithValueAndNull() {
-        Map<String, String> value = SchemaAttributeValueSerializer.deserializeTreeMapOfString(new AttributeValue().withM(mapOf(
+        TreeMap<String, String> value = SchemaAttributeValueSerializer.deserializeTreeMapOfString(new AttributeValue().withM(mapOf(
                 "key1", new AttributeValue("value1"),
                 "key2", null)));
-        assertThat(value)
-                .isInstanceOf(TreeMap.class)
-                .containsExactly(entry("key1", "value1"), entry("key2", null));
+        assertThat(value).containsExactly(entry("key1", "value1"), entry("key2", null));
     }
 
     @Test
     void deserializeTreeMapOfString_mapWithMultipleValuesSomeNullAttributeValue_returnsTreeMapWithValueAndNull() {
-        Map<String, String> value = SchemaAttributeValueSerializer.deserializeTreeMapOfString(new AttributeValue().withM(mapOf(
+        TreeMap<String, String> value = SchemaAttributeValueSerializer.deserializeTreeMapOfString(new AttributeValue().withM(mapOf(
                 "key1", new AttributeValue("value1"),
                 "key2", new AttributeValue().withNULL(true))));
-        assertThat(value)
-                .isInstanceOf(TreeMap.class)
-                .containsExactly(entry("key1", "value1"), entry("key2", null));
+        assertThat(value).containsExactly(entry("key1", "value1"), entry("key2", null));
     }
 
     @Test
     void deserializeTreeMapOfString_mapWithMultipleValuesAllNull_returnsTreeMapAllNull() {
-        Map<String, String> value = SchemaAttributeValueSerializer.deserializeTreeMapOfString(new AttributeValue().withM(mapOf(
+        TreeMap<String, String> value = SchemaAttributeValueSerializer.deserializeTreeMapOfString(new AttributeValue().withM(mapOf(
                 "key1", null,
                 "key2", null)));
-        assertThat(value)
-                .isInstanceOf(TreeMap.class)
-                .containsExactly(entry("key1", null), entry("key2", null));
+        assertThat(value).containsExactly(entry("key1", null), entry("key2", null));
     }
 
     @Test
     void deserializeTreeMapOfString_mapWithMultipleValuesAllNullAttributeValue_returnsTreeMapAllNull() {
-        Map<String, String> value = SchemaAttributeValueSerializer.deserializeTreeMapOfString(new AttributeValue().withM(mapOf(
+        TreeMap<String, String> value = SchemaAttributeValueSerializer.deserializeTreeMapOfString(new AttributeValue().withM(mapOf(
                 "key1", new AttributeValue().withNULL(true),
                 "key2", new AttributeValue().withNULL(true))));
-        assertThat(value)
-                .isInstanceOf(TreeMap.class)
-                .containsExactly(entry("key1", null), entry("key2", null));
+        assertThat(value).containsExactly(entry("key1", null), entry("key2", null));
     }
 
     @Test
     void deserializeTreeMapOfString_mapWithMultipleValuesAllMixedNulls_returnsTreeMapAllNull() {
-        Map<String, String> value = SchemaAttributeValueSerializer.deserializeTreeMapOfString(new AttributeValue().withM(mapOf(
+        TreeMap<String, String> value = SchemaAttributeValueSerializer.deserializeTreeMapOfString(new AttributeValue().withM(mapOf(
                 "key1", null,
                 "key2", new AttributeValue().withNULL(true))));
-        assertThat(value)
-                .isInstanceOf(TreeMap.class)
-                .containsExactly(entry("key1", null), entry("key2", null));
+        assertThat(value).containsExactly(entry("key1", null), entry("key2", null));
     }
 
     private <K extends Comparable<K>, V> TreeMap<K, V> mapOf() {

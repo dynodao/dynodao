@@ -30,6 +30,7 @@ import java.io.Writer;
 import java.util.List;
 import java.util.Map;
 
+import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonList;
 import static java.util.Collections.singletonMap;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -59,6 +60,14 @@ class ProcessorsTest extends AbstractUnitTest {
     @Mock private PackageElement packageElementMock;
     @Mock private Writer writerMock;
 
+    @Mock private TypeMirror typeMirrorErasureMock;
+    @Mock private TypeMirror supertypeMirrorMock;
+    @Mock private TypeMirror supertypeErasureMock;
+    @Mock private TypeMirror directSupertypeMirrorMock;
+    @Mock private TypeMirror directSupertypeErasureMock;
+    @Mock private TypeMirror indirectSupertypeMirrorMock;
+    @Mock private TypeMirror indirectSupertypeErasureMock;
+
     @Mock private ProcessingEnvironment processingEnvironmentMock;
 
     @Mock private Elements elementsMock;
@@ -72,6 +81,14 @@ class ProcessorsTest extends AbstractUnitTest {
         when(processingEnvironmentMock.getElementUtils()).thenReturn(elementsMock);
         when(processingEnvironmentMock.getTypeUtils()).thenReturn(typesMock);
         classUnderTest = new Processors(context);
+    }
+
+    @BeforeEach
+    void setupForGetSupertypeWithErasureSameAs() {
+        when(typesMock.erasure(typeMirrorMock)).thenReturn(typeMirrorErasureMock);
+        when(typesMock.erasure(supertypeMirrorMock)).thenReturn(supertypeErasureMock);
+        when(typesMock.erasure(directSupertypeMirrorMock)).thenReturn(directSupertypeErasureMock);
+        when(typesMock.erasure(indirectSupertypeMirrorMock)).thenReturn(indirectSupertypeErasureMock);
     }
 
     @AfterEach
@@ -146,6 +163,91 @@ class ProcessorsTest extends AbstractUnitTest {
         when(elementMock.getKind()).thenReturn(ElementKind.FIELD);
         assertThatThrownBy(() -> classUnderTest.getMethodByName(typeElementMock, "methodName"))
                 .isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @Test
+    void getSupertypeWithErasureSameAs_noSupertypesAndTypeNotSameAsWantedSupertype_throwsIllegalArgumentException() {
+        when(typesMock.directSupertypes(typeMirrorMock)).thenReturn(emptyList());
+        when(typesMock.isSameType(supertypeErasureMock, typeMirrorErasureMock)).thenReturn(false);
+        assertThatThrownBy(() -> classUnderTest.getSupertypeWithErasureSameAs(typeMirrorMock, supertypeMirrorMock))
+                .isInstanceOf(IllegalArgumentException.class);
+        verify(typesMock).erasure(typeMirrorMock);
+        verify(typesMock).erasure(supertypeMirrorMock);
+        verify(typesMock).isSameType(supertypeErasureMock, typeMirrorErasureMock);
+        verify(typesMock).directSupertypes(typeMirrorMock);
+    }
+
+    @Test
+    void getSupertypeWithErasureSameAs_noSupertypesAndTypeSameAsWantedSupertype_returnsTypeMirror() {
+        when(typesMock.directSupertypes(typeMirrorMock)).thenReturn(emptyList());
+        when(typesMock.isSameType(supertypeErasureMock, typeMirrorErasureMock)).thenReturn(true);
+        TypeMirror supertype = classUnderTest.getSupertypeWithErasureSameAs(typeMirrorMock, supertypeMirrorMock);
+        assertThat(supertype).isEqualTo(typeMirrorMock);
+        verify(typesMock).erasure(typeMirrorMock);
+        verify(typesMock).erasure(supertypeMirrorMock);
+        verify(typesMock).isSameType(supertypeErasureMock, typeMirrorErasureMock);
+        verify(typesMock).directSupertypes(typeMirrorMock);
+    }
+
+    @Test
+    void getSupertypeWithErasureSameAs_directSupertypeIsSame_returnsDirectSupertype() {
+        doReturn(singletonList(directSupertypeMirrorMock)).when(typesMock).directSupertypes(typeMirrorMock);
+        doReturn(emptyList()).when(typesMock).directSupertypes(directSupertypeMirrorMock);
+        when(typesMock.isSameType(supertypeErasureMock, typeMirrorErasureMock)).thenReturn(false);
+        when(typesMock.isSameType(supertypeErasureMock, directSupertypeErasureMock)).thenReturn(true);
+        TypeMirror supertype = classUnderTest.getSupertypeWithErasureSameAs(typeMirrorMock, supertypeMirrorMock);
+        assertThat(supertype).isEqualTo(directSupertypeMirrorMock);
+        verify(typesMock).erasure(typeMirrorMock);
+        verify(typesMock).erasure(directSupertypeMirrorMock);
+        verify(typesMock).erasure(supertypeMirrorMock);
+        verify(typesMock).isSameType(supertypeErasureMock, typeMirrorErasureMock);
+        verify(typesMock).isSameType(supertypeErasureMock, directSupertypeErasureMock);
+        verify(typesMock).directSupertypes(typeMirrorMock);
+        verify(typesMock).directSupertypes(directSupertypeMirrorMock);
+    }
+
+    @Test
+    void getSupertypeWithErasureSameAs_indirectSupertypeIsSame_returnsIndirectSupertype() {
+        doReturn(singletonList(directSupertypeMirrorMock)).when(typesMock).directSupertypes(typeMirrorMock);
+        doReturn(singletonList(indirectSupertypeMirrorMock)).when(typesMock).directSupertypes(directSupertypeMirrorMock);
+        doReturn(emptyList()).when(typesMock).directSupertypes(indirectSupertypeMirrorMock);
+        when(typesMock.isSameType(supertypeErasureMock, typeMirrorErasureMock)).thenReturn(false);
+        when(typesMock.isSameType(supertypeErasureMock, directSupertypeErasureMock)).thenReturn(false);
+        when(typesMock.isSameType(supertypeErasureMock, indirectSupertypeErasureMock)).thenReturn(true);
+        TypeMirror supertype = classUnderTest.getSupertypeWithErasureSameAs(typeMirrorMock, supertypeMirrorMock);
+        assertThat(supertype).isEqualTo(indirectSupertypeMirrorMock);
+        verify(typesMock).erasure(typeMirrorMock);
+        verify(typesMock).erasure(directSupertypeMirrorMock);
+        verify(typesMock).erasure(indirectSupertypeMirrorMock);
+        verify(typesMock).erasure(supertypeMirrorMock);
+        verify(typesMock).isSameType(supertypeErasureMock, typeMirrorErasureMock);
+        verify(typesMock).isSameType(supertypeErasureMock, directSupertypeErasureMock);
+        verify(typesMock).isSameType(supertypeErasureMock, indirectSupertypeErasureMock);
+        verify(typesMock).directSupertypes(typeMirrorMock);
+        verify(typesMock).directSupertypes(directSupertypeMirrorMock);
+        verify(typesMock).directSupertypes(indirectSupertypeMirrorMock);
+    }
+
+    @Test
+    void getSupertypeWithErasureSameAs_typeNotInAnySupertypes_throwsIllegalArgumentException() {
+        doReturn(singletonList(directSupertypeMirrorMock)).when(typesMock).directSupertypes(typeMirrorMock);
+        doReturn(singletonList(indirectSupertypeMirrorMock)).when(typesMock).directSupertypes(directSupertypeMirrorMock);
+        doReturn(emptyList()).when(typesMock).directSupertypes(indirectSupertypeMirrorMock);
+        when(typesMock.isSameType(supertypeErasureMock, typeMirrorErasureMock)).thenReturn(false);
+        when(typesMock.isSameType(supertypeErasureMock, directSupertypeErasureMock)).thenReturn(false);
+        when(typesMock.isSameType(supertypeErasureMock, indirectSupertypeErasureMock)).thenReturn(false);
+        assertThatThrownBy(() -> classUnderTest.getSupertypeWithErasureSameAs(typeMirrorMock, supertypeMirrorMock))
+                .isInstanceOf(IllegalArgumentException.class);
+        verify(typesMock).erasure(typeMirrorMock);
+        verify(typesMock).erasure(directSupertypeMirrorMock);
+        verify(typesMock).erasure(indirectSupertypeMirrorMock);
+        verify(typesMock).erasure(supertypeMirrorMock);
+        verify(typesMock).isSameType(supertypeErasureMock, typeMirrorErasureMock);
+        verify(typesMock).isSameType(supertypeErasureMock, directSupertypeErasureMock);
+        verify(typesMock).isSameType(supertypeErasureMock, indirectSupertypeErasureMock);
+        verify(typesMock).directSupertypes(typeMirrorMock);
+        verify(typesMock).directSupertypes(directSupertypeMirrorMock);
+        verify(typesMock).directSupertypes(indirectSupertypeMirrorMock);
     }
 
     /**

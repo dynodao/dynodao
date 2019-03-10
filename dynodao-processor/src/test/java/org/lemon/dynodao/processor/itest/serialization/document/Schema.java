@@ -6,6 +6,7 @@ import org.lemon.dynodao.annotation.DynoDaoDocument;
 import org.lemon.dynodao.annotation.DynoDaoHashKey;
 import org.lemon.dynodao.annotation.DynoDaoIgnore;
 import org.lemon.dynodao.annotation.DynoDaoSchema;
+import org.lemon.dynodao.processor.test.PackageScanner;
 
 @Data
 @DynoDaoSchema(tableName = "things")
@@ -36,6 +37,7 @@ class Schema {
 
 @Data
 @DynoDaoDocument
+@PackageScanner.Ignore
 class Document {
 
     private String attribute1;

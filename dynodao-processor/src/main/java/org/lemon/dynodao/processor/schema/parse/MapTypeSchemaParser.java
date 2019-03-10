@@ -17,11 +17,15 @@ import javax.lang.model.element.Element;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.TypeMirror;
-import java.util.HashMap;
+import javax.lang.model.util.SimpleTypeVisitor8;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentSkipListMap;
 
 import static org.lemon.dynodao.processor.schema.serialize.DeserializationMappingMethod.parameter;
 import static org.lemon.dynodao.processor.util.DynamoDbUtil.attributeValue;
@@ -35,6 +39,18 @@ class MapTypeSchemaParser implements SchemaParser {
     private static final TypeName MAP_OF_ATTRIBUTE_VALUE = ParameterizedTypeName.get(ClassName.get(Map.class), TypeName.get(String.class), attributeValue());
     private static final TypeName MAP_ENTRY_OF_ATTRIBUTE_VALUE = ParameterizedTypeName.get(ClassName.get(Map.Entry.class), TypeName.get(String.class), attributeValue());
     private static final TypeName MAP_OF_ATTRIBUTE_VALUE_ITERATOR = ParameterizedTypeName.get(ClassName.get(Iterator.class), MAP_ENTRY_OF_ATTRIBUTE_VALUE);
+
+    /**
+     * The priority ordered list of map implementation types when the target is a map interface, abstract or an intermediary map,
+     * like {@code HashMap}. If one is assignable to the type from the schema class, we use it as the implementation type
+     * during deserialization. If all fail to be assigned, an instance of the same type as the one from the schema should be
+     * used. A downside of this is we'd "successfully" new up an ImmutableMap, or similar. Perhaps a reasonable ask from users.
+     * TODO validate the implementation type has a no-args ctor and is non-abstract
+     */
+    private static final List<Class<? extends Map>> MAP_IMPLEMENTATION_CLASSES = Arrays.asList(
+            LinkedHashMap.class, TreeMap.class,
+            ConcurrentHashMap.class, ConcurrentSkipListMap.class
+    );
 
     private final Processors processors;
 
@@ -53,7 +69,11 @@ class MapTypeSchemaParser implements SchemaParser {
     }
 
     private TypeMirror getValueType(TypeMirror typeMirror) {
-        return ((DeclaredType) typeMirror).getTypeArguments().get(1);
+        return getMapInterface(typeMirror).getTypeArguments().get(1);
+    }
+
+    private DeclaredType getMapInterface(TypeMirror typeMirror) {
+        return (DeclaredType) processors.getSupertypeWithErasureSameAs(typeMirror, processors.getDeclaredType(Map.class));
     }
 
     @Override
@@ -82,9 +102,8 @@ class MapTypeSchemaParser implements SchemaParser {
                 .endControlFlow()
                 .addStatement("return new $T().withM(attrValueMap)", attributeValue());
 
-        String mapType = processors.asElement(typeMirror).getSimpleName().toString();
         return SerializationMappingMethod.builder()
-                .methodName(String.format("serialize%sOf%s", mapType, valueSerializationMethod.replaceFirst("serialize", "")))
+                .methodName(getSerializationMethodName(typeMirror, valueSerializationMethod))
                 .parameter(map)
                 .coreMethodBody(body.build())
                 .build();
@@ -95,15 +114,35 @@ class MapTypeSchemaParser implements SchemaParser {
     }
 
     private TypeName getMapEntryOf(TypeMirror typeMirror) {
-        return ParameterizedTypeName.get(ClassName.get(Map.Entry.class), ((DeclaredType) typeMirror).getTypeArguments().stream()
-                .map(TypeName::get)
-                .toArray(TypeName[]::new));
+        return ParameterizedTypeName.get(ClassName.get(Map.Entry.class), TypeName.get(String.class), TypeName.get(getValueType(typeMirror)));
+    }
+
+    private String getSerializationMethodName(TypeMirror typeMirror, String valueSerializationMethod) {
+        return getMethodName(typeMirror, valueSerializationMethod, "serialize");
+    }
+
+    private String getMethodName(TypeMirror typeMirror, String valueMethod, String methodType) {
+        String mapType = processors.asElement(typeMirror).getSimpleName().toString();
+        if (hasTypeArguments(typeMirror)) {
+            return String.format("%s%sOf%s", methodType, mapType, valueMethod.replaceFirst(methodType, ""));
+        } else {
+            return methodType + mapType;
+        }
+    }
+
+    private boolean hasTypeArguments(TypeMirror typeMirror) {
+        return typeMirror.accept(new SimpleTypeVisitor8<Boolean, Void>(false) {
+            @Override
+            public Boolean visitDeclared(DeclaredType declaredType, Void aVoid) {
+                return !declaredType.getTypeArguments().isEmpty();
+            }
+        }, null);
     }
 
     private DeserializationMappingMethod buildDeserializationMethod(TypeMirror typeMirror, DynamoAttribute mapElement) {
         String valueDeserializationMethod = mapElement.getDeserializationMethod().getMethodName();
         CodeBlock.Builder body = CodeBlock.builder()
-                .addStatement("$T map = new $T<>()", typeMirror, getMapImplementationType(typeMirror))
+                .addStatement("$T map = new $T$L()", typeMirror, getMapImplementationType(typeMirror), hasTypeArguments(typeMirror) ? "<>" : "")
                 .addStatement("$T it = $N.getM().entrySet().iterator()", MAP_OF_ATTRIBUTE_VALUE_ITERATOR, parameter())
                 .beginControlFlow("while (it.hasNext())")
                 .addStatement("$T entry = it.next()", MAP_ENTRY_OF_ATTRIBUTE_VALUE)
@@ -111,23 +150,25 @@ class MapTypeSchemaParser implements SchemaParser {
                 .endControlFlow()
                 .addStatement("return map");
 
-        String mapType = processors.asElement(typeMirror).getSimpleName().toString();
         return DeserializationMappingMethod.builder()
-                .methodName(String.format("deserialize%sOf%s", mapType, valueDeserializationMethod.replaceFirst("deserialize", "")))
+                .methodName(getDeserializationMethodName(typeMirror, valueDeserializationMethod))
                 .returnType(TypeName.get(typeMirror))
                 .coreMethodBody(body.build())
                 .build();
     }
 
-    private Class<? extends Map> getMapImplementationType(TypeMirror typeMirror) {
+    private TypeName getMapImplementationType(TypeMirror typeMirror) {
         TypeMirror erasure = processors.erasure(typeMirror);
-        if (processors.isAssignable(processors.getDeclaredType(LinkedHashMap.class), erasure)) {
-            return LinkedHashMap.class;
-        } else if (processors.isAssignable(processors.getDeclaredType(TreeMap.class), erasure)) {
-            return TreeMap.class;
-        } else {
-            return HashMap.class;
-        }
+        return MAP_IMPLEMENTATION_CLASSES.stream()
+                .map(processors::getDeclaredType)
+                .filter(mapImplType -> processors.isAssignable(mapImplType, erasure))
+                .map(TypeName::get)
+                .findFirst()
+                .orElseGet(() -> TypeName.get(erasure));
+    }
+
+    private String getDeserializationMethodName(TypeMirror typeMirror, String valueDeserializationMethod) {
+        return getMethodName(typeMirror, valueDeserializationMethod, "deserialize");
     }
 
 }

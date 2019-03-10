@@ -10,7 +10,9 @@ import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
+import java.util.ArrayDeque;
 import java.util.Arrays;
+import java.util.Queue;
 
 /**
  * Provides access to {@link Elements} and {@link Types} utility classes, as well as providing some additional
@@ -81,6 +83,28 @@ public class Processors implements Elements, Types {
                 .filter(method -> method.getSimpleName().contentEquals(methodName))
                 .map(method -> (ExecutableElement) method)
                 .findFirst().orElseThrow(() -> new IllegalArgumentException(String.format("no such method [%s] in [%s]", methodName, typeElement)));
+    }
+
+    /**
+     * Returns the supertype of <tt>typeMirror</tt> whose erasure is the same type as the erasure of <tt>supertype</tt>.
+     * @param typeMirror the type to find a supertype of
+     * @param supertype the supertype to find
+     * @return the supertype of <tt>typeMirror</tt> whose erasure is the same as <tt>supertype</tt>
+     * @throws IllegalArgumentException if no supertype matches <tt>supertype</tt>
+     */
+    public TypeMirror getSupertypeWithErasureSameAs(TypeMirror typeMirror, TypeMirror supertype) {
+        TypeMirror erasure = erasure(supertype);
+        Queue<TypeMirror> queue = new ArrayDeque<>();
+        queue.add(typeMirror);
+        while (!queue.isEmpty()) {
+            TypeMirror type = queue.poll();
+            queue.addAll(directSupertypes(type));
+
+            if (isSameType(erasure, erasure(type))) {
+                return type;
+            }
+        }
+        throw new IllegalArgumentException(String.format("%s has no supertype with erasure the same as %s", typeMirror, supertype));
     }
 
 }

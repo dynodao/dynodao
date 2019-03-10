@@ -10,6 +10,7 @@ import org.mockito.MockitoAnnotations;
  * Initializes mockito annotations.
  */
 @Disabled
+@PackageScanner.Ignore
 public abstract class AbstractUnitTest {
 
     /**

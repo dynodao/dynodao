@@ -28,6 +28,7 @@
 
         <aws.sdk.version>1.11.119</aws.sdk.version>
         <guava.version>21.0</guava.version>
+        <apache.commons.version>4.3</apache.commons.version>
         <lombok.version>1.16.18</lombok.version>
         <junit.version>4.12</junit.version>
         <junit.jupiter.version>5.4.0</junit.jupiter.version>
@@ -77,6 +78,12 @@
                 <artifactId>guava</artifactId>
                 <version>${guava.version}</version>
             </dependency>
+            <dependency>
+                <groupId>org.apache.commons</groupId>
+                <artifactId>commons-collections4</artifactId>
+                <version>${apache.commons.version}</version>
+            </dependency>
+
 
             <dependency>
                 <groupId>junit</groupId>

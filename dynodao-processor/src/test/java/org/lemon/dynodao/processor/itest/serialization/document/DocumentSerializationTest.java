@@ -5,7 +5,6 @@ import org.junit.jupiter.api.Test;
 import org.lemon.dynodao.processor.itest.AbstractSourceCompilingTest;
 
 import java.util.Map;
-import java.util.Set;
 import java.util.TreeMap;
 
 import static java.util.Collections.emptyMap;
@@ -100,13 +99,6 @@ class DocumentSerializationTest extends AbstractSourceCompilingTest {
         map.put("attribute2", attribute2 == null ? new AttributeValue().withNULL(true) : new AttributeValue(attribute2));
         map.put("attribute3", attribute3 == null ? new AttributeValue().withNULL(true) : new AttributeValue(attribute3));
         return new AttributeValue().withM(map);
-    }
-
-    @Override
-    protected Set<Class<?>> ignoreTestEqualsClasses() {
-        Set<Class<?>> classes = super.ignoreTestEqualsClasses();
-        classes.add(Document.class);
-        return classes;
     }
 
 }

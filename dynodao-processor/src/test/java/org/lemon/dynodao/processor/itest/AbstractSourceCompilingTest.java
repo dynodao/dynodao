@@ -3,31 +3,19 @@ package org.lemon.dynodao.processor.itest;
 import com.google.testing.compile.Compilation;
 import com.jparams.verifier.tostring.ToStringVerifier;
 import lombok.SneakyThrows;
-import lombok.experimental.UtilityClass;
 import nl.jqno.equalsverifier.EqualsVerifier;
 import nl.jqno.equalsverifier.EqualsVerifierApi;
 import nl.jqno.equalsverifier.Warning;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DynamicTest;
 import org.junit.jupiter.api.TestFactory;
-import org.lemon.dynodao.processor.test.AbstractUnitTest;
+import org.lemon.dynodao.processor.test.PackageScanner;
 
-import java.io.File;
-import java.io.IOException;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.Enumeration;
 import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.stream.Stream;
 
 import static com.google.testing.compile.CompilationSubject.assertThat;
-import static java.util.Collections.emptyList;
-import static java.util.Collections.singletonList;
-import static java.util.stream.Collectors.toList;
 import static org.junit.jupiter.api.DynamicTest.dynamicTest;
 
 /**
@@ -49,19 +37,10 @@ public abstract class AbstractSourceCompilingTest extends AbstractCompilingTest 
      * @return the schema "class under test"
      */
     @SneakyThrows(ClassNotFoundException.class)
-    protected Class<?> getCompilationUnitUnderTest() {
+    public Class<?> getCompilationUnitUnderTest() {
         String testClassName = getClass().getCanonicalName();
         String schemaClassName = testClassName.substring(0, testClassName.lastIndexOf('.') + 1) + "Schema";
         return Class.forName(schemaClassName);
-    }
-
-    /**
-     * Returns the set of classes that should not be tested for equals. This returns the {@code compilationUnitUnderTest}
-     * by default. The returned set is mutable.
-     * @return the set of classes to ignore equality checks for
-     */
-    protected Set<Class<?>> ignoreTestEqualsClasses() {
-        return new HashSet<>(singletonList(getCompilationUnitUnderTest()));
     }
 
     /**
@@ -73,7 +52,7 @@ public abstract class AbstractSourceCompilingTest extends AbstractCompilingTest 
     Stream<DynamicTest> recompileSchemaClass_onlyUseCase_generatesFilesAndCountTowardCoverage() {
         Class<?> compilationUnit = getCompilationUnitUnderTest();
         COMPILATION_RESULTS.computeIfAbsent(compilationUnit, clazz -> compile(FILE_MANAGER.getJavaFileObjects(getFileName(clazz)).iterator().next()));
-        return PackageScanner.findClasses(this).stream()
+        return PackageScanner.findClassesFor(this)
                 .map(clazz -> dynamicTest("recompileSchema_" + clazz.getSimpleName() + "_wasGenerated", () ->
                         assertThat(COMPILATION_RESULTS.get(getCompilationUnitUnderTest())).generatedSourceFile(clazz.getCanonicalName())));
     }
@@ -88,7 +67,7 @@ public abstract class AbstractSourceCompilingTest extends AbstractCompilingTest 
      */
     @TestFactory
     Stream<DynamicTest> toString_allGeneratedSources_validToString() {
-        return PackageScanner.findClasses(this).stream()
+        return PackageScanner.findClassesFor(this)
                 .map(clazz -> dynamicTest(clazz.getCanonicalName() + "#toString", () -> ToStringVerifier.forClass(clazz).verify()));
     }
 
@@ -98,7 +77,7 @@ public abstract class AbstractSourceCompilingTest extends AbstractCompilingTest 
      */
     @TestFactory
     Stream<DynamicTest> equalsAndHashCode_allGeneratedSources_validEquals() {
-        return PackageScanner.findClasses(this).stream()
+        return PackageScanner.findClassesFor(this)
                 .map(clazz -> dynamicTest(clazz.getCanonicalName() + "#equals", () -> {
                     EqualsVerifierApi<?> verifier = EqualsVerifier.forClass(clazz);
                     if (clazz.getName().endsWith("Serializer")) {
@@ -106,78 +85,6 @@ public abstract class AbstractSourceCompilingTest extends AbstractCompilingTest 
                     }
                     verifier.verify();
                 }));
-    }
-
-}
-
-/**
- * Scans package and identifies classes which match some criteria.
- */
-@UtilityClass
-class PackageScanner {
-
-    /**
-     * Scan for all classes in the same package as the test class, excluding tests, anonymous classes, lombok builders
-     * and those classes which the test class says to ignore.
-     * @param testClass the test class
-     * @return classes matching criteria
-     */
-    static List<Class<?>> findClasses(AbstractSourceCompilingTest testClass) {
-        return findClasses(testClass.getClass().getPackage().getName())
-                .filter(clazz -> !testClass.ignoreTestEqualsClasses().contains(clazz))
-                .filter(clazz -> !AbstractUnitTest.class.isAssignableFrom(clazz))
-                .filter(clazz -> !isLombokBuilder(clazz))
-                .filter(clazz -> !clazz.isAnonymousClass())
-                .collect(toList());
-    }
-
-    private boolean isLombokBuilder(Class<?> clazz) {
-        if (clazz.getSimpleName().endsWith("Builder")) {
-            String[] parts = clazz.getCanonicalName().split("\\.");
-            int len = parts.length;
-            return len >= 2
-                    && parts[len - 1].replaceAll("Builder$", "").equals(parts[len - 2]);
-        } else {
-            return false;
-        }
-    }
-
-    private static Stream<Class<?>> findClasses(String packageName) {
-        String path = packageName.replace('.', '/');
-        Enumeration<URL> resources = getResources(path);
-
-        List<File> rootDirectories = new ArrayList<>();
-        while (resources.hasMoreElements()) {
-            rootDirectories.add(new File(resources.nextElement().getFile()));
-        }
-
-        return rootDirectories.stream()
-                .map(rootDirectory -> findClasses(rootDirectory, packageName))
-                .flatMap(List::stream);
-    }
-
-    @SneakyThrows(IOException.class)
-    private static Enumeration<URL> getResources(String path) {
-        return Thread.currentThread().getContextClassLoader().getResources(path);
-    }
-
-    @SneakyThrows(ReflectiveOperationException.class)
-    private static List<Class<?>> findClasses(File rootDirectory, String packageName) {
-        File[] files;
-
-        if (!rootDirectory.exists() || (files = rootDirectory.listFiles()) == null) {
-            return emptyList();
-        }
-
-        List<Class<?>> classes = new ArrayList<>();
-        for (File file : files) {
-            if (file.getName().endsWith(".class")) {
-                String className = packageName + '.' + file.getName().substring(0, file.getName().length() - 6);
-                Class<?> clazz = Class.forName(className);
-                classes.add(clazz);
-            }
-        }
-        return classes;
     }
 
 }

@@ -5,7 +5,6 @@ import org.junit.jupiter.api.Test;
 import org.lemon.dynodao.processor.itest.AbstractSourceCompilingTest;
 
 import java.util.HashMap;
-import java.util.Map;
 
 import static java.util.Collections.emptyMap;
 import static java.util.Collections.singletonMap;
@@ -64,112 +63,92 @@ class HashMapSerializationTest extends AbstractSourceCompilingTest {
 
     @Test
     void deserializeHashMapOfString_null_returnsNull() {
-        Map<String, String> value = SchemaAttributeValueSerializer.deserializeHashMapOfString(null);
+        HashMap<String, String> value = SchemaAttributeValueSerializer.deserializeHashMapOfString(null);
         assertThat(value).isNull();
     }
 
     @Test
     void deserializeHashMapOfString_nullAttributeValue_returnsNull() {
-        Map<String, String> value = SchemaAttributeValueSerializer.deserializeHashMapOfString(new AttributeValue().withNULL(true));
+        HashMap<String, String> value = SchemaAttributeValueSerializer.deserializeHashMapOfString(new AttributeValue().withNULL(true));
         assertThat(value).isNull();
     }
 
     @Test
     void deserializeHashMapOfString_mapValueNull_returnsNull() {
-        Map<String, String> value = SchemaAttributeValueSerializer.deserializeHashMapOfString(new AttributeValue().withS("string"));
+        HashMap<String, String> value = SchemaAttributeValueSerializer.deserializeHashMapOfString(new AttributeValue().withS("string"));
         assertThat(value).isNull();
     }
 
     @Test
     void deserializeHashMapOfString_emptyMap_returnsEmptyHashMap() {
-        Map<String, String> value = SchemaAttributeValueSerializer.deserializeHashMapOfString(new AttributeValue().withM(emptyMap()));
-        assertThat(value)
-                .isInstanceOf(HashMap.class)
-                .isEmpty();
+        HashMap<String, String> value = SchemaAttributeValueSerializer.deserializeHashMapOfString(new AttributeValue().withM(emptyMap()));
+        assertThat(value).isEmpty();
     }
 
     @Test
     void deserializeHashMapOfString_singletonMapWithValue_returnsSingletonHashMap() {
-        Map<String, String> value = SchemaAttributeValueSerializer.deserializeHashMapOfString(new AttributeValue().withM(singletonMap("key", new AttributeValue("value"))));
-        assertThat(value)
-                .isInstanceOf(HashMap.class)
-                .containsOnly(entry("key", "value"));
+        HashMap<String, String> value = SchemaAttributeValueSerializer.deserializeHashMapOfString(new AttributeValue().withM(singletonMap("key", new AttributeValue("value"))));
+        assertThat(value).containsOnly(entry("key", "value"));
     }
 
     @Test
     void deserializeHashMapOfString_singletonMapWithNull_returnsSingletonHashMap() {
-        Map<String, String> value = SchemaAttributeValueSerializer.deserializeHashMapOfString(new AttributeValue().withM(singletonMap("key", null)));
-        assertThat(value)
-                .isInstanceOf(HashMap.class)
-                .containsOnly(entry("key", null));
+        HashMap<String, String> value = SchemaAttributeValueSerializer.deserializeHashMapOfString(new AttributeValue().withM(singletonMap("key", null)));
+        assertThat(value).containsOnly(entry("key", null));
     }
 
     @Test
     void deserializeHashMapOfString_singletonMapWithNullAttributeValue_returnsSingletonHashMap() {
-        Map<String, String> value = SchemaAttributeValueSerializer.deserializeHashMapOfString(new AttributeValue().withM(singletonMap("key", new AttributeValue().withNULL(true))));
-        assertThat(value)
-                .isInstanceOf(HashMap.class)
-                .containsOnly(entry("key", null));
+        HashMap<String, String> value = SchemaAttributeValueSerializer.deserializeHashMapOfString(new AttributeValue().withM(singletonMap("key", new AttributeValue().withNULL(true))));
+        assertThat(value).containsOnly(entry("key", null));
     }
 
     @Test
     void deserializeHashMapOfString_mapWithMultipleValues_returnsHashMapWithValues() {
-        Map<String, String> value = SchemaAttributeValueSerializer.deserializeHashMapOfString(new AttributeValue().withM(mapOf(
+        HashMap<String, String> value = SchemaAttributeValueSerializer.deserializeHashMapOfString(new AttributeValue().withM(mapOf(
                 "key1", new AttributeValue("value1"),
                 "key2", new AttributeValue("value2"))));
-        assertThat(value)
-                .isInstanceOf(HashMap.class)
-                .containsOnly(entry("key1", "value1"), entry("key2", "value2"));
+        assertThat(value).containsOnly(entry("key1", "value1"), entry("key2", "value2"));
     }
 
     @Test
     void deserializeHashMapOfString_mapWithMultipleValuesSomeNull_returnsHashMapWithValueAndNull() {
-        Map<String, String> value = SchemaAttributeValueSerializer.deserializeHashMapOfString(new AttributeValue().withM(mapOf(
+        HashMap<String, String> value = SchemaAttributeValueSerializer.deserializeHashMapOfString(new AttributeValue().withM(mapOf(
                 "key1", new AttributeValue("value1"),
                 "key2", null)));
-        assertThat(value)
-                .isInstanceOf(HashMap.class)
-                .containsOnly(entry("key1", "value1"), entry("key2", null));
+        assertThat(value).containsOnly(entry("key1", "value1"), entry("key2", null));
     }
 
     @Test
     void deserializeHashMapOfString_mapWithMultipleValuesSomeNullAttributeValue_returnsHashMapWithValueAndNull() {
-        Map<String, String> value = SchemaAttributeValueSerializer.deserializeHashMapOfString(new AttributeValue().withM(mapOf(
+        HashMap<String, String> value = SchemaAttributeValueSerializer.deserializeHashMapOfString(new AttributeValue().withM(mapOf(
                 "key1", new AttributeValue("value1"),
                 "key2", new AttributeValue().withNULL(true))));
-        assertThat(value)
-                .isInstanceOf(HashMap.class)
-                .containsOnly(entry("key1", "value1"), entry("key2", null));
+        assertThat(value).containsOnly(entry("key1", "value1"), entry("key2", null));
     }
 
     @Test
     void deserializeHashMapOfString_mapWithMultipleValuesAllNull_returnsHashMapAllNull() {
-        Map<String, String> value = SchemaAttributeValueSerializer.deserializeHashMapOfString(new AttributeValue().withM(mapOf(
+        HashMap<String, String> value = SchemaAttributeValueSerializer.deserializeHashMapOfString(new AttributeValue().withM(mapOf(
                 "key1", null,
                 "key2", null)));
-        assertThat(value)
-                .isInstanceOf(HashMap.class)
-                .containsOnly(entry("key1", null), entry("key2", null));
+        assertThat(value).containsOnly(entry("key1", null), entry("key2", null));
     }
 
     @Test
     void deserializeHashMapOfString_mapWithMultipleValuesAllNullAttributeValue_returnsHashMapAllNull() {
-        Map<String, String> value = SchemaAttributeValueSerializer.deserializeHashMapOfString(new AttributeValue().withM(mapOf(
+        HashMap<String, String> value = SchemaAttributeValueSerializer.deserializeHashMapOfString(new AttributeValue().withM(mapOf(
                 "key1", new AttributeValue().withNULL(true),
                 "key2", new AttributeValue().withNULL(true))));
-        assertThat(value)
-                .isInstanceOf(HashMap.class)
-                .containsOnly(entry("key1", null), entry("key2", null));
+        assertThat(value).containsOnly(entry("key1", null), entry("key2", null));
     }
 
     @Test
     void deserializeHashMapOfString_mapWithMultipleValuesAllMixedNulls_returnsHashMapAllNull() {
-        Map<String, String> value = SchemaAttributeValueSerializer.deserializeHashMapOfString(new AttributeValue().withM(mapOf(
+        HashMap<String, String> value = SchemaAttributeValueSerializer.deserializeHashMapOfString(new AttributeValue().withM(mapOf(
                 "key1", null,
                 "key2", new AttributeValue().withNULL(true))));
-        assertThat(value)
-                .isInstanceOf(HashMap.class)
-                .containsOnly(entry("key1", null), entry("key2", null));
+        assertThat(value).containsOnly(entry("key1", null), entry("key2", null));
     }
 
     private <K, V> HashMap<K, V> mapOf() {
