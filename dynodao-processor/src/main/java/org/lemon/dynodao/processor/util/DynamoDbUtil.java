@@ -1,7 +1,11 @@
 package org.lemon.dynodao.processor.util;
 
 import com.squareup.javapoet.ClassName;
+import com.squareup.javapoet.ParameterizedTypeName;
+import com.squareup.javapoet.TypeName;
 import lombok.experimental.UtilityClass;
+
+import java.util.Map;
 
 /**
  * Utility methods related to dynamoDb itself.
@@ -14,6 +18,13 @@ public class DynamoDbUtil {
      */
     public static ClassName attributeValue() {
         return ClassName.get("com.amazonaws.services.dynamodbv2.model", "AttributeValue");
+    }
+
+    /**
+     * @return the {@code Map<String, AttributeValue>} type
+     */
+    public static ParameterizedTypeName item() {
+        return ParameterizedTypeName.get(ClassName.get(Map.class), TypeName.get(String.class), attributeValue());
     }
 
     /**

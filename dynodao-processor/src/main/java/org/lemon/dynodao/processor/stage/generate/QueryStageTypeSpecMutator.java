@@ -22,7 +22,7 @@ import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.joining;
 import static org.lemon.dynodao.processor.util.DynamoDbUtil.amazonDynamoDb;
-import static org.lemon.dynodao.processor.util.DynamoDbUtil.attributeValue;
+import static org.lemon.dynodao.processor.util.DynamoDbUtil.item;
 import static org.lemon.dynodao.processor.util.DynamoDbUtil.queryRequest;
 import static org.lemon.dynodao.processor.util.DynamoDbUtil.queryResult;
 
@@ -114,17 +114,17 @@ class QueryStageTypeSpecMutator implements StageTypeSpecMutator {
     private MethodSpec buildQuery(Stage stage, MethodSpec asRequest) {
         TypeName documentType = TypeName.get(stage.getSchema().getDocument().getTypeMirror());
 
-        ParameterSpec attributeValue = ParameterSpec.builder(attributeValue(), "attributeValue").build();
+        ParameterSpec item = ParameterSpec.builder(item(), "item").build();
         String serializerClassName = stage.getSerializer().getTypeSpec().name;
-        String deserializeMethodName = stage.getSchema().getDocument().getDeserializationMethod().getMethodName();
+        String deserializeMethodName = stage.getSchema().getDocument().getItemDeserializationMethod().getMethodName();
         TypeSpec queryResult = TypeSpec.anonymousClassBuilder("$N, request, result", AMAZON_DYNAMO_DB_PARAMETER)
                 .addSuperinterface(ParameterizedTypeName.get(ClassName.get(QueryReadResult.class), documentType))
                 .addMethod(MethodSpec.methodBuilder("deserialize")
                         .addAnnotation(Override.class)
                         .addModifiers(Modifier.PROTECTED)
                         .returns(documentType)
-                        .addParameter(attributeValue)
-                        .addStatement("return $L.$L($N)", serializerClassName, deserializeMethodName, attributeValue)
+                        .addParameter(item)
+                        .addStatement("return $L.$L($N)", serializerClassName, deserializeMethodName, item)
                         .build())
                 .build();
 

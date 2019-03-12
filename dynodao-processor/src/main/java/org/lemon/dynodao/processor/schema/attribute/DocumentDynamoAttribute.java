@@ -23,6 +23,8 @@ public class DocumentDynamoAttribute implements DynamoAttribute {
     private final TypeMirror typeMirror;
     private final MappingMethod serializationMethod;
     private final MappingMethod deserializationMethod;
+    private final MappingMethod itemSerializationMethod;
+    private final MappingMethod itemDeserializationMethod;
     private final List<DynamoAttribute> attributes;
 
     @Override

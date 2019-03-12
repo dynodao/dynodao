@@ -12,22 +12,12 @@ import java.util.stream.StreamSupport;
  * @param <T> the type of item stored in DynamoDb, a {@link org.lemon.dynodao.annotation.DynoDaoSchema @DynoDaoSchema} class.
  */
 abstract class AbstractReadResult<T> {
-
-    /**
-     * Deserializes the {@link AttributeValue} into the schema class <tt>T</tt>.
-     * @param attributeValue the attribute value to convert to a class of type <tt>T</tt>
-     * @return the schema class
-     */
-    protected abstract T deserialize(AttributeValue attributeValue);
-
     /**
      * Deserializes the item into the schema class <tt>T</tt>.
      * @param item the item from dynamo to convert to a class of type <tt>T</tt>
      * @return the schema class
      */
-    protected final T deserialize(Map<String, AttributeValue> item) {
-        return deserialize(new AttributeValue().withM(item));
-    }
+    protected abstract T deserialize(Map<String, AttributeValue> item);
 
     /**
      * Returns a spliterator over the read operation result. If the operation requires pagination,

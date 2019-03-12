@@ -119,8 +119,8 @@ class QueryReadResultTest extends AbstractUnitTest {
     private QueryReadResult<Pojo> build(QueryRequest queryRequest, QueryResult queryResult) {
         return new QueryReadResult<Pojo>(amazonDynamoDbMock, queryRequest, queryResult) {
             @Override
-            protected Pojo deserialize(AttributeValue attributeValue) {
-                return pojo(attributeValue.getM().get("hash").getS(), Integer.parseInt(attributeValue.getM().get("range").getN()));
+            protected Pojo deserialize(Map<String, AttributeValue> item) {
+                return pojo(item.get("hash").getS(), Integer.parseInt(item.get("range").getN()));
             }
         };
     }

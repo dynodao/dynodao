@@ -2,37 +2,39 @@ package org.lemon.dynodao.processor.serialize.generate;
 
 import com.squareup.javapoet.MethodSpec;
 import com.squareup.javapoet.ParameterSpec;
-import com.squareup.javapoet.TypeName;
 import com.squareup.javapoet.TypeSpec;
 import org.lemon.dynodao.processor.schema.DynamoSchema;
 import org.lemon.dynodao.processor.schema.attribute.DocumentDynamoAttribute;
 import org.lemon.dynodao.processor.schema.attribute.DynamoAttribute;
 import org.lemon.dynodao.processor.schema.serialize.MappingMethod;
+import org.lemon.dynodao.processor.util.SimpleDynamoAttributeVisitor;
 
 import javax.inject.Inject;
 import javax.lang.model.element.Modifier;
 import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
 
 import static java.util.Collections.singletonList;
 
 /**
- * Adds all of the methods which deserialize from {@link com.amazonaws.services.dynamodbv2.model.AttributeValue}.
+ * Adds the item deserialization method for each {@link DocumentDynamoAttribute} within the schema.
  */
-class DeserializationMethodsSerializerTypeSpecMutator implements SerializerTypeSpecMutator {
+class ItemDeserializationMethodSerializerTypeSpecMutator implements SerializerTypeSpecMutator {
 
-    @Inject DeserializationMethodsSerializerTypeSpecMutator() { }
+    @Inject ItemDeserializationMethodSerializerTypeSpecMutator() { }
 
     @Override
     public void mutate(TypeSpec.Builder typeSpec, DynamoSchema schema) {
         Iterable<Modifier> modifiers = getModifiers(schema.getDocument());
 
-        Set<MappingMethod> addedMappings = new HashSet<>();
-        schema.getDocument().getNestedAttributesRecursively().stream()
-                .filter(attribute -> addedMappings.add(attribute.getDeserializationMethod()))
-                .map(attribute -> toMethodSpec(attribute, modifiers))
-                .forEach(typeSpec::addMethod);
+        for (DynamoAttribute attribute : schema.getDocument().getNestedAttributesRecursively()) {
+            attribute.accept(new SimpleDynamoAttributeVisitor<Void, Void>() {
+                @Override
+                public Void visitDocument(DocumentDynamoAttribute document, Void aVoid) {
+                    typeSpec.addMethod(toMethodSpec(document.getItemDeserializationMethod(), modifiers));
+                    return super.visitDocument(document, aVoid);
+                }
+            });
+        }
     }
 
     private Iterable<Modifier> getModifiers(DocumentDynamoAttribute document) {
@@ -43,8 +45,7 @@ class DeserializationMethodsSerializerTypeSpecMutator implements SerializerTypeS
         }
     }
 
-    private MethodSpec toMethodSpec(DynamoAttribute attribute, Iterable<Modifier> modifiers) {
-        MappingMethod method = attribute.getDeserializationMethod();
+    private MethodSpec toMethodSpec(MappingMethod method, Iterable<Modifier> modifiers) {
         ParameterSpec parameter = method.getParameter();
         return MethodSpec.methodBuilder(method.getMethodName())
                 .addJavadoc("Deserializes <tt>$N</tt> into {@link $T}.\n", parameter, method.getReturnType())
@@ -53,23 +54,11 @@ class DeserializationMethodsSerializerTypeSpecMutator implements SerializerTypeS
                 .addModifiers(modifiers)
                 .returns(method.getReturnType())
                 .addParameter(parameter)
-                .beginControlFlow("if ($1N == null || $1N.get$2L() == null || $3T.TRUE.equals($1N.getNULL()))", parameter, attribute.getAttributeType().getDataTypeName(), Boolean.class)
-                .addStatement("return $L", getDefaultLiteralForType(method.getReturnType()))
+                .beginControlFlow("if ($N == null)", parameter)
+                .addStatement("return null")
                 .endControlFlow()
                 .addCode(method.getCoreMethodBody())
                 .build();
-    }
-
-    private String getDefaultLiteralForType(TypeName type) {
-        if (!type.isPrimitive()) {
-            return "null";
-        } else if (TypeName.BOOLEAN.equals(type)) {
-            return "false";
-        } else if (TypeName.CHAR.equals(type)) {
-            return "'\0'";
-        } else {
-            return "0";
-        }
     }
 
 }

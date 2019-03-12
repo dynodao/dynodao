@@ -38,6 +38,30 @@ class DocumentSerializationTest extends AbstractSourceCompilingTest {
     }
 
     @Test
+    void serializeDocumentAsItem_null_returnsEmptyMap() {
+        Map<String, AttributeValue> item = SchemaAttributeValueSerializer.serializeDocumentAsItem(null);
+        assertThat(item).isEmpty();
+    }
+
+    @Test
+    void serializeDocumentAsItem_allFieldsPresent_returnsMapWithOverrideAttributeNames() {
+        Map<String, AttributeValue> item = SchemaAttributeValueSerializer.serializeDocumentAsItem(document("a1", "a2", "a3"));
+        assertThat(item).isEqualTo(item("a1", "a2", "a3"));
+    }
+
+    @Test
+    void serializeDocumentAsItem_someFieldsNull_returnsMapWithNulls() {
+        Map<String, AttributeValue> item = SchemaAttributeValueSerializer.serializeDocumentAsItem(document(null, null, "a3"));
+        assertThat(item).isEqualTo(item(null, null, "a3"));
+    }
+
+    @Test
+    void serializeDocumentAsItem_allFieldsNull_returnsMapWithNulls() {
+        Map<String, AttributeValue> item = SchemaAttributeValueSerializer.serializeDocumentAsItem(document(null, null, null));
+        assertThat(item).isEqualTo(item(null, null, null));
+    }
+
+    @Test
     void deserializeDocument_null_returnsNull() {
         Document value = SchemaAttributeValueSerializer.deserializeDocument(null);
         assertThat(value).isNull();
@@ -85,6 +109,42 @@ class DocumentSerializationTest extends AbstractSourceCompilingTest {
         assertThat(value).isEqualTo(document(null, null, null));
     }
 
+    @Test
+    void deserializeDocumentFromItem_null_returnsNull() {
+        Document value = SchemaAttributeValueSerializer.deserializeDocumentFromItem(null);
+        assertThat(value).isNull();
+    }
+
+    @Test
+    void deserializeDocumentFromItem_allFieldsPresent_returnsDocument() {
+        Document value = SchemaAttributeValueSerializer.deserializeDocumentFromItem(item("a1", "a2", "a3"));
+        assertThat(value).isEqualTo(document("a1", "a2", "a3"));
+    }
+
+    @Test
+    void deserializeDocumentFromItem_emptyMap_returnsDocumentWithNullFields() {
+        Document value = SchemaAttributeValueSerializer.deserializeDocumentFromItem(emptyMap());
+        assertThat(value).isEqualTo(document(null, null, null));
+    }
+
+    @Test
+    void deserializeDocumentFromItem_valueHaveWrongKeys_returnsDocumentWithNullFields() {
+        Document value = SchemaAttributeValueSerializer.deserializeDocumentFromItem(singletonMap("dynamoNameIsAttribute3", new AttributeValue("a3")));
+        assertThat(value).isEqualTo(document(null, null, null));
+    }
+
+    @Test
+    void deserializeDocumentFromItem_someKeysCorrect_returnsDocumentWithNullForMissingFieldsOnly() {
+        Document value = SchemaAttributeValueSerializer.deserializeDocumentFromItem(singletonMap("attribute3", new AttributeValue("a3")));
+        assertThat(value).isEqualTo(document(null, null, "a3"));
+    }
+
+    @Test
+    void deserializeDocumentFromItem_keysHaveWrongTypes_returnsDocumentWithNullFields() {
+        Document value = SchemaAttributeValueSerializer.deserializeDocumentFromItem(singletonMap("attribute3", new AttributeValue().withM(emptyMap())));
+        assertThat(value).isEqualTo(document(null, null, null));
+    }
+
     private Document document(String attribute1, String attribute2, String attribute3) {
         Document document = new Document();
         document.setAttribute1(attribute1);
@@ -93,12 +153,16 @@ class DocumentSerializationTest extends AbstractSourceCompilingTest {
         return document;
     }
 
+    private Map<String, AttributeValue> item(String attribute1, String attribute2, String attribute3) {
+        Map<String, AttributeValue> item = new TreeMap<>();
+        item.put("attribute1", attribute1 == null ? new AttributeValue().withNULL(true) : new AttributeValue(attribute1));
+        item.put("attribute2", attribute2 == null ? new AttributeValue().withNULL(true) : new AttributeValue(attribute2));
+        item.put("attribute3", attribute3 == null ? new AttributeValue().withNULL(true) : new AttributeValue(attribute3));
+        return item;
+    }
+
     private AttributeValue attributeValue(String attribute1, String attribute2, String attribute3) {
-        Map<String, AttributeValue> map = new TreeMap<>();
-        map.put("attribute1", attribute1 == null ? new AttributeValue().withNULL(true) : new AttributeValue(attribute1));
-        map.put("attribute2", attribute2 == null ? new AttributeValue().withNULL(true) : new AttributeValue(attribute2));
-        map.put("attribute3", attribute3 == null ? new AttributeValue().withNULL(true) : new AttributeValue(attribute3));
-        return new AttributeValue().withM(map);
+        return new AttributeValue().withM(item(attribute1, attribute2, attribute3));
     }
 
 }

@@ -68,10 +68,8 @@ public class QueryReadResultSpliteratorBenchmark {
     public long testSpliterator(MyState state) {
         QueryReadResult result = new QueryReadResult<Schema>(state.amazonDynamoDBMock, QUERY_REQUEST, buildQueryResult(LIST_0, false)) {
             @Override
-            protected Schema deserialize(AttributeValue attributeValue) {
-                Schema s = new Schema();
-                s.value = attributeValue.getS();
-                return s;
+            protected Schema deserialize(Map<String, AttributeValue> item) {
+                return new Schema();
             }
         };
         return result.stream().count();

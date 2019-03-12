@@ -1,9 +1,7 @@
 package org.lemon.dynodao.processor.schema.parse;
 
-import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.CodeBlock;
 import com.squareup.javapoet.ParameterSpec;
-import com.squareup.javapoet.ParameterizedTypeName;
 import com.squareup.javapoet.TypeName;
 import org.lemon.dynodao.annotation.DynoDaoAttribute;
 import org.lemon.dynodao.annotation.DynoDaoDocument;
@@ -14,6 +12,8 @@ import org.lemon.dynodao.processor.schema.SchemaContext;
 import org.lemon.dynodao.processor.schema.attribute.DocumentDynamoAttribute;
 import org.lemon.dynodao.processor.schema.attribute.DynamoAttribute;
 import org.lemon.dynodao.processor.schema.serialize.DeserializationMappingMethod;
+import org.lemon.dynodao.processor.schema.serialize.MappingMethod;
+import org.lemon.dynodao.processor.schema.serialize.MappingMethodImpl;
 import org.lemon.dynodao.processor.schema.serialize.SerializationMappingMethod;
 
 import javax.inject.Inject;
@@ -22,13 +22,13 @@ import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.VariableElement;
 import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
-import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 
 import static java.util.stream.Collectors.toList;
 import static org.lemon.dynodao.processor.schema.serialize.DeserializationMappingMethod.parameter;
 import static org.lemon.dynodao.processor.util.DynamoDbUtil.attributeValue;
+import static org.lemon.dynodao.processor.util.DynamoDbUtil.item;
 import static org.lemon.dynodao.processor.util.StringUtil.capitalize;
 
 /**
@@ -36,7 +36,7 @@ import static org.lemon.dynodao.processor.util.StringUtil.capitalize;
  */
 class DocumentSchemaParser implements SchemaParser {
 
-    private static final TypeName MAP_OF_ATTRIBUTE_VALUE = ParameterizedTypeName.get(ClassName.get(Map.class), TypeName.get(String.class), attributeValue());
+    private static final ParameterSpec ITEM_PARAMETER = ParameterSpec.builder(item(), "item").build();
 
     private final Processors processors;
 
@@ -67,13 +67,18 @@ class DocumentSchemaParser implements SchemaParser {
     public DocumentDynamoAttribute parseAttribute(Element element, TypeMirror typeMirror, String path, SchemaContext schemaContext) {
         Element typeElement = processors.asElement(typeMirror);
         List<DynamoAttribute> nestedAttributes = getNestedAttributes(typeElement, schemaContext);
+        MappingMethod itemSerializationMethod = buildItemSerializationMethod(typeElement, typeMirror, nestedAttributes);
+        MappingMethod itemDeserializationMethod = buildItemDeserializationMethod(typeElement, typeMirror, nestedAttributes);
+
         return DocumentDynamoAttribute.builder()
                 .element(element)
                 .typeMirror(typeMirror)
                 .path(path)
                 .attributes(nestedAttributes)
-                .serializationMethod(buildSerializationMethod(typeElement, typeMirror, nestedAttributes))
-                .deserializationMethod(buildDeserializationMethod(typeElement, typeMirror, nestedAttributes))
+                .itemSerializationMethod(itemSerializationMethod)
+                .serializationMethod(buildSerializationMethod(itemSerializationMethod))
+                .itemDeserializationMethod(itemDeserializationMethod)
+                .deserializationMethod(buildDeserializationMethod(itemDeserializationMethod))
                 .build();
     }
 
@@ -92,20 +97,20 @@ class DocumentSchemaParser implements SchemaParser {
         }
     }
 
-    private SerializationMappingMethod buildSerializationMethod(Element typeElement, TypeMirror typeMirror, List<DynamoAttribute> nestedAttributes) {
+    private MappingMethod buildItemSerializationMethod(Element typeElement, TypeMirror typeMirror, List<DynamoAttribute> attributes) {
         ParameterSpec document = ParameterSpec.builder(TypeName.get(typeMirror), "document").build();
 
         CodeBlock.Builder body = CodeBlock.builder()
-                .addStatement("$T attrValueMap = new $T<>()", MAP_OF_ATTRIBUTE_VALUE, HashMap.class);
+                .addStatement("$T item = new $T<>()", item(), LinkedHashMap.class);
 
-        for (DynamoAttribute attribute : nestedAttributes) {
-            body.addStatement("attrValueMap.put($S, $L($N.$L()))", attribute.getPath(),
+        for (DynamoAttribute attribute : attributes) {
+            body.addStatement("item.put($S, $L($N.$L()))", attribute.getPath(),
                     attribute.getSerializationMethod().getMethodName(), document, accessorOf(attribute.getElement()));
         }
-        body.addStatement("return new $T().withM(attrValueMap)", attributeValue());
-
-        return SerializationMappingMethod.builder()
-                .methodName("serialize" + typeElement.getSimpleName())
+        body.addStatement("return item");
+        return MappingMethodImpl.builder()
+                .methodName("serialize" + typeElement.getSimpleName() + "AsItem")
+                .returnType(item())
                 .parameter(document)
                 .coreMethodBody(body.build())
                 .build();
@@ -119,26 +124,47 @@ class DocumentSchemaParser implements SchemaParser {
         }
     }
 
-    private DeserializationMappingMethod buildDeserializationMethod(Element typeElement, TypeMirror typeMirror, List<DynamoAttribute> nestedAttributes) {
+    private SerializationMappingMethod buildSerializationMethod(MappingMethod itemSerializationMethod) {
+        return SerializationMappingMethod.builder()
+                .methodName(itemSerializationMethod.getMethodName().replaceAll("AsItem$", ""))
+                .parameter(itemSerializationMethod.getParameter())
+                .coreMethodBody(CodeBlock.builder()
+                        .addStatement("return new $T().withM($L($N))", attributeValue(), itemSerializationMethod.getMethodName(),
+                                itemSerializationMethod.getParameter())
+                        .build())
+                .build();
+    }
+
+    private MappingMethod buildItemDeserializationMethod(Element typeElement, TypeMirror typeMirror, List<DynamoAttribute> attributes) {
         CodeBlock.Builder body = CodeBlock.builder()
-                .addStatement("$T attrValueMap = $N.getM()", MAP_OF_ATTRIBUTE_VALUE, parameter())
                 .addStatement("$T document = new $T()", typeMirror, typeMirror);
 
-        for (DynamoAttribute attribute : nestedAttributes) {
-            body.addStatement("document.$L($L(attrValueMap.get($S)))", mutatorOf(attribute.getElement()),
-                    attribute.getDeserializationMethod().getMethodName(), attribute.getPath());
+        for (DynamoAttribute attribute : attributes) {
+            body.addStatement("document.$L($L($N.get($S)))", mutatorOf(attribute.getElement()),
+                    attribute.getDeserializationMethod().getMethodName(), ITEM_PARAMETER, attribute.getPath());
         }
         body.addStatement("return document");
 
-        return DeserializationMappingMethod.builder()
-                .methodName("deserialize" + typeElement.getSimpleName())
+        return MappingMethodImpl.builder()
+                .methodName("deserialize" + typeElement.getSimpleName() + "FromItem")
                 .returnType(TypeName.get(typeMirror))
+                .parameter(ITEM_PARAMETER)
                 .coreMethodBody(body.build())
                 .build();
     }
 
     private String mutatorOf(Element field) {
         return "set" + capitalize(field);
+    }
+
+    private DeserializationMappingMethod buildDeserializationMethod(MappingMethod itemDeserializationMethod) {
+        return DeserializationMappingMethod.builder()
+                .methodName(itemDeserializationMethod.getMethodName().replaceAll("FromItem$", ""))
+                .returnType(itemDeserializationMethod.getReturnType())
+                .coreMethodBody(CodeBlock.builder()
+                        .addStatement("return $L($N.getM())", itemDeserializationMethod.getMethodName(), parameter())
+                        .build())
+                .build();
     }
 
 }

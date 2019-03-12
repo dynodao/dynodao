@@ -29,6 +29,7 @@ import java.util.concurrent.ConcurrentSkipListMap;
 
 import static org.lemon.dynodao.processor.schema.serialize.DeserializationMappingMethod.parameter;
 import static org.lemon.dynodao.processor.util.DynamoDbUtil.attributeValue;
+import static org.lemon.dynodao.processor.util.DynamoDbUtil.item;
 
 /**
  * Parses a map of some type keyed by string. The value type is a single known type, while the keys
@@ -36,9 +37,8 @@ import static org.lemon.dynodao.processor.util.DynamoDbUtil.attributeValue;
  */
 class MapTypeSchemaParser implements SchemaParser {
 
-    private static final TypeName MAP_OF_ATTRIBUTE_VALUE = ParameterizedTypeName.get(ClassName.get(Map.class), TypeName.get(String.class), attributeValue());
-    private static final TypeName MAP_ENTRY_OF_ATTRIBUTE_VALUE = ParameterizedTypeName.get(ClassName.get(Map.Entry.class), TypeName.get(String.class), attributeValue());
-    private static final TypeName MAP_OF_ATTRIBUTE_VALUE_ITERATOR = ParameterizedTypeName.get(ClassName.get(Iterator.class), MAP_ENTRY_OF_ATTRIBUTE_VALUE);
+    private static final TypeName ITEM_MAP_ENTRY = ParameterizedTypeName.get(ClassName.get(Map.Entry.class), TypeName.get(String.class), attributeValue());
+    private static final TypeName ITEM_MAP_ENTRY_ITERATOR = ParameterizedTypeName.get(ClassName.get(Iterator.class), ITEM_MAP_ENTRY);
 
     /**
      * The priority ordered list of map implementation types when the target is a map interface, abstract or an intermediary map,
@@ -94,7 +94,7 @@ class MapTypeSchemaParser implements SchemaParser {
 
         String valueSerializationMethod = mapElement.getSerializationMethod().getMethodName();
         CodeBlock.Builder body = CodeBlock.builder()
-                .addStatement("$T attrValueMap = new $T<>()", MAP_OF_ATTRIBUTE_VALUE, LinkedHashMap.class)
+                .addStatement("$T attrValueMap = new $T<>()", item(), LinkedHashMap.class)
                 .addStatement("$T it = $N.entrySet().iterator()", getIteratorOf(typeMirror), map)
                 .beginControlFlow("while (it.hasNext())")
                 .addStatement("$T entry = it.next()", getMapEntryOf(typeMirror))
@@ -143,9 +143,9 @@ class MapTypeSchemaParser implements SchemaParser {
         String valueDeserializationMethod = mapElement.getDeserializationMethod().getMethodName();
         CodeBlock.Builder body = CodeBlock.builder()
                 .addStatement("$T map = new $T$L()", typeMirror, getMapImplementationType(typeMirror), hasTypeArguments(typeMirror) ? "<>" : "")
-                .addStatement("$T it = $N.getM().entrySet().iterator()", MAP_OF_ATTRIBUTE_VALUE_ITERATOR, parameter())
+                .addStatement("$T it = $N.getM().entrySet().iterator()", ITEM_MAP_ENTRY_ITERATOR, parameter())
                 .beginControlFlow("while (it.hasNext())")
-                .addStatement("$T entry = it.next()", MAP_ENTRY_OF_ATTRIBUTE_VALUE)
+                .addStatement("$T entry = it.next()", ITEM_MAP_ENTRY)
                 .addStatement("map.put(entry.getKey(), $L(entry.getValue()))", valueDeserializationMethod)
                 .endControlFlow()
                 .addStatement("return map");

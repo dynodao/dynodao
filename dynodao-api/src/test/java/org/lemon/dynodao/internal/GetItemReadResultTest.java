@@ -79,8 +79,8 @@ class GetItemReadResultTest extends AbstractUnitTest {
     private GetItemReadResult<Pojo> build(GetItemResult getItemResult) {
         return new GetItemReadResult<Pojo>(getItemResult) {
             @Override
-            protected Pojo deserialize(AttributeValue attributeValue) {
-                return pojo(attributeValue.getM().get("hash").getS());
+            protected Pojo deserialize(Map<String, AttributeValue> item) {
+                return pojo(item.get("hash").getS());
             }
         };
     }

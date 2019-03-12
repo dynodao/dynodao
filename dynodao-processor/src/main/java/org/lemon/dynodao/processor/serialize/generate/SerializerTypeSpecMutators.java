@@ -16,6 +16,8 @@ public class SerializerTypeSpecMutators implements Streamable<SerializerTypeSpec
     @Inject JavaDocSerializerTypeSpecMutator javaDocSerializerTypeSpecMutator;
     @Inject ModifiersSerializerTypeSpecMutator modifiersSerializerTypeSpecMutator;
     @Inject CtorSerializerTypeSpecMutator ctorSerializerTypeSpecMutator;
+    @Inject ItemSerializationMethodSerializerTypeSpecMutator itemSerializationMethodSerializerTypeSpecMutator;
+    @Inject ItemDeserializationMethodSerializerTypeSpecMutator itemDeserializationMethodSerializerTypeSpecMutator;
     @Inject SerializationMethodsSerializerTypeSpecMutator serializationMethodsSerializerTypeSpecMutator;
     @Inject DeserializationMethodsSerializerTypeSpecMutator deserializationMethodsSerializerTypeSpecMutator;
 
@@ -28,6 +30,9 @@ public class SerializerTypeSpecMutators implements Streamable<SerializerTypeSpec
         serializerTypeSpecMutators.add(javaDocSerializerTypeSpecMutator);
         serializerTypeSpecMutators.add(modifiersSerializerTypeSpecMutator);
         serializerTypeSpecMutators.add(ctorSerializerTypeSpecMutator);
+
+        serializerTypeSpecMutators.add(itemSerializationMethodSerializerTypeSpecMutator);
+        serializerTypeSpecMutators.add(itemDeserializationMethodSerializerTypeSpecMutator);
 
         serializerTypeSpecMutators.add(serializationMethodsSerializerTypeSpecMutator);
         serializerTypeSpecMutators.add(deserializationMethodsSerializerTypeSpecMutator);

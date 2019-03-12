@@ -119,8 +119,8 @@ class ScanReadResultTest extends AbstractUnitTest {
     private ScanReadResult<Pojo> build(ScanRequest scanRequest, ScanResult scanResult) {
         return new ScanReadResult<Pojo>(amazonDynamoDbMock, scanRequest, scanResult) {
             @Override
-            protected Pojo deserialize(AttributeValue attributeValue) {
-                return pojo(attributeValue.getM().get("hash").getS(), Integer.parseInt(attributeValue.getM().get("range").getN()));
+            protected Pojo deserialize(Map<String, AttributeValue> item) {
+                return pojo(item.get("hash").getS(), Integer.parseInt(item.get("range").getN()));
             }
         };
     }

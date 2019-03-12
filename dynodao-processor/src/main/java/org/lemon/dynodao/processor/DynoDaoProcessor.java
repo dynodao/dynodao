@@ -78,7 +78,8 @@ public class DynoDaoProcessor extends AbstractProcessor {
             try {
                 processDocumentElement(documentElement);
             } catch (RuntimeException e) {
-                processorMessager.submitError("DynoDaoProcessor had uncaught exception: %s\nDynoDao tries to continue processing even when it enters an error state in an effort to report all errors, check for others!", e.getMessage());
+                processorMessager.submitError("DynoDaoProcessor had uncaught exception: %s\n"
+                        + "DynoDao tries to continue processing even when it enters an error state in an effort to report all errors, check for others!", e.getMessage());
                 e.printStackTrace();
             }
         }
