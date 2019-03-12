@@ -49,6 +49,20 @@ class MySchema {
 }
 ```
 
+The processor generates several classes for simplifying the interactions with a DynamoDB table which stores items of type `MySchema`. Depending on the schema, many classes may be generated, but you don't really need to know about all of them (ctrl+space is your friend!). The main class you need to know about is the *staged builder*, which serves as your entry point to performing operations using dynodao.
+
+To make a query you new up the staged builder, specify the index to use and then the keys. Pass that object to `DynoDao#get` which will make the appropriate read operation for you. This results a class with a lazy stream which automatically performs the pagination for you, keeping only one page in memory at a time.
+
+```java
+DynoDao dynoDao = new DynoDao(amazonDynamoDb);
+Stream<MySchema> queryResult = dynoDao.get(new MySchemaStagedDynamoBuilder()
+        .usingIndexName()
+        .withHashKey("hashKey")
+        .withRangeKey("rangeKey"));
+```
+
+--------
+
 This then generates a bunch of classes in the same package as your schema class. You don't really need to care about most of them (ctrl+space is your friend!). The main ones are:
 * `MySchemaStagedDynamoBuilder`
   * Your main entry point to the suite of classes.
@@ -56,7 +70,6 @@ This then generates a bunch of classes in the same package as your schema class.
 * `MySchemaAttributeValueSerializer`
   * A utility classes for serializing each type in `MySchema` to and from `AttributeValue`. You shouldn't need to use it explicitly, it's just nice to know about in case you need it.
 
-To make a query you use the staged builder entry point and specify the index to use and then the keys. Pass that object to `DynoDao#get` which will make the appropriate read operation for you. This results a class with a lazy stream which automatically performs the pagination for you, keeping only one page in memory at a time.
 ```java
 DynoDao dynoDao = new DynoDao(amazonDynamoDb);
 Stream<MySchema> queryResult = dynoDao.get(new MySchemaStagedDynamoBuilder()
@@ -98,29 +111,3 @@ DynamoDBQueryExpression<MySchema> query = new DynamoDBQueryExpression<>()
         .addExpressionAttributeValuesEntry("#rangeKey", new AttributeValue().withS("rangeKey"));
 List<MySchema> results = dynamoDbMapper.query(MySchema.class, query);
 ```
-
-# Notes
-
-## Additional Parameters to Query (etc)
-One option to implement other (or all!) query attributes is to use decorators like the following:
-
-```java
-public TableHashKeyModel withReturnCapacity() {  
-    return new TableHashKeyModel(/*hashKey, true*/) {
-        @Override
-        protected QueryRequest asQueryRequest() {
-            QueryRequest query = super.asQueryRequest();
-            query.setReturnConsumedCapacity("true");
-            return query;
-        }
-    };
-}
-```
-That is, the class itself is stateless but chains state together through perpetually overriding `asQueryRequest()`. This can even be done for `withHashKey` and the like.
-
-Though, `equals()` is funky then. We could implement equals as `buildQuery().equals(o.buildQuery())` instead.
-
-Another option is to store the request object in each stage, then the withers clone the request and mutate the corresponding field. Or, perhaps more simply, store each relevent field in each stage.
-
-## Parallel Scan
-Scan and ParallelScan are both done using `ScanRequest`. How can we specify the number of segments seamlessly? Ideally, we can hide the parallel stuff inside of the spliterator, where each split has it's own segment to scan. It possible to choose how many times a spliterator splits by evaluating the stream in it's own `ForkJoinPool`. We'd have to ensure the stream cannot be made sequential and that each split has the proper `ScanRequest` segment provided.
