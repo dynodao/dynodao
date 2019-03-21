@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>org.lemon.dynodao</groupId>
+        <groupId>org.dynodao</groupId>
         <artifactId>dynodao-parent</artifactId>
         <version>1.0</version>
         <relativePath>../dynodao-parent/pom.xml</relativePath>
