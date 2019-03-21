@@ -39,7 +39,7 @@ class ParallelScanReadResultTest extends AbstractUnitTest {
 
     @TestFactory
     @SuppressWarnings("unchecked")
-    Stream<DynamicTest> ctor_onlyUseCase_requestCloned() {
+    Stream<DynamicTest> ctor_typicalUseCase_requestCloned() {
         return IntStream.rangeClosed(MIN_SEGMENTS, MAX_SEGMENTS)
                 .mapToObj(segments -> dynamicTest(testName(segments, "ctor"), () ->{
                     AmazonDynamoDB amazonDynamoDbMock = mock(AmazonDynamoDB.class);
@@ -59,6 +59,28 @@ class ParallelScanReadResultTest extends AbstractUnitTest {
                                     .boxed()
                                     .toArray(Integer[]::new)));
                 }));
+    }
+
+    @Test
+    void ctor_totalSegmentsNull_throwsIllegalArgumentException() {
+        assertThatThrownBy(() -> new ParallelScanReadResult<Item>(mock(AmazonDynamoDB.class), new ScanRequest().withTotalSegments(null)) {
+            @Override
+            protected Item deserialize(Map<String, AttributeValue> item) {
+                return null;
+            }
+        })
+                .isInstanceOf(IllegalArgumentException.class);
+    }
+
+    @Test
+    void ctor_segmentsLessThanTwo_throwsIllegalArgumentException() {
+        assertThatThrownBy(() -> new ParallelScanReadResult<Item>(mock(AmazonDynamoDB.class), new ScanRequest().withTotalSegments(1)) {
+            @Override
+            protected Item deserialize(Map<String, AttributeValue> item) {
+                return null;
+            }
+        })
+                .isInstanceOf(IllegalArgumentException.class);
     }
 
     @TestFactory

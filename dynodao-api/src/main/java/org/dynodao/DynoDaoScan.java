@@ -8,6 +8,8 @@ import java.util.stream.Stream;
 /**
  * A DynamoDB <tt>scan</tt> operation, getting a collection of documents of type <tt>T</tt>.
  * @param <T> the type of document stored in DynamoDB
+ * @see DynoDao#get(DynoDaoScan)
+ * @see DynoDao#get(DynoDaoScan, int)
  * @see <a href="https://docs.aws.amazon.com/amazondynamodb/latest/APIReference/API_Scan.html">AWS Documentation</a>
  */
 public interface DynoDaoScan<T> {
