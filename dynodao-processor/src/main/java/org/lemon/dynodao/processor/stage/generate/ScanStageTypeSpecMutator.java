@@ -6,6 +6,7 @@ import com.squareup.javapoet.ParameterSpec;
 import com.squareup.javapoet.ParameterizedTypeName;
 import com.squareup.javapoet.TypeName;
 import com.squareup.javapoet.TypeSpec;
+import org.lemon.dynodao.internal.ParallelScanReadResult;
 import org.lemon.dynodao.internal.ScanReadResult;
 import org.lemon.dynodao.processor.context.Processors;
 import org.lemon.dynodao.processor.schema.index.IndexType;
@@ -30,9 +31,12 @@ import static org.lemon.dynodao.processor.util.DynamoDbUtil.scanResult;
 class ScanStageTypeSpecMutator implements StageTypeSpecMutator {
 
     private static final ParameterSpec AMAZON_DYNAMO_DB_PARAMETER = ParameterSpec.builder(amazonDynamoDb(), "amazonDynamoDb").build();
+    private static final ParameterSpec TOTAL_SEGMENTS_PARAMETER = ParameterSpec.builder(int.class, "totalSegments").build();
 
     private final MethodSpec scanWithNoReturnOrBody;
     private final MethodSpec asRequestWithNoBody;
+    private final MethodSpec parallelScanWithNoReturnOrBody;
+    private final MethodSpec asParallelRequestWithNoBody;
 
     @Inject
     ScanStageTypeSpecMutator(Processors processors) {
@@ -46,6 +50,22 @@ class ScanStageTypeSpecMutator implements StageTypeSpecMutator {
 
         ExecutableElement asRequest = processors.getMethodByName(interfaceType, "asScanRequest");
         asRequestWithNoBody = MethodSpec.overriding(asRequest).build();
+
+        ExecutableElement parallelScan = processors.getMethodByName(interfaceType, "parallelScan");
+        parallelScanWithNoReturnOrBody = MethodSpec.methodBuilder(parallelScan.getSimpleName().toString())
+                .addAnnotation(Override.class)
+                .addModifiers(Modifier.PUBLIC)
+                .addParameter(AMAZON_DYNAMO_DB_PARAMETER)
+                .addParameter(TOTAL_SEGMENTS_PARAMETER)
+                .build();
+
+        ExecutableElement asParallelRequest = processors.getMethodByName(interfaceType, "asParallelScanRequest");
+        asParallelRequestWithNoBody = MethodSpec.methodBuilder(asParallelRequest.getSimpleName().toString())
+                .addAnnotation(Override.class)
+                .addModifiers(Modifier.PUBLIC)
+                .returns(TypeName.get(asParallelRequest.getReturnType()))
+                .addParameter(TOTAL_SEGMENTS_PARAMETER)
+                .build();
     }
 
     @Override
@@ -56,6 +76,12 @@ class ScanStageTypeSpecMutator implements StageTypeSpecMutator {
 
             MethodSpec scan = buildScan(stage, asRequest);
             typeSpec.addMethod(scan);
+
+            MethodSpec asParallelRequest = buildAsParallelRequest(stage, asRequest);
+            typeSpec.addMethod(asParallelRequest);
+
+            MethodSpec parallelScan = buildParallelScan(stage, asParallelRequest);
+            typeSpec.addMethod(parallelScan);
         }
     }
 
@@ -105,6 +131,39 @@ class ScanStageTypeSpecMutator implements StageTypeSpecMutator {
                 .addStatement("$T request = $N()", asRequest.returnType, asRequest)
                 .addStatement("$T result = $N.scan(request)", scanResult(), AMAZON_DYNAMO_DB_PARAMETER)
                 .addStatement("return $L.stream()", scanResult)
+                .build();
+    }
+
+    private MethodSpec buildAsParallelRequest(Stage stage, MethodSpec asRequest) {
+        return asParallelRequestWithNoBody.toBuilder()
+                .addStatement("$T request = $N()", scanRequest(), asRequest)
+                .addStatement("request.setSegment(0)")
+                .addStatement("request.setTotalSegments($N)", TOTAL_SEGMENTS_PARAMETER)
+                .addStatement("return request")
+                .build();
+    }
+
+    private MethodSpec buildParallelScan(Stage stage, MethodSpec asParallelRequest) {
+        TypeName documentType = TypeName.get(stage.getSchema().getDocument().getTypeMirror());
+
+        ParameterSpec item = ParameterSpec.builder(item(), "item").build();
+        String serializerClassName = stage.getSerializer().getTypeSpec().name;
+        String deserializeMethodName = stage.getSchema().getDocument().getItemDeserializationMethod().getMethodName();
+        TypeSpec parallelScanResult = TypeSpec.anonymousClassBuilder("$N, request", AMAZON_DYNAMO_DB_PARAMETER)
+                .addSuperinterface(ParameterizedTypeName.get(ClassName.get(ParallelScanReadResult.class), documentType))
+                .addMethod(MethodSpec.methodBuilder("deserialize")
+                        .addAnnotation(Override.class)
+                        .addModifiers(Modifier.PROTECTED)
+                        .returns(documentType)
+                        .addParameter(item)
+                        .addStatement("return $L.$L($N)", serializerClassName, deserializeMethodName, item)
+                        .build())
+                .build();
+
+        return parallelScanWithNoReturnOrBody.toBuilder()
+                .returns(ParameterizedTypeName.get(ClassName.get(Stream.class), documentType))
+                .addStatement("$T request = $N($N)", asParallelRequest.returnType, asParallelRequest, TOTAL_SEGMENTS_PARAMETER)
+                .addStatement("return $L.stream()", parallelScanResult)
                 .build();
     }
 

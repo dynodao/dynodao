@@ -2,28 +2,23 @@ package org.lemon.dynodao.internal;
 
 import com.amazonaws.services.dynamodbv2.model.AttributeValue;
 import com.amazonaws.services.dynamodbv2.model.GetItemResult;
-import lombok.Data;
 import org.junit.jupiter.api.Test;
 import org.lemon.dynodao.test.AbstractUnitTest;
+import org.lemon.dynodao.test.Item;
 
-import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Spliterator;
 import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.lemon.dynodao.test.Item.item;
 
 class GetItemReadResultTest extends AbstractUnitTest {
 
-    @Data
-    private static class Pojo {
-        String hash;
-    }
-
     @Test
     void ctor_onlyUseCase_fieldsSet() {
-        GetItemResult result = result(pojo("hash"));
-        GetItemReadResult<Pojo> classUnderTest = build(result);
+        GetItemResult result = result(item("hash", 0));
+        GetItemReadResult<Item> classUnderTest = build(result);
 
         assertThat(classUnderTest).extracting("getItemResult")
                 .containsExactly(result);
@@ -31,28 +26,28 @@ class GetItemReadResultTest extends AbstractUnitTest {
 
     @Test
     void stream_getItemResultIsEmpty_returnsEmptyStream() {
-        GetItemReadResult<Pojo> classUnderTest = build(emptyResult());
-        Stream<Pojo> getItem = classUnderTest.stream();
+        GetItemReadResult<Item> classUnderTest = build(emptyResult());
+        Stream<Item> getItem = classUnderTest.stream();
         assertThat(getItem).isEmpty();
     }
 
     @Test
     void stream_getItemResultContainsItem_returnsSingletonStream() {
-        Pojo pojo = pojo("hash");
-        GetItemReadResult<Pojo> classUnderTest = build(result(pojo));
-        Stream<Pojo> getItem = classUnderTest.stream();
-        assertThat(getItem).containsExactly(pojo);
+        Item item = item("hash", 0);
+        GetItemReadResult<Item> classUnderTest = build(result(item));
+        Stream<Item> getItem = classUnderTest.stream();
+        assertThat(getItem).containsExactly(item);
     }
 
     @Test
     void spliterator_characteristics_nonNullSizedSubSizedDistinctAndOrdered() {
-        Spliterator<Pojo> spliterator = build(emptyResult()).spliterator();
+        Spliterator<Item> spliterator = build(emptyResult()).spliterator();
         assertThat(spliterator.characteristics()).isEqualTo(Spliterator.SIZED | Spliterator.SUBSIZED | Spliterator.DISTINCT | Spliterator.ORDERED | Spliterator.NONNULL);
     }
 
     @Test
     void spliterator_trySplit_returnsNull() {
-        Spliterator<Pojo> spliterator = build(emptyResult()).spliterator().trySplit();
+        Spliterator<Item> spliterator = build(emptyResult()).spliterator().trySplit();
         assertThat(spliterator).isNull();
     }
 
@@ -64,46 +59,34 @@ class GetItemReadResultTest extends AbstractUnitTest {
 
     @Test
     void spliterator_estimateSizeNotConsumed_returnsOne() {
-        long size = build(result(pojo("hash"))).spliterator().estimateSize();
+        long size = build(result(item("hash", 0))).spliterator().estimateSize();
         assertThat(size).isOne();
     }
 
     @Test
     void spliterator_estimateSizeConsumed_returnsZero() {
-        Spliterator<Pojo> spliterator = build(result(pojo("hash"))).spliterator();
+        Spliterator<Item> spliterator = build(result(item("hash", 0))).spliterator();
         spliterator.tryAdvance(item -> {});
         long size = spliterator.estimateSize();
         assertThat(size).isZero();
     }
 
-    private GetItemReadResult<Pojo> build(GetItemResult getItemResult) {
-        return new GetItemReadResult<Pojo>(getItemResult) {
+    private GetItemReadResult<Item> build(GetItemResult getItemResult) {
+        return new GetItemReadResult<Item>(getItemResult) {
             @Override
-            protected Pojo deserialize(Map<String, AttributeValue> item) {
-                return pojo(item.get("hash").getS());
+            protected Item deserialize(Map<String, AttributeValue> item) {
+                return Item.deserialize(item);
             }
         };
-    }
-
-    private Pojo pojo(String hash) {
-        Pojo pojo = new Pojo();
-        pojo.setHash(hash);
-        return pojo;
     }
 
     private GetItemResult emptyResult() {
         return new GetItemResult();
     }
 
-    private GetItemResult result(Pojo pojo) {
+    private GetItemResult result(Item item) {
         return new GetItemResult()
-                .withItem(serialize(pojo));
-    }
-
-    private Map<String, AttributeValue> serialize(Pojo pojo) {
-        Map<String, AttributeValue> map = new LinkedHashMap<>();
-        map.put("hash", new AttributeValue(pojo.getHash()));
-        return map;
+                .withItem(item.serialize());
     }
 
 }

@@ -10,7 +10,10 @@ import com.amazonaws.services.dynamodbv2.model.ProvisionedThroughput;
 import com.amazonaws.services.dynamodbv2.model.ScalarAttributeType;
 import com.amazonaws.services.dynamodbv2.model.ScanRequest;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
 import org.lemon.dynodao.processor.test.AbstractUnitTest;
+import org.lemon.dynodao.processor.test.ParameterizedTestSources;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -43,6 +46,18 @@ class TableSchemaTest extends AbstractUnitTest {
                 .asScanRequest();
         assertThat(request).isEqualTo(new ScanRequest()
                 .withTableName("things"));
+    }
+
+    @ParameterizedTest
+    @MethodSource(ParameterizedTestSources.TOTAL_SEGMENTS_METHOD_SOURCE)
+    void asParallelScanRequest_onlyUseCase_returnsCorrectRequest(int totalSegments) {
+        ScanRequest request = new SchemaStagedDynamoBuilder()
+                .usingTable()
+                .asParallelScanRequest(totalSegments);
+        assertThat(request).isEqualTo(new ScanRequest()
+                .withTableName("things")
+                .withSegment(0)
+                .withTotalSegments(totalSegments));
     }
 
     @Test

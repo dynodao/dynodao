@@ -25,14 +25,14 @@ abstract class AbstractReadResult<T> {
      * @return a spliterator over the read result
      * @throws IllegalStateException if called more than once
      */
-    public abstract Spliterator<T> spliterator();
+    protected abstract Spliterator<T> spliterator();
 
     /**
      * Returns a stream over all elements returned by the read operation.
      * @return a stream over the read operation results
      * @throws IllegalStateException if called more than once
      */
-    public final Stream<T> stream() {
+    public Stream<T> stream() {
         return StreamSupport.stream(spliterator(), false);
     }
 

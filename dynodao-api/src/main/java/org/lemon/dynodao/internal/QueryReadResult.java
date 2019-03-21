@@ -40,7 +40,7 @@ public abstract class QueryReadResult<T> extends AbstractReadResult<T> {
     }
 
     @Override
-    public Spliterator<T> spliterator() {
+    protected Spliterator<T> spliterator() {
         if (iterationStarted) {
             throw new IllegalStateException("QueryReadResult can only be iterated once.");
         }

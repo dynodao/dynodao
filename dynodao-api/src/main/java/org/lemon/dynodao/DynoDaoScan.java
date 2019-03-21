@@ -25,4 +25,20 @@ public interface DynoDaoScan<T> {
      */
     ScanRequest asScanRequest();
 
+    /**
+     * Scans the total in parallel using <tt>totalSegments</tt> segments, returning the stream of documents.
+     * @param amazonDynamoDb the dynamoDb client to use
+     * @param totalSegments the number of segments the parallel scan should use
+     * @return a parallel stream of documents matching this instance specification
+     */
+    Stream<T> parallelScan(AmazonDynamoDB amazonDynamoDb, int totalSegments);
+
+    /**
+     * Returns the {@link ScanRequest} which will be used the the parallel scan operation. The request returned is
+     * only for the first segment of the parallel scan.
+     * @param totalSegments the number of segments the parallel scan should use
+     * @return the {@link ScanRequest}
+     */
+    ScanRequest asParallelScanRequest(int totalSegments);
+
 }

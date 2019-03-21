@@ -38,7 +38,7 @@ public abstract class ScanReadResult<T> extends AbstractReadResult<T> {
     }
 
     @Override
-    public Spliterator<T> spliterator() {
+    protected Spliterator<T> spliterator() {
         if (iterationStarted) {
             throw new IllegalStateException("ScanReadResult can only be iterated once.");
         }

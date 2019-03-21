@@ -55,7 +55,7 @@ public abstract class GetItemReadResult<T> extends AbstractReadResult<T> {
     }
 
     @Override
-    public Spliterator<T> spliterator() {
+    protected Spliterator<T> spliterator() {
         return new GetItemReadResultSpliterator();
     }
 
