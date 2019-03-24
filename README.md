@@ -1,5 +1,6 @@
 # dynodao
-
+[![Build Status](https://travis-ci.org/dynodao/dynodao.svg?branch=master)](https://travis-ci.org/dynodao/dynodao)
+[![codecov](https://codecov.io/gh/dynodao/dynodao/branch/master/graph/badge.svg)](https://codecov.io/gh/dynodao/dynodao)
 ```
 taras@me:~$ dynodao
  ________________________________________
