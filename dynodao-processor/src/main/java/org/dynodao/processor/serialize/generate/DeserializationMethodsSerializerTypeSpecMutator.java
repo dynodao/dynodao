@@ -66,7 +66,7 @@ class DeserializationMethodsSerializerTypeSpecMutator implements SerializerTypeS
         } else if (TypeName.BOOLEAN.equals(type)) {
             return "false";
         } else if (TypeName.CHAR.equals(type)) {
-            return "'\0'";
+            return "'\\0'";
         } else {
             return "0";
         }
