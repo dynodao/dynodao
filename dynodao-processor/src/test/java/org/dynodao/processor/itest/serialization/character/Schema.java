@@ -1,4 +1,4 @@
-package org.dynodao.processor.itest.serialization.bool;
+package org.dynodao.processor.itest.serialization.character;
 
 import lombok.Data;
 import org.dynodao.annotation.DynoDaoHashKey;
@@ -11,7 +11,7 @@ class Schema {
     @DynoDaoHashKey
     private String hashKey;
 
-    private Boolean booleanObject;
-    private boolean primitiveBoolean;
+    private Character characterObject;
+    private char primitiveCharacter;
 
 }
