@@ -1,4 +1,6 @@
 language: java
+sudo: false
+script: cd dynodao-parent && mvn clean install -B -V
 
 jdk:
   - openjdk8
