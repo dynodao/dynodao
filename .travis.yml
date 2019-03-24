@@ -5,7 +5,7 @@ script: cd dynodao-parent && mvn clean install -B -V
 matrix:
   include:
     - jdk: openjdk8
-      after_success: mvn jacoco:report -pl "org.dynodao:dynodapi-api,org.dynodao:dynodao-processor" -B && bash <(curl -s https://codecov.io/bash)
+      after_success: cd dynodao-parent && mvn jacoco:report -pl "org.dynodao:dynodapi-api,org.dynodao:dynodao-processor" -B && bash <(curl -s https://codecov.io/bash)
 
 cache:
   directories:
