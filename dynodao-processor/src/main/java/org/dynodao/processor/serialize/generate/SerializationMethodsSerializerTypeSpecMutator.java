@@ -50,7 +50,7 @@ class SerializationMethodsSerializerTypeSpecMutator implements SerializerTypeSpe
     private MethodSpec toMethodSpec(MappingMethod method, Iterable<Modifier> modifiers) {
         ParameterSpec parameter = method.getParameter();
         MethodSpec.Builder serialize = MethodSpec.methodBuilder(method.getMethodName())
-                .addJavadoc("Serializes <tt>$N</tt> as an {@link $T}.\n", parameter, attributeValue())
+                .addJavadoc("Serializes <tt>$N</tt> as an {@code $T}.\n", parameter, attributeValue())
                 .addJavadoc("@param $N the value to serialize\n", parameter)
                 .addJavadoc("@return the serialization of <tt>$N</tt>\n", parameter)
                 .addModifiers(modifiers)
