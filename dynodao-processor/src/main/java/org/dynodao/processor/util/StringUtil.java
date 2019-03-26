@@ -72,7 +72,7 @@ public class StringUtil {
      * @param n the number of times to repeat
      * @param toRepeat the string to repeat
      * @param delimiter the delimiter to place between each string
-     * @return
+     * @return <tt>toRepeat</tt> repeated <tt>n</tt> times with <tt>delimiter</tt> between each repetition
      */
     public static String repeat(int n, String toRepeat, String delimiter) {
         return Stream.iterate(0, i -> i + 1)
