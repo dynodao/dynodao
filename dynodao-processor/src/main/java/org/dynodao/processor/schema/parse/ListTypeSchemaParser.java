@@ -23,7 +23,6 @@ import java.util.List;
 
 import static org.dynodao.processor.schema.serialize.DeserializationMappingMethod.parameter;
 import static org.dynodao.processor.util.DynamoDbUtil.attributeValue;
-import static org.dynodao.processor.util.DynamoDbUtil.provisionedThroughput;
 
 /**
  * Parses a list. The value type is a single known attribute type, it does not allow for mixing types.

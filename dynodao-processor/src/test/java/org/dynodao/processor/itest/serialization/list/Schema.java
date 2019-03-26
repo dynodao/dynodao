@@ -8,7 +8,6 @@ import org.dynodao.processor.test.PackageScanner;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Stack;
 import java.util.Vector;
 import java.util.concurrent.CopyOnWriteArrayList;
 
@@ -26,7 +25,6 @@ class Schema {
     private CopyOnWriteArrayList<String> copyOnWriteArrayList;
 
     // -- old garbo list types --
-    private Stack<String> stack;
     private Vector<String> vector;
 
     // -- list type with no type args --
