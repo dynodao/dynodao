@@ -24,7 +24,7 @@ taras@me:~$ dynodao
                      |_____|        |_____|         ~ - . _ _ _ _ _>
 ```
 
-Puns aside, the dinosaur wearing a top hat is spot on. Working with the DynamoDb Java SDK can tedious. The addition of DynamoDBMapper removes much of the tedium by using magic to serialize and deserialize classes, but [working with expressions](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/DynamoDBMapper.QueryScanExample.html) is still awkward, and all that magic (read: reflection) incurs a runtime cost.
+Puns aside, the dinosaur wearing a top hat is spot on. Working with the DynamoDb Java SDK can be tedious. The addition of DynamoDBMapper removes much of the tedium by using magic to serialize and deserialize classes, but [working with expressions](https://docs.aws.amazon.com/amazondynamodb/latest/developerguide/DynamoDBMapper.QueryScanExample.html) is still awkward, and all that magic (read: reflection) incurs a runtime cost.
 
 Dynodao takes a lot of inspiration from DynamoDBMapper. Compared to it, dynodao offers:
 
