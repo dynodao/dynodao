@@ -11,4 +11,6 @@ class Schema {
     @DynoDaoHashKey
     private String hashKey;
 
+    private String string;
+
 }
