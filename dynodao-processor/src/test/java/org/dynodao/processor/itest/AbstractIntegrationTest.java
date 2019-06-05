@@ -53,8 +53,6 @@ public abstract class AbstractIntegrationTest extends AbstractSourceCompilingTes
         CreateTableRequest createTableRequest = getCreateTableRequest()
                 .withProvisionedThroughput(new ProvisionedThroughput(40000L, 40000L));
         amazonDynamoDb.createTable(createTableRequest);
-
-        dynoDao = new DynoDao(amazonDynamoDb);
     }
 
     @AfterEach
