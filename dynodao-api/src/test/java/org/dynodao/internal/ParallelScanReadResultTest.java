@@ -9,6 +9,8 @@ import org.dynodao.test.Item;
 import org.junit.jupiter.api.DynamicTest;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestFactory;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 
 import java.util.Arrays;
 import java.util.List;
@@ -247,6 +249,7 @@ class ParallelScanReadResultTest extends AbstractUnitTest {
                 }));
     }
 
+    @MockitoSettings(strictness = Strictness.LENIENT)
     @TestFactory
     Stream<DynamicTest> stream_sequential_streamContainsOnlyFirstSegment() {
         return IntStream.rangeClosed(MIN_SEGMENTS, MAX_SEGMENTS)

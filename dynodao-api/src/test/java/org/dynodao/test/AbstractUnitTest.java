@@ -1,8 +1,8 @@
 package org.dynodao.test;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
-import org.mockito.MockitoAnnotations;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 /**
  * Base class for any and all unit tests.
@@ -10,14 +10,7 @@ import org.mockito.MockitoAnnotations;
  * Initializes mockito annotations.
  */
 @Disabled
+@ExtendWith(MockitoExtension.class)
 public abstract class AbstractUnitTest {
-
-    /**
-     * Initials any mockito mock annotations in this class.
-     */
-    @BeforeEach
-    public void initMocks() {
-        MockitoAnnotations.initMocks(this);
-    }
 
 }
