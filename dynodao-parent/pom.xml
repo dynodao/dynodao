@@ -7,15 +7,9 @@
     <groupId>org.dynodao</groupId>
     <artifactId>dynodao-parent</artifactId>
     <version>1.0</version>
-    <modules>
-        <module>../dynodao-api</module>
-        <module>../dynodao-processor</module>
-        <module>../dynodao-benchmark</module>
-        <module>../dynodao-playground</module>
-    </modules>
     <packaging>pom</packaging>
 
-    <name>DynoDao</name>
+    <name>DynoDao Parent</name>
     <description>An annotation processor for generating fluent, type-safe DynamoDB operations based on a structured schema.</description>
     <url>https://github.com/twentylemon/dynodao</url>
     <inceptionYear>2019</inceptionYear>
@@ -47,6 +41,16 @@
             <distribution>repo</distribution>
         </license>
     </licenses>
+
+    <issueManagement>
+        <system>GitHub Issues</system>
+        <url>https://github.com/dynodao/dynodao/issues</url>
+    </issueManagement>
+
+    <ciManagement>
+        <system>Travis CI</system>
+        <url>https://travis-ci.org/dynodao/dynodao</url>
+    </ciManagement>
 
     <dependencyManagement>
         <dependencies>
