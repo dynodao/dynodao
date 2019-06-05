@@ -50,7 +50,7 @@ public interface DynamoAttribute {
     MappingMethod getSerializationMethod();
 
     /**
-     * A method that converts an {@link com.amazonaws.services.dynamodbv2.model.AttributeValue} into the javaland version
+     * A method that converts an {@link com.amazonaws.services.dynamodbv2.model.AttributeValue} into the java-land version
      * of this attribute.
      * @return a method specification that converts an {@link com.amazonaws.services.dynamodbv2.model.AttributeValue} to this attribute
      */

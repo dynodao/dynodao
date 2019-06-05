@@ -44,7 +44,7 @@ public abstract class AbstractSourceCompilingTest extends AbstractCompilingTest 
     }
 
     /**
-     * Recompiles the {@code compilationUnitUnderTest} and asserts the compilation succeeds (which, it must have),
+     * Recompile the {@code compilationUnitUnderTest} and asserts the compilation succeeds (which, it must have),
      * and that the compilation generated the source files (which... it must have).
      * This allows for us to actually get code coverage metrics during integration tests.
      */

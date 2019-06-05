@@ -21,12 +21,12 @@ public class StreamUtil {
     /**
      * Concatenates all of the objects into a single stream. If the passed object is a stream or collection, then
      * it is flattened into the returned stream.
-     * @param objs the objects, or collections to be in the stream
+     * @param objects the objects, or collections to be in the stream
      * @return the flattened single stream
      */
     @SuppressWarnings("unchecked")
-    public static Stream<Object> concat(Object... objs) {
-        return Arrays.stream(objs)
+    public static Stream<Object> concat(Object... objects) {
+        return Arrays.stream(objects)
                 .flatMap(obj -> {
                     if (obj instanceof Stream) {
                         return (Stream) obj;
