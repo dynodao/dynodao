@@ -19,7 +19,7 @@ import java.util.stream.IntStream;
 
 import static java.util.Collections.singletonMap;
 import static java.util.stream.Collectors.toList;
-import static org.mockito.Matchers.any;
+import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.when;
 
 public class QueryReadResultSpliteratorBenchmark {
