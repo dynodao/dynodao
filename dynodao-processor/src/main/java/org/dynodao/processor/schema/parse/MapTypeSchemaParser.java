@@ -65,7 +65,7 @@ class MapTypeSchemaParser implements SchemaParser {
         TypeMirror wildcard = processors.getWildcardType(null, null);
         TypeMirror mapOfStringToAnything = processors.getDeclaredType(map, string, wildcard);
         return processors.isAssignable(typeMirror, mapOfStringToAnything)
-                && schemaContext.isApplicableTo(element, getValueType(typeMirror), schemaContext);
+                && schemaContext.isApplicableTo(element, getValueType(typeMirror));
     }
 
     private TypeMirror getValueType(TypeMirror typeMirror) {
@@ -78,7 +78,7 @@ class MapTypeSchemaParser implements SchemaParser {
 
     @Override
     public MapDynamoAttribute parseAttribute(Element element, TypeMirror typeMirror, String path, SchemaContext schemaContext) {
-        DynamoAttribute mapElement = schemaContext.parseAttribute(element, getValueType(typeMirror), ".", schemaContext);
+        DynamoAttribute mapElement = schemaContext.parseAttribute(element, getValueType(typeMirror), ".");
         return MapDynamoAttribute.builder()
                 .element(element)
                 .typeMirror(typeMirror)

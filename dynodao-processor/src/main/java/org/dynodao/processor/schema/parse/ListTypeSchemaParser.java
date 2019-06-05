@@ -43,7 +43,7 @@ class ListTypeSchemaParser implements SchemaParser {
         TypeMirror wildcard = processors.getWildcardType(null, null);
         TypeMirror listOfAnything = processors.getDeclaredType(list, wildcard);
         return processors.isAssignable(typeMirror, listOfAnything)
-                && schemaContext.isApplicableTo(element, getValueType(typeMirror), schemaContext);
+                && schemaContext.isApplicableTo(element, getValueType(typeMirror));
     }
 
     private TypeMirror getValueType(TypeMirror typeMirror) {
@@ -56,7 +56,7 @@ class ListTypeSchemaParser implements SchemaParser {
 
     @Override
     public ListDynamoAttribute parseAttribute(Element element, TypeMirror typeMirror, String path, SchemaContext schemaContext) {
-        DynamoAttribute listElement = schemaContext.parseAttribute(element, getValueType(typeMirror), "[]", schemaContext);
+        DynamoAttribute listElement = schemaContext.parseAttribute(element, getValueType(typeMirror), "[]");
         return ListDynamoAttribute.builder()
                 .element(element)
                 .typeMirror(typeMirror)
