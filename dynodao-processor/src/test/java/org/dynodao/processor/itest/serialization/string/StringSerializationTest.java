@@ -2,9 +2,11 @@ package org.dynodao.processor.itest.serialization.string;
 
 import com.amazonaws.services.dynamodbv2.model.AttributeValue;
 import org.dynodao.processor.itest.AbstractIntegrationTest;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.EmptySource;
 import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.params.provider.NullAndEmptySource;
+import org.junit.jupiter.params.provider.NullSource;
 import org.junit.jupiter.params.provider.ValueSource;
 
 import java.util.stream.Stream;
@@ -15,44 +17,23 @@ class StringSerializationTest extends AbstractIntegrationTest {
 
     private static final String TABLE = "things";
     private static final String HASH_KEY_VALUE = "hashKey";
-
-    @Test
-    void serializeString_null_returnsNullAttributeValue() {
-        AttributeValue value = SchemaAttributeValueSerializer.serializeString(null);
+    
+    @ParameterizedTest
+    @NullAndEmptySource
+    void serializeString_nullCases_returnsNullAttributeValue(String stringValue) {
+        AttributeValue value = SchemaAttributeValueSerializer.serializeString(stringValue);
         assertThat(value).isEqualTo(new AttributeValue().withNULL(true));
-    }
-
-    @Test
-    void serializeString_emptyString_returnsNullAttributeValue() {
-        AttributeValue value = SchemaAttributeValueSerializer.serializeString("");
-        assertThat(value).isEqualTo(new AttributeValue().withNULL(true));
-    }
-
-    @Test
-    void serializeString_string_returnsAttributeValueWithString() {
-        AttributeValue value = SchemaAttributeValueSerializer.serializeString("string");
-        assertThat(value).isEqualTo(new AttributeValue("string"));
-    }
-
-    @Test
-    void deserializeString_null_returnsNull() {
-        String value = SchemaAttributeValueSerializer.deserializeString(null);
-        assertThat(value).isNull();
-    }
-
-    @Test
-    void deserializeString_nullAttributeValue_returnsNull() {
-        String value = SchemaAttributeValueSerializer.deserializeString(new AttributeValue().withNULL(true));
-        assertThat(value).isNull();
-    }
-
-    @Test
-    void deserializeString_stringValueNull_returnsNull() {
-        String value = SchemaAttributeValueSerializer.deserializeString(new AttributeValue().withN("not string"));
-        assertThat(value).isNull();
     }
 
     @ParameterizedTest
+    @ValueSource(strings = { "string", "\t", "\n", "\r", " " })
+    void serializeString_string_returnsAttributeValueWithString(String string) {
+        AttributeValue value = SchemaAttributeValueSerializer.serializeString(string);
+        assertThat(value).isEqualTo(new AttributeValue(string));
+    }
+
+    @ParameterizedTest
+    @NullSource
     @MethodSource("attributeValuesThatDeserializeToNull")
     void deserializeString_nullCases_returnsNull(AttributeValue attributeValue) {
         String value = SchemaAttributeValueSerializer.deserializeString(attributeValue);
@@ -60,18 +41,20 @@ class StringSerializationTest extends AbstractIntegrationTest {
     }
 
     static Stream<AttributeValue> attributeValuesThatDeserializeToNull() {
-        return Stream.of(null, new AttributeValue().withNULL(true), new AttributeValue().withN("not string"));
-    }
-
-    @Test
-    void deserializeString_stringValue_returnsString() {
-        String value = SchemaAttributeValueSerializer.deserializeString(new AttributeValue().withS("string"));
-        assertThat(value).isEqualTo("string");
+        return Stream.of(new AttributeValue().withNULL(true), new AttributeValue().withN("not string"));
     }
 
     @ParameterizedTest
-    @ValueSource(strings = { "", "string" })
-    void putAndGet_typicalUseCases_returnsItem(String stringValue) {
+    @ValueSource(strings = { "string", "\t", "\n", "\r", " " })
+    void deserializeString_string_returnsString(String string) {
+        String value = SchemaAttributeValueSerializer.deserializeString(new AttributeValue().withS(string));
+        assertThat(value).isEqualTo(string);
+    }
+
+    @ParameterizedTest
+    @NullSource
+    @ValueSource(strings = { "string", "\t", "\n", "\r", " " })
+    void putAndGet_symmetricCases_returnsItem(String stringValue) {
         Schema schema = schema(stringValue);
         put(schema);
         Stream<Schema> items = dynoDao.get(new SchemaStagedDynamoBuilder()
@@ -80,9 +63,15 @@ class StringSerializationTest extends AbstractIntegrationTest {
         assertThat(items).containsExactly(schema);
     }
 
-    @Test
-    void putAndGet_nullString_returnsItem() {
-        putAndGet_typicalUseCases_returnsItem(null);
+    @ParameterizedTest
+    @EmptySource
+    void putAndGet_asymmetricStringToNull_returnsItemWithNull(String string) {
+        Schema schema = schema(string);
+        put(schema);
+        Stream<Schema> items = dynoDao.get(new SchemaStagedDynamoBuilder()
+                .usingTable()
+                .withHashKey(HASH_KEY_VALUE));
+        assertThat(items).containsExactly(schema(null));
     }
 
     private void put(Schema item) {
