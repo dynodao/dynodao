@@ -10,7 +10,7 @@ import java.lang.annotation.Target;
 
 /**
  * Marks a field as the table range key.
- * @see {@link DynoDaoAttributeValueMapper}
+ * @see DynoDaoAttributeValueMapper
  */
 @Documented
 @Target(ElementType.FIELD)
