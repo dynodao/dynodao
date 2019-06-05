@@ -20,10 +20,9 @@ class HashKeyQueryTest extends AbstractIntegrationTest {
 
     @Test
     void query_noItems_returnsEmptyStream() {
-        Stream<Schema> query = new SchemaStagedDynamoBuilder()
+        Stream<Schema> query = dynoDao.get(new SchemaStagedDynamoBuilder()
                 .usingTable()
-                .withHashKey("no hash key")
-                .query(amazonDynamoDb);
+                .withHashKey("no hash key"));
         assertThat(query).isEmpty();
     }
 
@@ -32,10 +31,9 @@ class HashKeyQueryTest extends AbstractIntegrationTest {
         Schema item = schema("hashKey", 1);
         put(item);
 
-        Stream<Schema> query = new SchemaStagedDynamoBuilder()
+        Stream<Schema> query = dynoDao.get(new SchemaStagedDynamoBuilder()
                 .usingTable()
-                .withHashKey("hashKey")
-                .query(amazonDynamoDb);
+                .withHashKey("hashKey"));
         assertThat(query).containsExactly(item);
     }
 
@@ -45,10 +43,9 @@ class HashKeyQueryTest extends AbstractIntegrationTest {
         Schema item2 = schema("hashKey", 2);
         put(item1, item2);
 
-        Stream<Schema> query = new SchemaStagedDynamoBuilder()
+        Stream<Schema> query = dynoDao.get(new SchemaStagedDynamoBuilder()
                 .usingTable()
-                .withHashKey("hashKey")
-                .query(amazonDynamoDb);
+                .withHashKey("hashKey"));
         assertThat(query).containsExactly(item1, item2);
     }
 
@@ -59,10 +56,9 @@ class HashKeyQueryTest extends AbstractIntegrationTest {
                 .toArray(Schema[]::new);
         put(items);
 
-        Stream<Schema> query = new SchemaStagedDynamoBuilder()
+        Stream<Schema> query = dynoDao.get(new SchemaStagedDynamoBuilder()
                 .usingTable()
-                .withHashKey("hashKey")
-                .query(amazonDynamoDb);
+                .withHashKey("hashKey"));
         assertThat(query).containsExactly(items);
     }
 

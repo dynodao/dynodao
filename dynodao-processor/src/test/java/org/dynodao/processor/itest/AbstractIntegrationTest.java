@@ -6,6 +6,7 @@ import com.amazonaws.services.dynamodbv2.local.shared.access.AmazonDynamoDBLocal
 import com.amazonaws.services.dynamodbv2.model.CreateTableRequest;
 import com.amazonaws.services.dynamodbv2.model.ProvisionedThroughput;
 import lombok.SneakyThrows;
+import org.dynodao.DynoDao;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
@@ -25,6 +26,7 @@ public abstract class AbstractIntegrationTest extends AbstractSourceCompilingTes
     private static final ThreadLocal<AmazonDynamoDBLocal> DYNAMO_DB_LOCAL = new ThreadLocal<>();
 
     protected AmazonDynamoDB amazonDynamoDb;
+    protected DynoDao dynoDao;
 
     @BeforeAll
     static void startDynamoDbLocal() {
@@ -47,6 +49,7 @@ public abstract class AbstractIntegrationTest extends AbstractSourceCompilingTes
     @BeforeEach
     void createTable() {
         amazonDynamoDb = DYNAMO_DB_LOCAL.get().amazonDynamoDB();
+        dynoDao = new DynoDao(amazonDynamoDb);
         CreateTableRequest createTableRequest = getCreateTableRequest()
                 .withProvisionedThroughput(new ProvisionedThroughput(40000L, 40000L));
         amazonDynamoDb.createTable(createTableRequest);
