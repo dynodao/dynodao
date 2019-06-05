@@ -36,12 +36,16 @@ questions.
 
     <artifactId>dynodao-benchmark</artifactId>
     <packaging>jar</packaging>
-
     <name>DynoDao Benchmark</name>
 
     <prerequisites>
         <maven>3.0</maven>
     </prerequisites>
+
+    <properties>
+        <maven.deploy.skip>true</maven.deploy.skip>
+        <uberjar.name>benchmarks</uberjar.name>
+    </properties>
 
     <dependencies>
         <dependency>
@@ -98,10 +102,6 @@ questions.
             <artifactId>assertj-core</artifactId>
         </dependency>
     </dependencies>
-
-    <properties>
-        <uberjar.name>benchmarks</uberjar.name>
-    </properties>
 
     <build>
         <plugins>
