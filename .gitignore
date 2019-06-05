@@ -13,6 +13,19 @@ dependencies/
 # high churn intellij files
 *.iml
 
+# netbeans
+nb-configuration.xml
+
+# eclipse
+.metadata
+.recommenders
+.classpath
+.project
+.settings
+.factorypath
+.checkstyle
+.externalToolBuilders
+
 # Mobile Tools for Java (J2ME)
 .mtj.tmp/
 
