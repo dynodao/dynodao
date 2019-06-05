@@ -18,11 +18,10 @@ class HashKeyRangeKeyLoadTest extends AbstractIntegrationTest {
 
     @Test
     void load_noItems_returnsEmptyStream() {
-        Stream<Schema> load = new SchemaStagedDynamoBuilder()
+        Stream<Schema> load = dynoDao.get(new SchemaStagedDynamoBuilder()
                 .usingTable()
                 .withHashKey("no hash key")
-                .withRangeKey(0)
-                .load(amazonDynamoDb);
+                .withRangeKey(0));
         assertThat(load).isEmpty();
     }
 
@@ -31,11 +30,10 @@ class HashKeyRangeKeyLoadTest extends AbstractIntegrationTest {
         Schema item = schema("hashKey", 1);
         put(item);
 
-        Stream<Schema> load = new SchemaStagedDynamoBuilder()
+        Stream<Schema> load = dynoDao.get(new SchemaStagedDynamoBuilder()
                 .usingTable()
                 .withHashKey("hashKey")
-                .withRangeKey(1)
-                .load(amazonDynamoDb);
+                .withRangeKey(1));
         assertThat(load).containsExactly(item);
     }
 
