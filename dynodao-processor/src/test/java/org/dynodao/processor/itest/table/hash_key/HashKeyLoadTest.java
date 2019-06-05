@@ -19,19 +19,17 @@ class HashKeyLoadTest extends AbstractIntegrationTest {
         Schema item = schema("value");
         put(item);
 
-        Stream<Schema> load = new SchemaStagedDynamoBuilder()
+        Stream<Schema> load = dynoDao.get(new SchemaStagedDynamoBuilder()
                 .usingTable()
-                .withHashKey("value")
-                .load(amazonDynamoDb);
+                .withHashKey("value"));
         assertThat(load).containsExactly(item);
     }
 
     @Test
     void load_itemDoesNotExist_returnsEmptyStream() {
-        Stream<Schema> load = new SchemaStagedDynamoBuilder()
+        Stream<Schema> load = dynoDao.get(new SchemaStagedDynamoBuilder()
                 .usingTable()
-                .withHashKey("no-such-value")
-                .load(amazonDynamoDb);
+                .withHashKey("no-such-value"));
         assertThat(load).isEmpty();
     }
 
