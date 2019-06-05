@@ -18,9 +18,7 @@ class ScanTest extends AbstractIntegrationTest {
 
     @Test
     void scan_noResults_returnsEmptyStream() {
-        Stream<Schema> scan = new SchemaStagedDynamoBuilder()
-                .usingTable()
-                .scan(amazonDynamoDb);
+        Stream<Schema> scan = dynoDao.get(new SchemaStagedDynamoBuilder().usingTable());
         assertThat(scan).isEmpty();
     }
 
@@ -29,9 +27,7 @@ class ScanTest extends AbstractIntegrationTest {
         Schema schema = schema("hash");
         put(schema);
 
-        Stream<Schema> scan = new SchemaStagedDynamoBuilder()
-                .usingTable()
-                .scan(amazonDynamoDb);
+        Stream<Schema> scan = dynoDao.get(new SchemaStagedDynamoBuilder().usingTable());
         assertThat(scan).containsExactly(schema);
     }
 
@@ -41,9 +37,7 @@ class ScanTest extends AbstractIntegrationTest {
         Schema schema2 = schema("2");
         put(schema1, schema2);
 
-        Stream<Schema> scan = new SchemaStagedDynamoBuilder()
-                .usingTable()
-                .scan(amazonDynamoDb);
+        Stream<Schema> scan = dynoDao.get(new SchemaStagedDynamoBuilder().usingTable());
         assertThat(scan).containsExactlyInAnyOrder(schema1, schema2);
     }
 
@@ -54,9 +48,7 @@ class ScanTest extends AbstractIntegrationTest {
                 .toArray(Schema[]::new);
         put(items);
 
-        Stream<Schema> scan = new SchemaStagedDynamoBuilder()
-                .usingTable()
-                .scan(amazonDynamoDb);
+        Stream<Schema> scan = dynoDao.get(new SchemaStagedDynamoBuilder().usingTable());
         assertThat(scan).containsExactlyInAnyOrder(items);
     }
 

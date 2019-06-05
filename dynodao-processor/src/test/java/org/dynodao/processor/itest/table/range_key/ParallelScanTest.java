@@ -24,9 +24,7 @@ class ParallelScanTest extends AbstractIntegrationTest {
     @ParameterizedTest
     @MethodSource(ParameterizedTestSources.TOTAL_SEGMENTS_METHOD_SOURCE)
     void parallelScan_noResults_returnsEmptyStream(int totalSegments) {
-        Stream<Schema> parallelScan = new SchemaStagedDynamoBuilder()
-                .usingTable()
-                .parallelScan(amazonDynamoDb, totalSegments);
+        Stream<Schema> parallelScan = dynoDao.get(new SchemaStagedDynamoBuilder().usingTable(), totalSegments);
         assertThat(parallelScan.collect(toList())).isEmpty();
     }
 
@@ -36,9 +34,7 @@ class ParallelScanTest extends AbstractIntegrationTest {
         Schema schema = schema("hash", 1);
         put(schema);
 
-        Stream<Schema> parallelScan = new SchemaStagedDynamoBuilder()
-                .usingTable()
-                .parallelScan(amazonDynamoDb, totalSegments);
+        Stream<Schema> parallelScan = dynoDao.get(new SchemaStagedDynamoBuilder().usingTable(), totalSegments);
         assertThat(parallelScan.collect(toList())).containsExactly(schema);
     }
 
@@ -49,9 +45,7 @@ class ParallelScanTest extends AbstractIntegrationTest {
         Schema schema2 = schema("2", 2);
         put(schema1, schema2);
 
-        Stream<Schema> parallelScan = new SchemaStagedDynamoBuilder()
-                .usingTable()
-                .parallelScan(amazonDynamoDb, totalSegments);
+        Stream<Schema> parallelScan = dynoDao.get(new SchemaStagedDynamoBuilder().usingTable(), totalSegments);
         assertThat(parallelScan.collect(toList())).containsExactlyInAnyOrder(schema1, schema2);
     }
 
@@ -63,9 +57,7 @@ class ParallelScanTest extends AbstractIntegrationTest {
                 .toArray(Schema[]::new);
         put(items);
 
-        Stream<Schema> parallelScan = new SchemaStagedDynamoBuilder()
-                .usingTable()
-                .parallelScan(amazonDynamoDb, totalSegments);
+        Stream<Schema> parallelScan = dynoDao.get(new SchemaStagedDynamoBuilder().usingTable(), totalSegments);
         assertThat(parallelScan.collect(toList())).containsExactlyInAnyOrder(items);
     }
 
