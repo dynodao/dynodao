@@ -110,7 +110,7 @@ public class DynoDao {
      * remain parallel, though it is not enforced. The underlying stream will not return all items from the scan
      * if it is made sequential, either through {@link Stream#sequential()} or {@link Stream#iterator()}. Users
      * should also avoid manually accessing {@link Stream#spliterator()} unless they intend to split until {@link Spliterator#trySplit()}
-     * return <tt>null</tt>, and consume all spliterators (as the Stream would).
+     * returns <tt>null</tt>, and consume all spliterator instances (as a terminal Stream operation would).
      * <p>
      * As with all parallel streams, each split of the stream is evaluated on {@link ForkJoinPool#commonPool()}. The common pool
      * may not be the ideal place to run a parallel scan, especially if you use parallel streams in several places. It is possible

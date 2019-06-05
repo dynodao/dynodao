@@ -35,7 +35,7 @@ Dynodao takes a lot of inspiration from DynamoDBMapper. Compared to it, dynodao 
 * **Easily debuggable code** as there is no magic at runtime
 * **Real lazy pagination** as `PaginatedList` end up [storing all results](https://github.com/puppetlabs/aws-sdk-for-java/blob/master/src/main/java/com/amazonaws/services/dynamodb/datamodeling/PaginatedList.java#L121) from a read operation in memory
 
-To generate all of the classes, you must define a *schema* class. This is just an annotated POJO (aka java-bean) which corresponds to the data you'd store in Dynamo. This class must adhear to the [java-beans](https://en.wikipedia.org/wiki/JavaBeans) specification, ie needs a default contructor, and getters and setters.
+To generate all of the classes, you must define a *schema* class. This is just an annotated POJO (aka java-bean) which corresponds to the data you'd store in Dynamo. This class must adhere to the [java-beans](https://en.wikipedia.org/wiki/JavaBeans) specification, ie needs a default constructor, and getters and setters.
 
 ```java
 @DynoDaoSchema(tableName = "things")
