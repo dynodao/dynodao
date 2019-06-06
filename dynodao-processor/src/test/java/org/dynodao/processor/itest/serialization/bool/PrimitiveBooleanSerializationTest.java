@@ -27,7 +27,7 @@ class PrimitiveBooleanSerializationTest extends AbstractIntegrationTest {
     @ParameterizedTest
     @NullSource
     @MethodSource(ParameterizedTestSources.ATTRIBUTE_VALUES_WITHOUT_BOOLEAN_SOURCE)
-    void deserializePrimitiveBoolean_nullCases_returnsNull(AttributeValue attributeValue) {
+    void deserializePrimitiveBoolean_nullCases_returnsFalse(AttributeValue attributeValue) {
         boolean value = SchemaAttributeValueSerializer.deserializePrimitiveBoolean(attributeValue);
         assertThat(value).isFalse();
     }
