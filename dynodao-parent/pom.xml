@@ -25,7 +25,7 @@
         <apache.commons.version>4.3</apache.commons.version>
         <lombok.version>1.16.18</lombok.version>
         <junit.version>4.12</junit.version>
-        <junit.jupiter.version>5.4.0</junit.jupiter.version>
+        <junit.jupiter.version>5.5.0-M1</junit.jupiter.version>
         <mockito.version>2.28.2</mockito.version>
         <assertj.version>3.12.1</assertj.version>
         <compile.testing.version>0.15</compile.testing.version>
@@ -87,7 +87,6 @@
                 <artifactId>commons-collections4</artifactId>
                 <version>${apache.commons.version}</version>
             </dependency>
-
 
             <dependency>
                 <groupId>junit</groupId>
