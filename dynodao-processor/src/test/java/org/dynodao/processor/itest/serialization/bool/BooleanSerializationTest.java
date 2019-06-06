@@ -1,47 +1,72 @@
 package org.dynodao.processor.itest.serialization.bool;
 
 import com.amazonaws.services.dynamodbv2.model.AttributeValue;
-import org.dynodao.processor.itest.AbstractSourceCompilingTest;
-import org.junit.jupiter.api.Test;
+import org.dynodao.processor.itest.AbstractIntegrationTest;
+import org.dynodao.processor.test.ParameterizedTestSources;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.params.provider.NullSource;
+import org.junit.jupiter.params.provider.ValueSource;
+
+import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-class BooleanSerializationTest extends AbstractSourceCompilingTest {
+class BooleanSerializationTest extends AbstractIntegrationTest {
 
-    @Test
-    void serializeBoolean_null_returnsNullAttributeValue() {
-        AttributeValue value = SchemaAttributeValueSerializer.serializeBoolean(null);
+    private static final String TABLE = "things";
+    private static final String HASH_KEY_VALUE = "hashKey";
+
+    @ParameterizedTest
+    @NullSource
+    void serializeBoolean_nullCases_returnsNullAttributeValue(Boolean bool) {
+        AttributeValue value = SchemaAttributeValueSerializer.serializeBoolean(bool);
         assertThat(value).isEqualTo(new AttributeValue().withNULL(true));
     }
 
-    @Test
-    void serializeBoolean_boolean_returnsAttributeValueWithBoolean() {
-        AttributeValue value = SchemaAttributeValueSerializer.serializeBoolean(true);
-        assertThat(value).isEqualTo(new AttributeValue().withBOOL(true));
+    @ParameterizedTest
+    @ValueSource(booleans = { true, false })
+    void serializeBoolean_booleanValue_returnsAttributeValueWithBoolean(Boolean bool) {
+        AttributeValue value = SchemaAttributeValueSerializer.serializeBoolean(bool);
+        assertThat(value).isEqualTo(new AttributeValue().withBOOL(bool));
     }
 
-    @Test
-    void deserializeBoolean_null_returnsNull() {
-        Boolean value = SchemaAttributeValueSerializer.deserializeBoolean(null);
+    @ParameterizedTest
+    @NullSource
+    @MethodSource(ParameterizedTestSources.ATTRIBUTE_VALUES_WITHOUT_BOOLEAN_SOURCE)
+    void deserializeBoolean_nullCases_returnsNull(AttributeValue attributeValue) {
+        Boolean value = SchemaAttributeValueSerializer.deserializeBoolean(attributeValue);
         assertThat(value).isNull();
     }
 
-    @Test
-    void deserializeBoolean_nullAttributeValue_returnsNull() {
-        Boolean value = SchemaAttributeValueSerializer.deserializeBoolean(new AttributeValue().withNULL(true));
-        assertThat(value).isNull();
+    @ParameterizedTest
+    @ValueSource(booleans = { true, false })
+    void deserializeBoolean_booleanValue_returnsBooleanValue(Boolean bool) {
+        Boolean value = SchemaAttributeValueSerializer.deserializeBoolean(new AttributeValue().withBOOL(bool));
+        assertThat(value).isEqualTo(bool);
     }
 
-    @Test
-    void deserializeBoolean_booleanValueNull_returnsNull() {
-        Boolean value = SchemaAttributeValueSerializer.deserializeBoolean(new AttributeValue().withS("not bool"));
-        assertThat(value).isNull();
+    @ParameterizedTest
+    @NullSource
+    @ValueSource(booleans = { true, false })
+    void putAndGet_symmetricCases_returnsItem(Boolean bool) {
+        Schema schema = schema(bool);
+        put(schema);
+        Stream<Schema> items = dynoDao.get(new SchemaStagedDynamoBuilder()
+                .usingTable()
+                .withHashKey(HASH_KEY_VALUE));
+        assertThat(items).containsExactly(schema);
     }
 
-    @Test
-    void deserializeBoolean_booleanValue_returnsBooleanValue() {
-        Boolean value = SchemaAttributeValueSerializer.deserializeBoolean(new AttributeValue().withBOOL(true));
-        assertThat(value).isTrue();
+    private void put(Schema item) {
+        amazonDynamoDb.putItem(TABLE, SchemaAttributeValueSerializer.serializeSchemaAsItem(item));
+    }
+
+    private Schema schema(Boolean booleanValue) {
+        Schema schema = new Schema();
+        schema.setHashKey(HASH_KEY_VALUE);
+        schema.setBooleanObject(booleanValue);
+        return schema;
     }
 
 }
