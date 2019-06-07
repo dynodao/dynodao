@@ -20,7 +20,7 @@ import static java.util.Collections.singletonMap;
 public class AttributeValueSource {
     
     /**
-     * Parameter sources containing an {@link AttributeValue} all types except <tt>B</tt>.
+     * Parameter sources containing an {@link AttributeValue} of all types except <tt>B</tt>.
      */
     @Retention(RetentionPolicy.RUNTIME)
     @MethodSource("org.dynodao.processor.test.params.AttributeValueSource#attributeValuesWithoutBinarySource")
@@ -31,7 +31,7 @@ public class AttributeValueSource {
     }
 
     /**
-     * Parameter sources containing an {@link AttributeValue} all types except <tt>BS</tt>.
+     * Parameter sources containing an {@link AttributeValue} of all types except <tt>BS</tt>.
      */
     @Retention(RetentionPolicy.RUNTIME)
     @MethodSource("org.dynodao.processor.test.params.AttributeValueSource#attributeValuesWithoutBinarySetSource")
@@ -42,7 +42,7 @@ public class AttributeValueSource {
     }
 
     /**
-     * Parameter sources containing an {@link AttributeValue} all types except <tt>BOOL</tt>.
+     * Parameter sources containing an {@link AttributeValue} of all types except <tt>BOOL</tt>.
      */
     @Retention(RetentionPolicy.RUNTIME)
     @MethodSource("org.dynodao.processor.test.params.AttributeValueSource#attributeValuesWithoutBooleanSource")
@@ -53,7 +53,7 @@ public class AttributeValueSource {
     }
 
     /**
-     * Parameter sources containing an {@link AttributeValue} all types except <tt>L</tt>.
+     * Parameter sources containing an {@link AttributeValue} of all types except <tt>L</tt>.
      */
     @Retention(RetentionPolicy.RUNTIME)
     @MethodSource("org.dynodao.processor.test.params.AttributeValueSource#attributeValuesWithoutListSource")
@@ -64,7 +64,7 @@ public class AttributeValueSource {
     }
 
     /**
-     * Parameter sources containing an {@link AttributeValue} all types except <tt>M</tt>.
+     * Parameter sources containing an {@link AttributeValue} of all types except <tt>M</tt>.
      */
     @Retention(RetentionPolicy.RUNTIME)
     @MethodSource("org.dynodao.processor.test.params.AttributeValueSource#attributeValuesWithoutMapSource")
@@ -75,7 +75,7 @@ public class AttributeValueSource {
     }
 
     /**
-     * Parameter sources containing an {@link AttributeValue} all types except <tt>NULL</tt>.
+     * Parameter sources containing an {@link AttributeValue} of all types except <tt>NULL</tt>.
      */
     @Retention(RetentionPolicy.RUNTIME)
     @MethodSource("org.dynodao.processor.test.params.AttributeValueSource#attributeValuesWithoutNullSource")
@@ -86,7 +86,7 @@ public class AttributeValueSource {
     }
 
     /**
-     * Parameter sources containing an {@link AttributeValue} all types except <tt>N</tt>.
+     * Parameter sources containing an {@link AttributeValue} of all types except <tt>N</tt>.
      */
     @Retention(RetentionPolicy.RUNTIME)
     @MethodSource("org.dynodao.processor.test.params.AttributeValueSource#attributeValuesWithoutNumberSource")
@@ -97,7 +97,7 @@ public class AttributeValueSource {
     }
 
     /**
-     * Parameter sources containing an {@link AttributeValue} all types except <tt>NS</tt>.
+     * Parameter sources containing an {@link AttributeValue} of all types except <tt>NS</tt>.
      */
     @Retention(RetentionPolicy.RUNTIME)
     @MethodSource("org.dynodao.processor.test.params.AttributeValueSource#attributeValuesWithoutNumberSetSource")
@@ -108,7 +108,7 @@ public class AttributeValueSource {
     }
 
     /**
-     * Parameter sources containing an {@link AttributeValue} all types except <tt>S</tt>.
+     * Parameter sources containing an {@link AttributeValue} of all types except <tt>S</tt>.
      */
     @Retention(RetentionPolicy.RUNTIME)
     @MethodSource("org.dynodao.processor.test.params.AttributeValueSource#attributeValuesWithoutStringSource")
@@ -119,7 +119,7 @@ public class AttributeValueSource {
     }
 
     /**
-     * Parameter sources containing an {@link AttributeValue} all types except <tt>SS</tt>.
+     * Parameter sources containing an {@link AttributeValue} of all types except <tt>SS</tt>.
      */
     @Retention(RetentionPolicy.RUNTIME)
     @MethodSource("org.dynodao.processor.test.params.AttributeValueSource#attributeValuesWithoutStringSetSource")
