@@ -98,7 +98,9 @@ class MapTypeSchemaParser implements SchemaParser {
                 .addStatement("$T it = $N.entrySet().iterator()", getIteratorOf(typeMirror), map)
                 .beginControlFlow("while (it.hasNext())")
                 .addStatement("$T entry = it.next()", getMapEntryOf(typeMirror))
+                .beginControlFlow("if (entry.getValue() != null)")
                 .addStatement("attrValueMap.put(entry.getKey(), $L(entry.getValue()))", valueSerializationMethod)
+                .endControlFlow()
                 .endControlFlow()
                 .addStatement("return new $T().withM(attrValueMap)", attributeValue());
 
@@ -146,7 +148,10 @@ class MapTypeSchemaParser implements SchemaParser {
                 .addStatement("$T it = $N.getM().entrySet().iterator()", ITEM_MAP_ENTRY_ITERATOR, parameter())
                 .beginControlFlow("while (it.hasNext())")
                 .addStatement("$T entry = it.next()", ITEM_MAP_ENTRY)
-                .addStatement("map.put(entry.getKey(), $L(entry.getValue()))", valueDeserializationMethod)
+                .addStatement("$T value = $L(entry.getValue())", getValueType(typeMirror), valueDeserializationMethod)
+                .beginControlFlow("if (value != null)")
+                .addStatement("map.put(entry.getKey(), value)")
+                .endControlFlow()
                 .endControlFlow()
                 .addStatement("return map");
 

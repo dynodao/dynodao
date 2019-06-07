@@ -1,15 +1,23 @@
 package org.dynodao.processor.itest.serialization.map;
 
 import com.amazonaws.services.dynamodbv2.model.AttributeValue;
-import org.dynodao.processor.itest.AbstractSourceCompilingTest;
+import org.dynodao.processor.itest.AbstractIntegrationTest;
+import org.dynodao.processor.test.ParameterizedTestSources;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.params.provider.NullSource;
 
 import java.util.concurrent.ConcurrentSkipListMap;
+import java.util.stream.Stream;
 
+import static java.util.stream.Collectors.toMap;
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.entry;
 
-class ConcurrentSkipListMapSerializationTest extends AbstractSourceCompilingTest {
+class ConcurrentSkipListMapSerializationTest extends AbstractIntegrationTest {
+
+    private static final String TABLE = "things";
+    private static final String HASH_KEY_VALUE = "hashKey";
 
     @Test
     void serializeConcurrentSkipListMapOfString_null_returnsNullAttributeValue() {
@@ -17,75 +25,75 @@ class ConcurrentSkipListMapSerializationTest extends AbstractSourceCompilingTest
         assertThat(value).isEqualTo(new AttributeValue().withNULL(true));
     }
 
-    @Test
-    void serializeConcurrentSkipListMapOfString_emptyConcurrentSkipListMap_returnsAttributeValueWithEmptyConcurrentSkipListMap() {
-        AttributeValue value = SchemaAttributeValueSerializer.serializeConcurrentSkipListMapOfString(mapOf());
-        assertThat(value).isEqualTo(new AttributeValue().withM(mapOf()));
+    @ParameterizedTest
+    @MethodSource("concurrentSkipListMapOfStringsSource")
+    void serializeConcurrentSkipListMapOfString_mapCases_returnsMapAttributeValue(ConcurrentSkipListMap<String, String> concurrentNavigableMap) {
+        AttributeValue value = SchemaAttributeValueSerializer.serializeConcurrentSkipListMapOfString(concurrentNavigableMap);
+        assertThat(value).isEqualTo(new AttributeValue().withM(concurrentNavigableMap.entrySet().stream()
+                .collect(toMap(e -> e.getKey(), e -> new AttributeValue(e.getValue())))));
     }
 
-    @Test
-    void serializeConcurrentSkipListMapOfString_singletonConcurrentSkipListMapWithValue_returnsAttributeValueWithSingleValueSerializedConcurrentSkipListMap() {
-        AttributeValue value = SchemaAttributeValueSerializer.serializeConcurrentSkipListMapOfString(mapOf("key", "value"));
-        assertThat(value).isEqualTo(new AttributeValue().withM(mapOf("key", new AttributeValue("value"))));
+    static Stream<ConcurrentSkipListMap<String, String>> concurrentSkipListMapOfStringsSource() {
+        return Stream.of(mapOf(), mapOf("key", "value"), mapOf("key1", "value1", "key2", "value2"));
     }
 
-    @Test
-    void serializeConcurrentSkipListMapOfString_mapWithMultipleValues_returnsAttributeValueWithSerializedConcurrentSkipListMap() {
-        AttributeValue value = SchemaAttributeValueSerializer.serializeConcurrentSkipListMapOfString(mapOf("key1", "value1", "key2", "value2"));
-        assertThat(value).isEqualTo(new AttributeValue().withM(mapOf(
-                "key1", new AttributeValue("value1"),
-                "key2", new AttributeValue("value2"))));
-    }
-
-    @Test
-    void deserializeConcurrentSkipListMapOfString_null_returnsNull() {
-        ConcurrentSkipListMap<String, String> value = SchemaAttributeValueSerializer.deserializeConcurrentSkipListMapOfString(null);
+    @ParameterizedTest
+    @NullSource
+    @MethodSource(ParameterizedTestSources.ATTRIBUTE_VALUES_WITHOUT_MAP_SOURCE)
+    void deserializeConcurrentSkipListMapOfString_nullCases_returnsNull(AttributeValue attributeValue) {
+        ConcurrentSkipListMap<String, String> value = SchemaAttributeValueSerializer.deserializeConcurrentSkipListMapOfString(attributeValue);
         assertThat(value).isNull();
     }
 
-    @Test
-    void deserializeConcurrentSkipListMapOfString_nullAttributeValue_returnsNull() {
-        ConcurrentSkipListMap<String, String> value = SchemaAttributeValueSerializer.deserializeConcurrentSkipListMapOfString(new AttributeValue().withNULL(true));
-        assertThat(value).isNull();
+    @ParameterizedTest
+    @MethodSource("concurrentSkipListMapOfStringsSource")
+    void deserializeConcurrentSkipListMapOfString_correctTypesInMap_returnsConcurrentSkipListMap(ConcurrentSkipListMap<String, String> concurrentSkipListMap) {
+        AttributeValue attributeValue = new AttributeValue().withM(concurrentSkipListMap.entrySet().stream()
+                .collect(toMap(e -> e.getKey(), e -> new AttributeValue(e.getValue()))));
+        ConcurrentSkipListMap<String, String> value = SchemaAttributeValueSerializer.deserializeConcurrentSkipListMapOfString(attributeValue);
+        assertThat(value).isEqualTo(concurrentSkipListMap);
     }
 
-    @Test
-    void deserializeConcurrentSkipListMapOfString_mapValueNull_returnsNull() {
-        ConcurrentSkipListMap<String, String> value = SchemaAttributeValueSerializer.deserializeConcurrentSkipListMapOfString(new AttributeValue().withS("string"));
-        assertThat(value).isNull();
-    }
-
-    @Test
-    void deserializeConcurrentSkipListMapOfString_emptyConcurrentSkipListMap_returnsEmptyConcurrentSkipListMap() {
-        ConcurrentSkipListMap<String, String> value = SchemaAttributeValueSerializer.deserializeConcurrentSkipListMapOfString(new AttributeValue().withM(mapOf()));
+    @ParameterizedTest
+    @MethodSource(ParameterizedTestSources.ATTRIBUTE_VALUES_WITHOUT_STRING_SOURCE)
+    void deserializeConcurrentSkipListMapOfString_incorrectTypesInMap_returnsConcurrentSkipListMapWithoutItems(AttributeValue attributeValue) {
+        ConcurrentSkipListMap<String, String> value = SchemaAttributeValueSerializer.deserializeConcurrentSkipListMapOfString(new AttributeValue().withM(mapOf("key", attributeValue)));
         assertThat(value).isEmpty();
     }
 
-    @Test
-    void deserializeConcurrentSkipListMapOfString_singletonConcurrentSkipListMapWithValue_returnsSingletonConcurrentSkipListMap() {
-        ConcurrentSkipListMap<String, String> value = SchemaAttributeValueSerializer.deserializeConcurrentSkipListMapOfString(new AttributeValue().withM(mapOf("key", new AttributeValue("value"))));
-        assertThat(value).containsExactly(entry("key", "value"));
+    @ParameterizedTest
+    @MethodSource("concurrentSkipListMapOfStringsSource")
+    void putAndGet_symmetricCases_returnsItem(ConcurrentSkipListMap<String, String> concurrentSkipListMap) {
+        Schema schema = schema(concurrentSkipListMap);
+        put(schema);
+        Stream<Schema> items = dynoDao.get(new SchemaStagedDynamoBuilder()
+                .usingTable()
+                .withHashKey(HASH_KEY_VALUE));
+        assertThat(items).containsExactly(schema);
     }
 
-    @Test
-    void deserializeConcurrentSkipListMapOfString_mapWithMultipleValues_returnsConcurrentSkipListMapWithValues() {
-        ConcurrentSkipListMap<String, String> value = SchemaAttributeValueSerializer.deserializeConcurrentSkipListMapOfString(new AttributeValue().withM(mapOf(
-                "key1", new AttributeValue("value1"),
-                "key2", new AttributeValue("value2"))));
-        assertThat(value).containsExactly(entry("key1", "value1"), entry("key2", "value2"));
+    private void put(Schema item) {
+        amazonDynamoDb.putItem(TABLE, SchemaAttributeValueSerializer.serializeSchemaAsItem(item));
     }
 
-    private <K extends Comparable<K>, V> ConcurrentSkipListMap<K, V> mapOf() {
+    private Schema schema(ConcurrentSkipListMap<String, String> concurrentSkipListMap) {
+        Schema schema = new Schema();
+        schema.setHashKey(HASH_KEY_VALUE);
+        schema.setConcurrentSkipListMap(concurrentSkipListMap);
+        return schema;
+    }
+
+    private static <K extends Comparable<K>, V> ConcurrentSkipListMap<K, V> mapOf() {
         return new ConcurrentSkipListMap<>();
     }
 
-    private <K extends Comparable<K>, V> ConcurrentSkipListMap<K, V> mapOf(K key, V value) {
+    private static <K extends Comparable<K>, V> ConcurrentSkipListMap<K, V> mapOf(K key, V value) {
         ConcurrentSkipListMap<K, V> map = new ConcurrentSkipListMap<>();
         map.put(key, value);
         return map;
     }
 
-    private <K extends Comparable<K>, V> ConcurrentSkipListMap<K, V> mapOf(K key1, V value1, K key2, V value2) {
+    private static <K extends Comparable<K>, V> ConcurrentSkipListMap<K, V> mapOf(K key1, V value1, K key2, V value2) {
         ConcurrentSkipListMap<K, V> map = new ConcurrentSkipListMap<>();
         map.put(key1, value1);
         map.put(key2, value2);
