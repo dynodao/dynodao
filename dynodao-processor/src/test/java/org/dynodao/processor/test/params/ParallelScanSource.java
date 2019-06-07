@@ -3,8 +3,11 @@ package org.dynodao.processor.test.params;
 import lombok.experimental.UtilityClass;
 import org.junit.jupiter.params.provider.MethodSource;
 
+import java.lang.annotation.Documented;
+import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 import java.util.stream.IntStream;
 
 /**
@@ -16,6 +19,8 @@ public class ParallelScanSource {
     /**
      * Parameter sources for the total number of segments in parallel scan.
      */
+    @Documented
+    @Target({ ElementType.ANNOTATION_TYPE, ElementType.METHOD })
     @Retention(RetentionPolicy.RUNTIME)
     @MethodSource("org.dynodao.processor.test.params.ParallelScanSource#totalSegmentsSource")
     public @interface TotalSegments { }

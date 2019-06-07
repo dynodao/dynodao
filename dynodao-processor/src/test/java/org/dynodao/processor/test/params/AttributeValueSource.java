@@ -6,8 +6,11 @@ import lombok.experimental.UtilityClass;
 import org.dynodao.processor.schema.attribute.DynamoAttributeType;
 import org.junit.jupiter.params.provider.MethodSource;
 
+import java.lang.annotation.Documented;
+import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 import java.nio.ByteBuffer;
 import java.util.stream.Stream;
 
@@ -22,6 +25,8 @@ public class AttributeValueSource {
     /**
      * Parameter sources containing an {@link AttributeValue} of all types except <tt>B</tt>.
      */
+    @Documented
+    @Target({ ElementType.ANNOTATION_TYPE, ElementType.METHOD })
     @Retention(RetentionPolicy.RUNTIME)
     @MethodSource("org.dynodao.processor.test.params.AttributeValueSource#attributeValuesWithoutBinarySource")
     public @interface WithoutBinary { }
@@ -33,6 +38,8 @@ public class AttributeValueSource {
     /**
      * Parameter sources containing an {@link AttributeValue} of all types except <tt>BS</tt>.
      */
+    @Documented
+    @Target({ ElementType.ANNOTATION_TYPE, ElementType.METHOD })
     @Retention(RetentionPolicy.RUNTIME)
     @MethodSource("org.dynodao.processor.test.params.AttributeValueSource#attributeValuesWithoutBinarySetSource")
     public @interface WithoutBinarySet { }
@@ -44,6 +51,8 @@ public class AttributeValueSource {
     /**
      * Parameter sources containing an {@link AttributeValue} of all types except <tt>BOOL</tt>.
      */
+    @Documented
+    @Target({ ElementType.ANNOTATION_TYPE, ElementType.METHOD })
     @Retention(RetentionPolicy.RUNTIME)
     @MethodSource("org.dynodao.processor.test.params.AttributeValueSource#attributeValuesWithoutBooleanSource")
     public @interface WithoutBoolean { }
@@ -55,6 +64,8 @@ public class AttributeValueSource {
     /**
      * Parameter sources containing an {@link AttributeValue} of all types except <tt>L</tt>.
      */
+    @Documented
+    @Target({ ElementType.ANNOTATION_TYPE, ElementType.METHOD })
     @Retention(RetentionPolicy.RUNTIME)
     @MethodSource("org.dynodao.processor.test.params.AttributeValueSource#attributeValuesWithoutListSource")
     public @interface WithoutList { }
@@ -66,6 +77,8 @@ public class AttributeValueSource {
     /**
      * Parameter sources containing an {@link AttributeValue} of all types except <tt>M</tt>.
      */
+    @Documented
+    @Target({ ElementType.ANNOTATION_TYPE, ElementType.METHOD })
     @Retention(RetentionPolicy.RUNTIME)
     @MethodSource("org.dynodao.processor.test.params.AttributeValueSource#attributeValuesWithoutMapSource")
     public @interface WithoutMap { }
@@ -77,6 +90,8 @@ public class AttributeValueSource {
     /**
      * Parameter sources containing an {@link AttributeValue} of all types except <tt>NULL</tt>.
      */
+    @Documented
+    @Target({ ElementType.ANNOTATION_TYPE, ElementType.METHOD })
     @Retention(RetentionPolicy.RUNTIME)
     @MethodSource("org.dynodao.processor.test.params.AttributeValueSource#attributeValuesWithoutNullSource")
     public @interface WithoutNull { }
@@ -88,6 +103,8 @@ public class AttributeValueSource {
     /**
      * Parameter sources containing an {@link AttributeValue} of all types except <tt>N</tt>.
      */
+    @Documented
+    @Target({ ElementType.ANNOTATION_TYPE, ElementType.METHOD })
     @Retention(RetentionPolicy.RUNTIME)
     @MethodSource("org.dynodao.processor.test.params.AttributeValueSource#attributeValuesWithoutNumberSource")
     public @interface WithoutNumber { }
@@ -99,6 +116,8 @@ public class AttributeValueSource {
     /**
      * Parameter sources containing an {@link AttributeValue} of all types except <tt>NS</tt>.
      */
+    @Documented
+    @Target({ ElementType.ANNOTATION_TYPE, ElementType.METHOD })
     @Retention(RetentionPolicy.RUNTIME)
     @MethodSource("org.dynodao.processor.test.params.AttributeValueSource#attributeValuesWithoutNumberSetSource")
     public @interface WithoutNumberSet { }
@@ -110,6 +129,8 @@ public class AttributeValueSource {
     /**
      * Parameter sources containing an {@link AttributeValue} of all types except <tt>S</tt>.
      */
+    @Documented
+    @Target({ ElementType.ANNOTATION_TYPE, ElementType.METHOD })
     @Retention(RetentionPolicy.RUNTIME)
     @MethodSource("org.dynodao.processor.test.params.AttributeValueSource#attributeValuesWithoutStringSource")
     public @interface WithoutString { }
@@ -121,6 +142,8 @@ public class AttributeValueSource {
     /**
      * Parameter sources containing an {@link AttributeValue} of all types except <tt>SS</tt>.
      */
+    @Documented
+    @Target({ ElementType.ANNOTATION_TYPE, ElementType.METHOD })
     @Retention(RetentionPolicy.RUNTIME)
     @MethodSource("org.dynodao.processor.test.params.AttributeValueSource#attributeValuesWithoutStringSetSource")
     public @interface WithoutStringSet { }
