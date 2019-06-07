@@ -7,7 +7,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.NullSource;
-import org.junit.jupiter.params.provider.ValueSource;
 
 import java.math.BigDecimal;
 import java.util.stream.Stream;
@@ -26,7 +25,7 @@ class BigDecimalSerializationTest extends AbstractIntegrationTest {
     }
 
     @ParameterizedTest
-    @ValueSource(strings = { "0", "1", "1e10", "-1", "1e-10", "-1e-10" })
+    @MethodSource("bigDecimalSources")
     void serializeBigDecimal_numberValues_returnsNumberAttributeValueUsingPlainString(BigDecimal bigDecimal) {
         AttributeValue value = SchemaAttributeValueSerializer.serializeBigDecimal(bigDecimal);
         assertThat(value).isEqualTo(new AttributeValue().withN(bigDecimal.toPlainString()));
@@ -41,15 +40,15 @@ class BigDecimalSerializationTest extends AbstractIntegrationTest {
     }
 
     @ParameterizedTest
-    @ValueSource(strings = { "0", "1", "-1", "10.123123123", "-1029381092.123123" })
-    void deserializeBigDecimal_numberValue_returnsBigDecimalValue(String numberValue) {
-        BigDecimal value = SchemaAttributeValueSerializer.deserializeBigDecimal(new AttributeValue().withN(numberValue));
-        assertThat(value).isEqualTo(new BigDecimal(numberValue));
+    @MethodSource("bigDecimalSources")
+    void deserializeBigDecimal_numberValue_returnsBigDecimalValue(BigDecimal bigDecimal) {
+        BigDecimal value = SchemaAttributeValueSerializer.deserializeBigDecimal(new AttributeValue().withN(bigDecimal.toPlainString()));
+        assertThat(value).isEqualTo(new BigDecimal(bigDecimal.toPlainString()));
     }
 
     @ParameterizedTest
     @NullSource
-    @ValueSource(strings = { "0", "1", "1e10", "-1", "1e-10", "-1e-10" })
+    @MethodSource("bigDecimalSources")
     void putAndGet_symmetricCases_returnsItem(BigDecimal bigDecimal) {
         Schema schema = schema(bigDecimal == null ? null : new BigDecimal(bigDecimal.toPlainString()));
         put(schema);
@@ -57,6 +56,12 @@ class BigDecimalSerializationTest extends AbstractIntegrationTest {
                 .usingTable()
                 .withHashKey(HASH_KEY_VALUE));
         assertThat(items).containsExactly(schema);
+    }
+
+    static Stream<BigDecimal> bigDecimalSources() {
+        return Stream.of(0, 1, -1, Integer.MAX_VALUE, Integer.MIN_VALUE, Long.MAX_VALUE, Long.MAX_VALUE, "1e10", "-1e10", "1e-10", "-1e-10")
+                .map(String::valueOf)
+                .map(BigDecimal::new);
     }
 
     private void put(Schema item) {

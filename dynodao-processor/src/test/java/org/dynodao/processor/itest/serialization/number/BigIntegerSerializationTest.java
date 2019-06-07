@@ -7,7 +7,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.NullSource;
-import org.junit.jupiter.params.provider.ValueSource;
 
 import java.math.BigInteger;
 import java.util.stream.Stream;
@@ -26,7 +25,7 @@ class BigIntegerSerializationTest extends AbstractIntegrationTest {
     }
 
     @ParameterizedTest
-    @ValueSource(strings = { "0", "1", "-1982739812739817223894", "-1", "19823791827312393849728342" })
+    @MethodSource("bigIntegerSources")
     void serializeBigInteger_numberValues_returnsNumberAttributeValue(BigInteger bigInteger) {
         AttributeValue value = SchemaAttributeValueSerializer.serializeBigInteger(bigInteger);
         assertThat(value).isEqualTo(new AttributeValue().withN(bigInteger.toString()));
@@ -41,15 +40,15 @@ class BigIntegerSerializationTest extends AbstractIntegrationTest {
     }
 
     @ParameterizedTest
-    @ValueSource(strings = { "0", "1", "-1982739812739817223894", "-1", "19823791827312393849728342" })
-    void deserializeBigInteger_numberValue_returnsBigIntegerValue(String numberValue) {
-        BigInteger value = SchemaAttributeValueSerializer.deserializeBigInteger(new AttributeValue().withN(numberValue));
-        assertThat(value).isEqualTo(new BigInteger(numberValue));
+    @MethodSource("bigIntegerSources")
+    void deserializeBigInteger_numberValue_returnsBigIntegerValue(BigInteger bigInteger) {
+        BigInteger value = SchemaAttributeValueSerializer.deserializeBigInteger(new AttributeValue().withN(bigInteger.toString()));
+        assertThat(value).isEqualTo(bigInteger);
     }
 
     @ParameterizedTest
     @NullSource
-    @ValueSource(strings = { "0", "1", "-1982739812739817223894", "-1", "19823791827312393849728342" })
+    @MethodSource("bigIntegerSources")
     void putAndGet_symmetricCases_returnsItem(BigInteger bigInteger) {
         Schema schema = schema(bigInteger);
         put(schema);
@@ -57,6 +56,12 @@ class BigIntegerSerializationTest extends AbstractIntegrationTest {
                 .usingTable()
                 .withHashKey(HASH_KEY_VALUE));
         assertThat(items).containsExactly(schema);
+    }
+
+    static Stream<BigInteger> bigIntegerSources() {
+        return Stream.of(0, 1, -1, Integer.MAX_VALUE, Integer.MIN_VALUE, Long.MAX_VALUE, Long.MAX_VALUE, "123123123123123123123123123123123")
+                .map(String::valueOf)
+                .map(BigInteger::new);
     }
 
     private void put(Schema item) {
