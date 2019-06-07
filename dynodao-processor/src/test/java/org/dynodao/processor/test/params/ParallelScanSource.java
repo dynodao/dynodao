@@ -1,5 +1,6 @@
 package org.dynodao.processor.test.params;
 
+import lombok.experimental.UtilityClass;
 import org.junit.jupiter.params.provider.MethodSource;
 
 import java.lang.annotation.Retention;
@@ -7,16 +8,17 @@ import java.lang.annotation.RetentionPolicy;
 import java.util.stream.IntStream;
 
 /**
- * Parameter sources containing the total number of segments for parallel scan tests.
+ * Parameter sources for use in parallel scan tests.
  */
-@Retention(RetentionPolicy.RUNTIME)
-@MethodSource("org.dynodao.processor.test.params.ParallelScanTotalSegmentsSourceHolder#totalSegmentsSource")
-public @interface ParallelScanTotalSegmentsSource {
+@UtilityClass
+public class ParallelScanSource {
 
-}
-
-@SuppressWarnings("unused")
-class ParallelScanTotalSegmentsSourceHolder {
+    /**
+     * Parameter sources for the total number of segments in parallel scan.
+     */
+    @Retention(RetentionPolicy.RUNTIME)
+    @MethodSource("org.dynodao.processor.test.params.ParallelScanSource#totalSegmentsSource")
+    public @interface TotalSegments { }
 
     private static int[] totalSegmentsSource() {
         int min = Math.max(2, Runtime.getRuntime().availableProcessors() - 1);

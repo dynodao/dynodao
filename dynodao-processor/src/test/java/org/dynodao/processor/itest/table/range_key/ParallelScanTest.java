@@ -2,7 +2,7 @@ package org.dynodao.processor.itest.table.range_key;
 
 import com.amazonaws.services.dynamodbv2.model.AttributeValue;
 import org.dynodao.processor.itest.AbstractIntegrationTest;
-import org.dynodao.processor.test.params.ParallelScanTotalSegmentsSource;
+import org.dynodao.processor.test.params.ParallelScanSource;
 import org.junit.jupiter.params.ParameterizedTest;
 
 import java.util.Arrays;
@@ -21,14 +21,14 @@ class ParallelScanTest extends AbstractIntegrationTest {
     private static final String RANGE_KEY = "rangeKey";
 
     @ParameterizedTest
-    @ParallelScanTotalSegmentsSource
+    @ParallelScanSource.TotalSegments
     void parallelScan_noResults_returnsEmptyStream(int totalSegments) {
         Stream<Schema> parallelScan = dynoDao.get(new SchemaStagedDynamoBuilder().usingTable(), totalSegments);
         assertThat(parallelScan.collect(toList())).isEmpty();
     }
 
     @ParameterizedTest
-    @ParallelScanTotalSegmentsSource
+    @ParallelScanSource.TotalSegments
     void parallelScan_singleItem_returnsSingletonStream(int totalSegments) {
         Schema schema = schema("hash", 1);
         put(schema);
@@ -38,7 +38,7 @@ class ParallelScanTest extends AbstractIntegrationTest {
     }
 
     @ParameterizedTest
-    @ParallelScanTotalSegmentsSource
+    @ParallelScanSource.TotalSegments
     void parallelScan_multipleItems_returnsAllItemsInAnyOrder(int totalSegments) {
         Schema schema1 = schema("1", 1);
         Schema schema2 = schema("2", 2);
@@ -49,7 +49,7 @@ class ParallelScanTest extends AbstractIntegrationTest {
     }
 
     @ParameterizedTest
-    @ParallelScanTotalSegmentsSource
+    @ParallelScanSource.TotalSegments
     void parallelScan_largeData_returnsAllItemsInAnyOrder(int totalSegments) {
         Schema[] items = IntStream.range(0, 1000)
                 .mapToObj(i -> schema(String.valueOf(i), i))
