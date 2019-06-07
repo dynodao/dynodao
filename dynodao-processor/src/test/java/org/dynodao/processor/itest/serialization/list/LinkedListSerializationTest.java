@@ -44,7 +44,7 @@ class LinkedListSerializationTest extends AbstractIntegrationTest {
 
     @ParameterizedTest
     @NullSource
-    @MethodSource(ParameterizedTestSources.ATTRIBUTE_VALUES_WITHOUT_LIST_SOURCE)
+    @ParameterizedTestSources.AttributeValuesWithoutListSource
     void deserializeLinkedListOfString_nullCases_returnsNull(AttributeValue attributeValue) {
         LinkedList<String> value = SchemaAttributeValueSerializer.deserializeLinkedListOfString(attributeValue);
         assertThat(value).isNull();
@@ -65,7 +65,7 @@ class LinkedListSerializationTest extends AbstractIntegrationTest {
 
     @ParameterizedTest
     @NullSource
-    @MethodSource(ParameterizedTestSources.ATTRIBUTE_VALUES_WITHOUT_STRING_SOURCE)
+    @ParameterizedTestSources.AttributeValuesWithoutStringSource
     void deserializeLinkedListOfString_incorrectTypesInList_returnsLinkedListOfNulls(AttributeValue attributeValue) {
         LinkedList<String> value = SchemaAttributeValueSerializer.deserializeLinkedListOfString(new AttributeValue().withL(listOf(attributeValue)));
         assertThat(value).containsOnlyNulls().hasSize(1);
@@ -73,7 +73,7 @@ class LinkedListSerializationTest extends AbstractIntegrationTest {
 
     @ParameterizedTest
     @NullSource
-    @MethodSource(ParameterizedTestSources.ATTRIBUTE_VALUES_WITHOUT_STRING_SOURCE)
+    @ParameterizedTestSources.AttributeValuesWithoutStringSource
     void deserializeLinkedListOfString_incorrectTypesInListMultipleItems_returnsLinkedListWithValueAndNull(AttributeValue attributeValue) {
         LinkedList<String> value = SchemaAttributeValueSerializer.deserializeLinkedListOfString(new AttributeValue().withL(listOf(new AttributeValue("value"), attributeValue)));
         assertThat(value).containsExactly("value", null);

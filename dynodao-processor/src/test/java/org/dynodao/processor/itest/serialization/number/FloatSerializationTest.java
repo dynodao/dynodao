@@ -32,7 +32,7 @@ class FloatSerializationTest extends AbstractIntegrationTest {
 
     @ParameterizedTest
     @NullSource
-    @MethodSource(ParameterizedTestSources.ATTRIBUTE_VALUES_WITHOUT_NUMBER_SOURCE)
+    @ParameterizedTestSources.AttributeValuesWithoutNumberSource
     void deserializeFloat_nullCases_returnsNull(AttributeValue attributeValue) {
         Float value = SchemaAttributeValueSerializer.deserializeFloat(attributeValue);
         assertThat(value).isNull();

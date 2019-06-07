@@ -32,7 +32,7 @@ class LongSerializationTest extends AbstractIntegrationTest {
 
     @ParameterizedTest
     @NullSource
-    @MethodSource(ParameterizedTestSources.ATTRIBUTE_VALUES_WITHOUT_NUMBER_SOURCE)
+    @ParameterizedTestSources.AttributeValuesWithoutNumberSource
     void deserializeLong_nullCases_returnsNull(AttributeValue attributeValue) {
         Long value = SchemaAttributeValueSerializer.deserializeLong(attributeValue);
         assertThat(value).isNull();

@@ -5,7 +5,6 @@ import org.dynodao.processor.itest.AbstractIntegrationTest;
 import org.dynodao.processor.test.ParameterizedTestSources;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.NullSource;
 import org.junit.jupiter.params.provider.ValueSource;
 
@@ -35,7 +34,7 @@ class CharacterSerializationTest extends AbstractIntegrationTest {
 
     @ParameterizedTest
     @NullSource
-    @MethodSource(ParameterizedTestSources.ATTRIBUTE_VALUES_WITHOUT_STRING_SOURCE)
+    @ParameterizedTestSources.AttributeValuesWithoutStringSource
     void deserializeCharacter_nullCases_returnsNull(AttributeValue attributeValue) {
         Character value = SchemaAttributeValueSerializer.deserializeCharacter(attributeValue);
         assertThat(value).isNull();

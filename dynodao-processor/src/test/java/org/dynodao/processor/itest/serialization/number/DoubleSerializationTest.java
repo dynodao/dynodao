@@ -32,7 +32,7 @@ class DoubleSerializationTest extends AbstractIntegrationTest {
 
     @ParameterizedTest
     @NullSource
-    @MethodSource(ParameterizedTestSources.ATTRIBUTE_VALUES_WITHOUT_NUMBER_SOURCE)
+    @ParameterizedTestSources.AttributeValuesWithoutNumberSource
     void deserializeDouble_nullCases_returnsNull(AttributeValue attributeValue) {
         Double value = SchemaAttributeValueSerializer.deserializeDouble(attributeValue);
         assertThat(value).isNull();

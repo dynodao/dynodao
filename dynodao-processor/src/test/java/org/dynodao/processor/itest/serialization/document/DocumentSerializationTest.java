@@ -6,7 +6,6 @@ import org.dynodao.processor.test.ParameterizedTestSources;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
-import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.NullSource;
 
 import java.util.Map;
@@ -60,7 +59,7 @@ class DocumentSerializationTest extends AbstractIntegrationTest {
 
     @ParameterizedTest
     @NullSource
-    @MethodSource(ParameterizedTestSources.ATTRIBUTE_VALUES_WITHOUT_MAP_SOURCE)
+    @ParameterizedTestSources.AttributeValuesWithoutMapSource
     void deserializeDocument_nullCases_returnsNull(AttributeValue attributeValue) {
         Document value = SchemaAttributeValueSerializer.deserializeDocument(attributeValue);
         assertThat(value).isNull();
@@ -95,7 +94,7 @@ class DocumentSerializationTest extends AbstractIntegrationTest {
     }
 
     @ParameterizedTest
-    @MethodSource(ParameterizedTestSources.ATTRIBUTE_VALUES_WITHOUT_STRING_SOURCE)
+    @ParameterizedTestSources.AttributeValuesWithoutStringSource
     void deserializeDocument_keysHaveWrongTypes_returnsDocumentWithNullFields(AttributeValue attributeValue) {
         Document value = SchemaAttributeValueSerializer.deserializeDocument(new AttributeValue().withM(singletonMap("attribute1", attributeValue)));
         assertThat(value).isEqualTo(document(null, null, null));
@@ -137,7 +136,7 @@ class DocumentSerializationTest extends AbstractIntegrationTest {
     }
 
     @ParameterizedTest
-    @MethodSource(ParameterizedTestSources.ATTRIBUTE_VALUES_WITHOUT_STRING_SOURCE)
+    @ParameterizedTestSources.AttributeValuesWithoutStringSource
     void deserializeDocumentFromItem_keysHaveWrongTypes_returnsDocumentWithNullFields(AttributeValue attributeValue) {
         Document value = SchemaAttributeValueSerializer.deserializeDocumentFromItem(singletonMap("attribute1", attributeValue));
         assertThat(value).isEqualTo(document(null, null, null));

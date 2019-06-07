@@ -44,7 +44,7 @@ class ListSerializationTest extends AbstractIntegrationTest {
 
     @ParameterizedTest
     @NullSource
-    @MethodSource(ParameterizedTestSources.ATTRIBUTE_VALUES_WITHOUT_LIST_SOURCE)
+    @ParameterizedTestSources.AttributeValuesWithoutListSource
     void deserializeListOfString_nullCases_returnsNull(AttributeValue attributeValue) {
         List<String> value = SchemaAttributeValueSerializer.deserializeListOfString(attributeValue);
         assertThat(value).isNull();
@@ -67,7 +67,7 @@ class ListSerializationTest extends AbstractIntegrationTest {
 
     @ParameterizedTest
     @NullSource
-    @MethodSource(ParameterizedTestSources.ATTRIBUTE_VALUES_WITHOUT_STRING_SOURCE)
+    @ParameterizedTestSources.AttributeValuesWithoutStringSource
     void deserializeListOfString_incorrectTypesInList_returnsListOfNulls(AttributeValue attributeValue) {
         List<String> value = SchemaAttributeValueSerializer.deserializeListOfString(new AttributeValue().withL(listOf(attributeValue)));
         assertThat(value)
@@ -77,7 +77,7 @@ class ListSerializationTest extends AbstractIntegrationTest {
 
     @ParameterizedTest
     @NullSource
-    @MethodSource(ParameterizedTestSources.ATTRIBUTE_VALUES_WITHOUT_STRING_SOURCE)
+    @ParameterizedTestSources.AttributeValuesWithoutStringSource
     void deserializeListOfString_incorrectTypesInListMultipleItems_returnsListWithValueAndNull(AttributeValue attributeValue) {
         List<String> value = SchemaAttributeValueSerializer.deserializeListOfString(new AttributeValue().withL(listOf(new AttributeValue("value"), attributeValue)));
         assertThat(value)

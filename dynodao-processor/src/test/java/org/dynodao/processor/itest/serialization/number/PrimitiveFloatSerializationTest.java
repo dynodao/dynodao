@@ -25,7 +25,7 @@ class PrimitiveFloatSerializationTest extends AbstractIntegrationTest {
 
     @ParameterizedTest
     @NullSource
-    @MethodSource(ParameterizedTestSources.ATTRIBUTE_VALUES_WITHOUT_NUMBER_SOURCE)
+    @ParameterizedTestSources.AttributeValuesWithoutNumberSource
     void deserializePrimitiveFloat_nullCases_returnsZero(AttributeValue attributeValue) {
         float value = SchemaAttributeValueSerializer.deserializePrimitiveFloat(attributeValue);
         assertThat(value).isZero();

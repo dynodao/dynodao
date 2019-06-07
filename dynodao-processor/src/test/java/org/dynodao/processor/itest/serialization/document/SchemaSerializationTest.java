@@ -12,7 +12,6 @@ import org.junit.jupiter.params.aggregator.ArgumentsAccessor;
 import org.junit.jupiter.params.aggregator.ArgumentsAggregationException;
 import org.junit.jupiter.params.aggregator.ArgumentsAggregator;
 import org.junit.jupiter.params.provider.CsvSource;
-import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.NullSource;
 
 import java.util.Map;
@@ -68,7 +67,7 @@ class SchemaSerializationTest extends AbstractIntegrationTest {
 
     @ParameterizedTest
     @NullSource
-    @MethodSource(ParameterizedTestSources.ATTRIBUTE_VALUES_WITHOUT_MAP_SOURCE)
+    @ParameterizedTestSources.AttributeValuesWithoutMapSource
     void deserializeSchema_nullCases_returnsNull(AttributeValue attributeValue) {
         Schema value = SchemaAttributeValueSerializer.deserializeSchema(attributeValue);
         assertThat(value).isNull();
@@ -104,7 +103,7 @@ class SchemaSerializationTest extends AbstractIntegrationTest {
     }
 
     @ParameterizedTest
-    @MethodSource(ParameterizedTestSources.ATTRIBUTE_VALUES_WITHOUT_STRING_SOURCE)
+    @ParameterizedTestSources.AttributeValuesWithoutStringSource
     void deserializeSchema_keysHaveWrongTypes_returnsSchemaWithNullFields(AttributeValue attributeValue) {
         Schema value = SchemaAttributeValueSerializer.deserializeSchema(new AttributeValue().withM(singletonMap("hashKey", attributeValue)));
         assertThat(value).isEqualTo(schema(null, false, null, null, null));
@@ -147,7 +146,7 @@ class SchemaSerializationTest extends AbstractIntegrationTest {
     }
 
     @ParameterizedTest
-    @MethodSource(ParameterizedTestSources.ATTRIBUTE_VALUES_WITHOUT_STRING_SOURCE)
+    @ParameterizedTestSources.AttributeValuesWithoutStringSource
     void deserializeSchemaFromItem_keysHaveWrongTypes_returnsDocumentWithNullFields(AttributeValue attributeValue) {
         Schema value = SchemaAttributeValueSerializer.deserializeSchemaFromItem(singletonMap("hashKey", attributeValue));
         assertThat(value).isEqualTo(schema(null, false, null, null, null));

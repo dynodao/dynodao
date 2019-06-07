@@ -33,7 +33,7 @@ class BigDecimalSerializationTest extends AbstractIntegrationTest {
 
     @ParameterizedTest
     @NullSource
-    @MethodSource(ParameterizedTestSources.ATTRIBUTE_VALUES_WITHOUT_NUMBER_SOURCE)
+    @ParameterizedTestSources.AttributeValuesWithoutNumberSource
     void deserializeBigDecimal_nullCases_returnsNull(AttributeValue attributeValue) {
         BigDecimal value = SchemaAttributeValueSerializer.deserializeBigDecimal(attributeValue);
         assertThat(value).isNull();

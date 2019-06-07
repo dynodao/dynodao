@@ -41,7 +41,7 @@ class ConcurrentMapSerializationTest extends AbstractIntegrationTest {
 
     @ParameterizedTest
     @NullSource
-    @MethodSource(ParameterizedTestSources.ATTRIBUTE_VALUES_WITHOUT_MAP_SOURCE)
+    @ParameterizedTestSources.AttributeValuesWithoutMapSource
     void deserializeConcurrentMapOfString_nullCases_returnsNull(AttributeValue attributeValue) {
         ConcurrentMap<String, String> value = SchemaAttributeValueSerializer.deserializeConcurrentMapOfString(attributeValue);
         assertThat(value).isNull();
@@ -59,14 +59,14 @@ class ConcurrentMapSerializationTest extends AbstractIntegrationTest {
     }
 
     @ParameterizedTest
-    @MethodSource(ParameterizedTestSources.ATTRIBUTE_VALUES_WITHOUT_STRING_SOURCE)
+    @ParameterizedTestSources.AttributeValuesWithoutStringSource
     void deserializeConcurrentMapOfString_incorrectTypesInMap_returnsConcurrentHashMapWithoutItems(AttributeValue attributeValue) {
         ConcurrentMap<String, String> value = SchemaAttributeValueSerializer.deserializeConcurrentMapOfString(new AttributeValue().withM(mapOf("key", attributeValue)));
         assertThat(value).isEmpty();
     }
 
     @ParameterizedTest
-    @MethodSource(ParameterizedTestSources.ATTRIBUTE_VALUES_WITHOUT_STRING_SOURCE)
+    @ParameterizedTestSources.AttributeValuesWithoutStringSource
     void deserializeConcurrentMapOfString_incorrectTypesInMapMultipleItems_returnsConcurrentHashMapOnlyWithCorrectTypes(AttributeValue attributeValue) {
         ConcurrentMap<String, String> value = SchemaAttributeValueSerializer.deserializeConcurrentMapOfString(new AttributeValue().withM(
                 mapOf("present", new AttributeValue("value"), "non-present", attributeValue)));

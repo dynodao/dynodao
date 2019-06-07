@@ -44,7 +44,7 @@ class NoTypeArgsListSerializationTest extends AbstractIntegrationTest {
 
     @ParameterizedTest
     @NullSource
-    @MethodSource(ParameterizedTestSources.ATTRIBUTE_VALUES_WITHOUT_LIST_SOURCE)
+    @ParameterizedTestSources.AttributeValuesWithoutListSource
     void deserializeNoTypeArgsList_nullCases_returnsNull(AttributeValue attributeValue) {
         NoTypeArgsList value = SchemaAttributeValueSerializer.deserializeNoTypeArgsList(attributeValue);
         assertThat(value).isNull();
@@ -65,7 +65,7 @@ class NoTypeArgsListSerializationTest extends AbstractIntegrationTest {
 
     @ParameterizedTest
     @NullSource
-    @MethodSource(ParameterizedTestSources.ATTRIBUTE_VALUES_WITHOUT_STRING_SOURCE)
+    @ParameterizedTestSources.AttributeValuesWithoutStringSource
     void deserializeNoTypeArgsList_incorrectTypesInList_returnsNoTypeArgsListOfNulls(AttributeValue attributeValue) {
         NoTypeArgsList value = SchemaAttributeValueSerializer.deserializeNoTypeArgsList(new AttributeValue().withL(arrayListOf(attributeValue)));
         assertThat(value).containsOnlyNulls().hasSize(1);
@@ -73,7 +73,7 @@ class NoTypeArgsListSerializationTest extends AbstractIntegrationTest {
 
     @ParameterizedTest
     @NullSource
-    @MethodSource(ParameterizedTestSources.ATTRIBUTE_VALUES_WITHOUT_STRING_SOURCE)
+    @ParameterizedTestSources.AttributeValuesWithoutStringSource
     void deserializeNoTypeArgsList_incorrectTypesInListMultipleItems_returnsNoTypeArgsListWithValueAndNull(AttributeValue attributeValue) {
         NoTypeArgsList value = SchemaAttributeValueSerializer.deserializeNoTypeArgsList(new AttributeValue().withL(arrayListOf(new AttributeValue("value"), attributeValue)));
         assertThat(value).containsExactly("value", null);

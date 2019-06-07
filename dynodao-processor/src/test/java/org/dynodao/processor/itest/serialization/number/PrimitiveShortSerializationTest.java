@@ -25,7 +25,7 @@ class PrimitiveShortSerializationTest extends AbstractIntegrationTest {
 
     @ParameterizedTest
     @NullSource
-    @MethodSource(ParameterizedTestSources.ATTRIBUTE_VALUES_WITHOUT_NUMBER_SOURCE)
+    @ParameterizedTestSources.AttributeValuesWithoutNumberSource
     void deserializePrimitiveShort_nullCases_returnsZero(AttributeValue attributeValue) {
         short value = SchemaAttributeValueSerializer.deserializePrimitiveShort(attributeValue);
         assertThat(value).isZero();

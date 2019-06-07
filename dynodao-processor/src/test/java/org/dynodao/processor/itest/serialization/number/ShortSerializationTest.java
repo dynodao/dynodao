@@ -32,7 +32,7 @@ class ShortSerializationTest extends AbstractIntegrationTest {
 
     @ParameterizedTest
     @NullSource
-    @MethodSource(ParameterizedTestSources.ATTRIBUTE_VALUES_WITHOUT_NUMBER_SOURCE)
+    @ParameterizedTestSources.AttributeValuesWithoutNumberSource
     void deserializeShort_nullCases_returnsNull(AttributeValue attributeValue) {
         Short value = SchemaAttributeValueSerializer.deserializeShort(attributeValue);
         assertThat(value).isNull();

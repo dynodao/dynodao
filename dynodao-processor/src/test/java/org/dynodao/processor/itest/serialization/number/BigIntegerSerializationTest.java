@@ -34,7 +34,7 @@ class BigIntegerSerializationTest extends AbstractIntegrationTest {
 
     @ParameterizedTest
     @NullSource
-    @MethodSource(ParameterizedTestSources.ATTRIBUTE_VALUES_WITHOUT_NUMBER_SOURCE)
+    @ParameterizedTestSources.AttributeValuesWithoutNumberSource
     void deserializeBigInteger_nullCases_returnsNull(AttributeValue attributeValue) {
         BigInteger value = SchemaAttributeValueSerializer.deserializeBigInteger(attributeValue);
         assertThat(value).isNull();

@@ -41,7 +41,7 @@ class ConcurrentNavigableMapSerializationTest extends AbstractIntegrationTest {
 
     @ParameterizedTest
     @NullSource
-    @MethodSource(ParameterizedTestSources.ATTRIBUTE_VALUES_WITHOUT_MAP_SOURCE)
+    @ParameterizedTestSources.AttributeValuesWithoutMapSource
     void deserializeConcurrentNavigableMapOfString_nullCases_returnsNull(AttributeValue attributeValue) {
         ConcurrentNavigableMap<String, String> value = SchemaAttributeValueSerializer.deserializeConcurrentNavigableMapOfString(attributeValue);
         assertThat(value).isNull();
@@ -59,7 +59,7 @@ class ConcurrentNavigableMapSerializationTest extends AbstractIntegrationTest {
     }
 
     @ParameterizedTest
-    @MethodSource(ParameterizedTestSources.ATTRIBUTE_VALUES_WITHOUT_STRING_SOURCE)
+    @ParameterizedTestSources.AttributeValuesWithoutStringSource
     void deserializeConcurrentNavigableMapOfString_incorrectTypesInMap_returnsConcurrentSkipListMapWithoutItems(AttributeValue attributeValue) {
         ConcurrentNavigableMap<String, String> value = SchemaAttributeValueSerializer.deserializeConcurrentNavigableMapOfString(new AttributeValue().withM(mapOf("key", attributeValue)));
         assertThat(value)
@@ -68,7 +68,7 @@ class ConcurrentNavigableMapSerializationTest extends AbstractIntegrationTest {
     }
 
     @ParameterizedTest
-    @MethodSource(ParameterizedTestSources.ATTRIBUTE_VALUES_WITHOUT_STRING_SOURCE)
+    @ParameterizedTestSources.AttributeValuesWithoutStringSource
     void deserializeConcurrentNavigableMapOfString_incorrectTypesInMapMultipleItems_returnsConcurrentSkipListMapOnlyWithCorrectTypes(AttributeValue attributeValue) {
         ConcurrentNavigableMap<String, String> value = SchemaAttributeValueSerializer.deserializeConcurrentNavigableMapOfString(new AttributeValue().withM(
                 mapOf("present", new AttributeValue("value"), "non-present", attributeValue)));

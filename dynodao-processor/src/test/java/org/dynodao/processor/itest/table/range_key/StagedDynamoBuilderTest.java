@@ -14,7 +14,6 @@ import org.dynodao.processor.test.AbstractUnitTest;
 import org.dynodao.processor.test.ParameterizedTestSources;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.MethodSource;
 
 import java.util.Arrays;
 
@@ -54,7 +53,7 @@ class TableSchemaTest extends AbstractUnitTest {
     }
 
     @ParameterizedTest
-    @MethodSource(ParameterizedTestSources.TOTAL_SEGMENTS_METHOD_SOURCE)
+    @ParameterizedTestSources.ParallelScanTotalSegmentsSource
     void asParallelScanRequest_onlyUseCase_returnsCorrectRequest(int totalSegments) {
         ScanRequest request = new SchemaStagedDynamoBuilder()
                 .usingTable()

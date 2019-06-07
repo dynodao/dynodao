@@ -39,7 +39,7 @@ class ConcurrentSkipListMapSerializationTest extends AbstractIntegrationTest {
 
     @ParameterizedTest
     @NullSource
-    @MethodSource(ParameterizedTestSources.ATTRIBUTE_VALUES_WITHOUT_MAP_SOURCE)
+    @ParameterizedTestSources.AttributeValuesWithoutMapSource
     void deserializeConcurrentSkipListMapOfString_nullCases_returnsNull(AttributeValue attributeValue) {
         ConcurrentSkipListMap<String, String> value = SchemaAttributeValueSerializer.deserializeConcurrentSkipListMapOfString(attributeValue);
         assertThat(value).isNull();
@@ -55,7 +55,7 @@ class ConcurrentSkipListMapSerializationTest extends AbstractIntegrationTest {
     }
 
     @ParameterizedTest
-    @MethodSource(ParameterizedTestSources.ATTRIBUTE_VALUES_WITHOUT_STRING_SOURCE)
+    @ParameterizedTestSources.AttributeValuesWithoutStringSource
     void deserializeConcurrentSkipListMapOfString_incorrectTypesInMap_returnsConcurrentSkipListMapWithoutItems(AttributeValue attributeValue) {
         ConcurrentSkipListMap<String, String> value = SchemaAttributeValueSerializer.deserializeConcurrentSkipListMapOfString(new AttributeValue().withM(mapOf("key", attributeValue)));
         assertThat(value).isEmpty();

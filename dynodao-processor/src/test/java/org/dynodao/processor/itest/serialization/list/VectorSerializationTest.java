@@ -44,7 +44,7 @@ class VectorSerializationTest extends AbstractIntegrationTest {
 
     @ParameterizedTest
     @NullSource
-    @MethodSource(ParameterizedTestSources.ATTRIBUTE_VALUES_WITHOUT_LIST_SOURCE)
+    @ParameterizedTestSources.AttributeValuesWithoutListSource
     void deserializeVectorOfString_nullCases_returnsNull(AttributeValue attributeValue) {
         Vector<String> value = SchemaAttributeValueSerializer.deserializeVectorOfString(attributeValue);
         assertThat(value).isNull();
@@ -65,7 +65,7 @@ class VectorSerializationTest extends AbstractIntegrationTest {
 
     @ParameterizedTest
     @NullSource
-    @MethodSource(ParameterizedTestSources.ATTRIBUTE_VALUES_WITHOUT_STRING_SOURCE)
+    @ParameterizedTestSources.AttributeValuesWithoutStringSource
     void deserializeVectorOfString_incorrectTypesInList_returnsVectorOfNulls(AttributeValue attributeValue) {
         Vector<String> value = SchemaAttributeValueSerializer.deserializeVectorOfString(new AttributeValue().withL(listOf(attributeValue)));
         assertThat(value).containsOnlyNulls().hasSize(1);
@@ -73,7 +73,7 @@ class VectorSerializationTest extends AbstractIntegrationTest {
 
     @ParameterizedTest
     @NullSource
-    @MethodSource(ParameterizedTestSources.ATTRIBUTE_VALUES_WITHOUT_STRING_SOURCE)
+    @ParameterizedTestSources.AttributeValuesWithoutStringSource
     void deserializeVectorOfString_incorrectTypesInListMultipleItems_returnsVectorWithValueAndNull(AttributeValue attributeValue) {
         Vector<String> value = SchemaAttributeValueSerializer.deserializeVectorOfString(new AttributeValue().withL(listOf(new AttributeValue("value"), attributeValue)));
         assertThat(value).containsExactly("value", null);

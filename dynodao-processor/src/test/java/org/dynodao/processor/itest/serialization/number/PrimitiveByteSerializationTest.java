@@ -25,7 +25,7 @@ class PrimitiveByteSerializationTest extends AbstractIntegrationTest {
 
     @ParameterizedTest
     @NullSource
-    @MethodSource(ParameterizedTestSources.ATTRIBUTE_VALUES_WITHOUT_NUMBER_SOURCE)
+    @ParameterizedTestSources.AttributeValuesWithoutNumberSource
     void deserializePrimitiveByte_nullCases_returnsZero(AttributeValue attributeValue) {
         byte value = SchemaAttributeValueSerializer.deserializePrimitiveByte(attributeValue);
         assertThat(value).isZero();

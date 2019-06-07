@@ -26,7 +26,7 @@ class PrimitiveLongSerializationTest extends AbstractIntegrationTest {
 
     @ParameterizedTest
     @NullSource
-    @MethodSource(ParameterizedTestSources.ATTRIBUTE_VALUES_WITHOUT_NUMBER_SOURCE)
+    @ParameterizedTestSources.AttributeValuesWithoutNumberSource
     void deserializePrimitiveLong_nullCases_returnsZero(AttributeValue attributeValue) {
         long value = SchemaAttributeValueSerializer.deserializePrimitiveLong(attributeValue);
         assertThat(value).isZero();

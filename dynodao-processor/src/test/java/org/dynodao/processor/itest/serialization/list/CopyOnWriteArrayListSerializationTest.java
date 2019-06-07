@@ -44,7 +44,7 @@ class CopyOnWriteArrayListSerializationTest extends AbstractIntegrationTest {
 
     @ParameterizedTest
     @NullSource
-    @MethodSource(ParameterizedTestSources.ATTRIBUTE_VALUES_WITHOUT_LIST_SOURCE)
+    @ParameterizedTestSources.AttributeValuesWithoutListSource
     void deserializeCopyOnWriteArrayListOfString_nullCases_returnsNull(AttributeValue attributeValue) {
         CopyOnWriteArrayList<String> value = SchemaAttributeValueSerializer.deserializeCopyOnWriteArrayListOfString(attributeValue);
         assertThat(value).isNull();
@@ -65,7 +65,7 @@ class CopyOnWriteArrayListSerializationTest extends AbstractIntegrationTest {
 
     @ParameterizedTest
     @NullSource
-    @MethodSource(ParameterizedTestSources.ATTRIBUTE_VALUES_WITHOUT_STRING_SOURCE)
+    @ParameterizedTestSources.AttributeValuesWithoutStringSource
     void deserializeCopyOnWriteArrayListOfString_incorrectTypesInList_returnsCopyOnWriteArrayListOfNulls(AttributeValue attributeValue) {
         CopyOnWriteArrayList<String> value = SchemaAttributeValueSerializer.deserializeCopyOnWriteArrayListOfString(new AttributeValue().withL(listOf(attributeValue)));
         assertThat(value).containsOnlyNulls().hasSize(1);
@@ -73,7 +73,7 @@ class CopyOnWriteArrayListSerializationTest extends AbstractIntegrationTest {
 
     @ParameterizedTest
     @NullSource
-    @MethodSource(ParameterizedTestSources.ATTRIBUTE_VALUES_WITHOUT_STRING_SOURCE)
+    @ParameterizedTestSources.AttributeValuesWithoutStringSource
     void deserializeCopyOnWriteArrayListOfString_incorrectTypesInListMultipleItems_returnsCopyOnWriteArrayListWithValueAndNull(AttributeValue attributeValue) {
         CopyOnWriteArrayList<String> value = SchemaAttributeValueSerializer.deserializeCopyOnWriteArrayListOfString(new AttributeValue().withL(listOf(new AttributeValue("value"), attributeValue)));
         assertThat(value).containsExactly("value", null);

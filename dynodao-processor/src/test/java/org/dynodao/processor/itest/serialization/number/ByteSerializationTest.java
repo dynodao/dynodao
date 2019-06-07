@@ -32,7 +32,7 @@ class ByteSerializationTest extends AbstractIntegrationTest {
 
     @ParameterizedTest
     @NullSource
-    @MethodSource(ParameterizedTestSources.ATTRIBUTE_VALUES_WITHOUT_NUMBER_SOURCE)
+    @ParameterizedTestSources.AttributeValuesWithoutNumberSource
     void deserializeByte_nullCases_returnsNull(AttributeValue attributeValue) {
         Byte value = SchemaAttributeValueSerializer.deserializeByte(attributeValue);
         assertThat(value).isNull();

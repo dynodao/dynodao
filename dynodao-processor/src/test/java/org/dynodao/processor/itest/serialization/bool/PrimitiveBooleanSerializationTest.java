@@ -4,7 +4,6 @@ import com.amazonaws.services.dynamodbv2.model.AttributeValue;
 import org.dynodao.processor.itest.AbstractIntegrationTest;
 import org.dynodao.processor.test.ParameterizedTestSources;
 import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.NullSource;
 import org.junit.jupiter.params.provider.ValueSource;
 
@@ -26,7 +25,7 @@ class PrimitiveBooleanSerializationTest extends AbstractIntegrationTest {
 
     @ParameterizedTest
     @NullSource
-    @MethodSource(ParameterizedTestSources.ATTRIBUTE_VALUES_WITHOUT_BOOLEAN_SOURCE)
+    @ParameterizedTestSources.AttributeValuesWithoutBooleanSource
     void deserializePrimitiveBoolean_nullCases_returnsFalse(AttributeValue attributeValue) {
         boolean value = SchemaAttributeValueSerializer.deserializePrimitiveBoolean(attributeValue);
         assertThat(value).isFalse();

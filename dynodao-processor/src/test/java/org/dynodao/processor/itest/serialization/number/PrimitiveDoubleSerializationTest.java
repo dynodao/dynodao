@@ -26,7 +26,7 @@ class PrimitiveDoubleSerializationTest extends AbstractIntegrationTest {
 
     @ParameterizedTest
     @NullSource
-    @MethodSource(ParameterizedTestSources.ATTRIBUTE_VALUES_WITHOUT_NUMBER_SOURCE)
+    @ParameterizedTestSources.AttributeValuesWithoutNumberSource
     void deserializePrimitiveDouble_nullCases_returnsZero(AttributeValue attributeValue) {
         double value = SchemaAttributeValueSerializer.deserializePrimitiveDouble(attributeValue);
         assertThat(value).isZero();
