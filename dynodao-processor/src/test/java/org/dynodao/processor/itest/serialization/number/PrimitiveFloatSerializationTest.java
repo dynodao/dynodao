@@ -1,41 +1,70 @@
 package org.dynodao.processor.itest.serialization.number;
 
 import com.amazonaws.services.dynamodbv2.model.AttributeValue;
-import org.dynodao.processor.itest.AbstractSourceCompilingTest;
-import org.junit.jupiter.api.Test;
+import org.dynodao.processor.itest.AbstractIntegrationTest;
+import org.dynodao.processor.test.ParameterizedTestSources;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.params.provider.NullSource;
+
+import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-class PrimitiveFloatSerializationTest extends AbstractSourceCompilingTest {
+class PrimitiveFloatSerializationTest extends AbstractIntegrationTest {
 
-    @Test
-    void serializePrimitiveFloat_onlyUseCase_returnsAttributeValueWithNumber() {
-        AttributeValue value = SchemaAttributeValueSerializer.serializePrimitiveFloat(0.125f);
-        assertThat(value).isEqualTo(new AttributeValue().withN("0.125"));
+    private static final String TABLE = "things";
+    private static final String HASH_KEY_VALUE = "hashKey";
+
+    @ParameterizedTest
+    @MethodSource("floatSources")
+    void serializePrimitiveFloat_onlyUseCase_returnsAttributeValueWithNumber(float floatValue) {
+        AttributeValue value = SchemaAttributeValueSerializer.serializePrimitiveFloat(floatValue);
+        assertThat(value).isEqualTo(new AttributeValue().withN(String.valueOf(floatValue)));
     }
 
-    @Test
-    void deserializePrimitiveFloat_null_returnsZero() {
-        float value = SchemaAttributeValueSerializer.deserializePrimitiveFloat(null);
+    @ParameterizedTest
+    @NullSource
+    @MethodSource(ParameterizedTestSources.ATTRIBUTE_VALUES_WITHOUT_NUMBER_SOURCE)
+    void deserializePrimitiveFloat_nullCases_returnsZero(AttributeValue attributeValue) {
+        float value = SchemaAttributeValueSerializer.deserializePrimitiveFloat(attributeValue);
         assertThat(value).isZero();
     }
 
-    @Test
-    void deserializePrimitiveFloat_nullAttributeValue_returnsZero() {
-        float value = SchemaAttributeValueSerializer.deserializePrimitiveFloat(new AttributeValue().withNULL(true));
-        assertThat(value).isZero();
+    @ParameterizedTest
+    @MethodSource("floatSources")
+    void deserializePrimitiveFloat_numberValue_returnsFloatValue(float floatValue) {
+        float value = SchemaAttributeValueSerializer.deserializePrimitiveFloat(new AttributeValue().withN(String.valueOf(floatValue)));
+        assertThat(value).isEqualTo(floatValue);
     }
 
-    @Test
-    void deserializePrimitiveFloat_numberValueNull_returnsZero() {
-        float value = SchemaAttributeValueSerializer.deserializePrimitiveFloat(new AttributeValue().withS("not number"));
-        assertThat(value).isZero();
+    @ParameterizedTest
+    @MethodSource("floatSources")
+    void putAndGet_symmetricCases_returnsItem(float floatValue) {
+        Schema schema = schema(floatValue);
+        put(schema);
+        Stream<Schema> items = dynoDao.get(new SchemaStagedDynamoBuilder()
+                .usingTable()
+                .withHashKey(HASH_KEY_VALUE));
+        assertThat(items).containsExactly(schema);
     }
 
-    @Test
-    void deserializePrimitiveFloat_numberValue_returnsFloatValue() {
-        float value = SchemaAttributeValueSerializer.deserializePrimitiveFloat(new AttributeValue().withN("0.125"));
-        assertThat(value).isEqualTo(0.125f);
+    static Stream<Float> floatSources() {
+        // float can't store the max number value, so use max/min float instead
+        return Stream.of(0, 1, -1, Float.MAX_VALUE, -Float.MAX_VALUE, Float.MIN_VALUE, -Float.MIN_VALUE)
+                .map(String::valueOf)
+                .map(Float::new);
+    }
+
+    private void put(Schema item) {
+        amazonDynamoDb.putItem(TABLE, SchemaAttributeValueSerializer.serializeSchemaAsItem(item));
+    }
+
+    private Schema schema(float floatValue) {
+        Schema schema = new Schema();
+        schema.setHashKey(HASH_KEY_VALUE);
+        schema.setPrimitiveFloat(floatValue);
+        return schema;
     }
 
 }
