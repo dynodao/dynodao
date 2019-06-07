@@ -1,4 +1,4 @@
-package org.dynodao.processor.test;
+package org.dynodao.processor.test.params;
 
 import com.amazonaws.services.dynamodbv2.model.AttributeValue;
 import lombok.SneakyThrows;
@@ -7,34 +7,21 @@ import org.dynodao.processor.schema.attribute.DynamoAttributeType;
 import org.junit.jupiter.params.provider.MethodSource;
 
 import java.nio.ByteBuffer;
-import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 import static java.util.Collections.singletonMap;
 
 /**
- * Stores common parameters for parameterized tests.
+ * Stores common parameters for {@link AttributeValue} parameterized tests.
  */
 @UtilityClass
-public class ParameterizedTestSources {
-
-    /**
-     * Parameter sources containing the total number of segments for parallel scan tests.
-     */
-    @MethodSource("org.dynodao.processor.test.ParameterizedTestSources#totalSegmentsSource")
-    public @interface ParallelScanTotalSegmentsSource { }
-
-    private static int[] totalSegmentsSource() {
-        int min = Math.max(2, Runtime.getRuntime().availableProcessors() - 1);
-        int max = Math.min(min + 2, Runtime.getRuntime().availableProcessors() + 1);
-        return IntStream.rangeClosed(min, max).toArray();
-    }
-
+public class AttributeValueSource {
+    
     /**
      * Parameter sources containing an {@link AttributeValue} all types except <tt>B</tt>.
      */
-    @MethodSource("org.dynodao.processor.test.ParameterizedTestSources#attributeValuesWithoutBinarySource")
-    public @interface AttributeValuesWithoutBinarySource { }
+    @MethodSource("org.dynodao.processor.test.params.AttributeValueSource#attributeValuesWithoutBinarySource")
+    public @interface WithoutBinary { }
 
     private static Stream<AttributeValue> attributeValuesWithoutBinarySource() {
         return attributeValuesWithoutType(DynamoAttributeType.BINARY);
@@ -43,8 +30,8 @@ public class ParameterizedTestSources {
     /**
      * Parameter sources containing an {@link AttributeValue} all types except <tt>BS</tt>.
      */
-    @MethodSource("org.dynodao.processor.test.ParameterizedTestSources#attributeValuesWithoutBinarySetSource")
-    public @interface AttributeValuesWithoutBinarySetSource { }
+    @MethodSource("org.dynodao.processor.test.params.AttributeValueSource#attributeValuesWithoutBinarySetSource")
+    public @interface WithoutBinarySet { }
 
     private static Stream<AttributeValue> attributeValuesWithoutBinarySetSource() {
         return attributeValuesWithoutType(DynamoAttributeType.BINARY_SET);
@@ -53,8 +40,8 @@ public class ParameterizedTestSources {
     /**
      * Parameter sources containing an {@link AttributeValue} all types except <tt>BOOL</tt>.
      */
-    @MethodSource("org.dynodao.processor.test.ParameterizedTestSources#attributeValuesWithoutBooleanSource")
-    public @interface AttributeValuesWithoutBooleanSource { }
+    @MethodSource("org.dynodao.processor.test.params.AttributeValueSource#attributeValuesWithoutBooleanSource")
+    public @interface WithoutBoolean { }
 
     private static Stream<AttributeValue> attributeValuesWithoutBooleanSource() {
         return attributeValuesWithoutType(DynamoAttributeType.BOOLEAN);
@@ -63,8 +50,8 @@ public class ParameterizedTestSources {
     /**
      * Parameter sources containing an {@link AttributeValue} all types except <tt>L</tt>.
      */
-    @MethodSource("org.dynodao.processor.test.ParameterizedTestSources#attributeValuesWithoutListSource")
-    public @interface AttributeValuesWithoutListSource { }
+    @MethodSource("org.dynodao.processor.test.params.AttributeValueSource#attributeValuesWithoutListSource")
+    public @interface WithoutList { }
 
     private static Stream<AttributeValue> attributeValuesWithoutListSource() {
         return attributeValuesWithoutType(DynamoAttributeType.LIST);
@@ -73,8 +60,8 @@ public class ParameterizedTestSources {
     /**
      * Parameter sources containing an {@link AttributeValue} all types except <tt>M</tt>.
      */
-    @MethodSource("org.dynodao.processor.test.ParameterizedTestSources#attributeValuesWithoutMapSource")
-    public @interface AttributeValuesWithoutMapSource { }
+    @MethodSource("org.dynodao.processor.test.params.AttributeValueSource#attributeValuesWithoutMapSource")
+    public @interface WithoutMap { }
 
     private static Stream<AttributeValue> attributeValuesWithoutMapSource() {
         return attributeValuesWithoutType(DynamoAttributeType.MAP);
@@ -83,8 +70,8 @@ public class ParameterizedTestSources {
     /**
      * Parameter sources containing an {@link AttributeValue} all types except <tt>NULL</tt>.
      */
-    @MethodSource("org.dynodao.processor.test.ParameterizedTestSources#attributeValuesWithoutNullSource")
-    public @interface AttributeValuesWithoutNullSource { }
+    @MethodSource("org.dynodao.processor.test.params.AttributeValueSource#attributeValuesWithoutNullSource")
+    public @interface WithoutNull { }
 
     private static Stream<AttributeValue> attributeValuesWithoutNullSource() {
         return attributeValuesWithoutType(DynamoAttributeType.NULL);
@@ -93,8 +80,8 @@ public class ParameterizedTestSources {
     /**
      * Parameter sources containing an {@link AttributeValue} all types except <tt>N</tt>.
      */
-    @MethodSource("org.dynodao.processor.test.ParameterizedTestSources#attributeValuesWithoutNumberSource")
-    public @interface AttributeValuesWithoutNumberSource { }
+    @MethodSource("org.dynodao.processor.test.params.AttributeValueSource#attributeValuesWithoutNumberSource")
+    public @interface WithoutNumber { }
 
     private static Stream<AttributeValue> attributeValuesWithoutNumberSource() {
         return attributeValuesWithoutType(DynamoAttributeType.NUMBER);
@@ -103,8 +90,8 @@ public class ParameterizedTestSources {
     /**
      * Parameter sources containing an {@link AttributeValue} all types except <tt>NS</tt>.
      */
-    @MethodSource("org.dynodao.processor.test.ParameterizedTestSources#attributeValuesWithoutNumberSetSource")
-    public @interface AttributeValuesWithoutNumberSetSource { }
+    @MethodSource("org.dynodao.processor.test.params.AttributeValueSource#attributeValuesWithoutNumberSetSource")
+    public @interface WithoutNumberSet { }
 
     private static Stream<AttributeValue> attributeValuesWithoutNumberSetSource() {
         return attributeValuesWithoutType(DynamoAttributeType.NUMBER_SET);
@@ -113,8 +100,8 @@ public class ParameterizedTestSources {
     /**
      * Parameter sources containing an {@link AttributeValue} all types except <tt>S</tt>.
      */
-    @MethodSource("org.dynodao.processor.test.ParameterizedTestSources#attributeValuesWithoutStringSource")
-    public @interface AttributeValuesWithoutStringSource { }
+    @MethodSource("org.dynodao.processor.test.params.AttributeValueSource#attributeValuesWithoutStringSource")
+    public @interface WithoutString { }
 
     private static Stream<AttributeValue> attributeValuesWithoutStringSource() {
         return attributeValuesWithoutType(DynamoAttributeType.STRING);
@@ -123,8 +110,8 @@ public class ParameterizedTestSources {
     /**
      * Parameter sources containing an {@link AttributeValue} all types except <tt>SS</tt>.
      */
-    @MethodSource("org.dynodao.processor.test.ParameterizedTestSources#attributeValuesWithoutStringSetSource")
-    public @interface AttributeValuesWithoutStringSetSource { }
+    @MethodSource("org.dynodao.processor.test.params.AttributeValueSource#attributeValuesWithoutStringSetSource")
+    public @interface WithoutStringSet { }
 
     private static Stream<AttributeValue> attributeValuesWithoutStringSetSource() {
         return attributeValuesWithoutType(DynamoAttributeType.STRING_SET);

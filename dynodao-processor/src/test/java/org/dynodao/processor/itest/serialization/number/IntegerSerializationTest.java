@@ -2,7 +2,7 @@ package org.dynodao.processor.itest.serialization.number;
 
 import com.amazonaws.services.dynamodbv2.model.AttributeValue;
 import org.dynodao.processor.itest.AbstractIntegrationTest;
-import org.dynodao.processor.test.ParameterizedTestSources;
+import org.dynodao.processor.test.params.AttributeValueSource;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -32,7 +32,7 @@ class IntegerSerializationTest extends AbstractIntegrationTest {
 
     @ParameterizedTest
     @NullSource
-    @ParameterizedTestSources.AttributeValuesWithoutNumberSource
+    @AttributeValueSource.WithoutNumber
     void deserializeInteger_nullCases_returnsNull(AttributeValue attributeValue) {
         Integer value = SchemaAttributeValueSerializer.deserializeInteger(attributeValue);
         assertThat(value).isNull();

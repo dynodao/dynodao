@@ -2,7 +2,7 @@ package org.dynodao.processor.itest.serialization.list;
 
 import com.amazonaws.services.dynamodbv2.model.AttributeValue;
 import org.dynodao.processor.itest.AbstractIntegrationTest;
-import org.dynodao.processor.test.ParameterizedTestSources;
+import org.dynodao.processor.test.params.AttributeValueSource;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -44,7 +44,7 @@ class VectorSerializationTest extends AbstractIntegrationTest {
 
     @ParameterizedTest
     @NullSource
-    @ParameterizedTestSources.AttributeValuesWithoutListSource
+    @AttributeValueSource.WithoutList
     void deserializeVectorOfString_nullCases_returnsNull(AttributeValue attributeValue) {
         Vector<String> value = SchemaAttributeValueSerializer.deserializeVectorOfString(attributeValue);
         assertThat(value).isNull();
@@ -65,7 +65,7 @@ class VectorSerializationTest extends AbstractIntegrationTest {
 
     @ParameterizedTest
     @NullSource
-    @ParameterizedTestSources.AttributeValuesWithoutStringSource
+    @AttributeValueSource.WithoutString
     void deserializeVectorOfString_incorrectTypesInList_returnsVectorOfNulls(AttributeValue attributeValue) {
         Vector<String> value = SchemaAttributeValueSerializer.deserializeVectorOfString(new AttributeValue().withL(listOf(attributeValue)));
         assertThat(value).containsOnlyNulls().hasSize(1);
@@ -73,7 +73,7 @@ class VectorSerializationTest extends AbstractIntegrationTest {
 
     @ParameterizedTest
     @NullSource
-    @ParameterizedTestSources.AttributeValuesWithoutStringSource
+    @AttributeValueSource.WithoutString
     void deserializeVectorOfString_incorrectTypesInListMultipleItems_returnsVectorWithValueAndNull(AttributeValue attributeValue) {
         Vector<String> value = SchemaAttributeValueSerializer.deserializeVectorOfString(new AttributeValue().withL(listOf(new AttributeValue("value"), attributeValue)));
         assertThat(value).containsExactly("value", null);

@@ -2,7 +2,7 @@ package org.dynodao.processor.itest.serialization.character;
 
 import com.amazonaws.services.dynamodbv2.model.AttributeValue;
 import org.dynodao.processor.itest.AbstractIntegrationTest;
-import org.dynodao.processor.test.ParameterizedTestSources;
+import org.dynodao.processor.test.params.AttributeValueSource;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.NullSource;
@@ -27,7 +27,7 @@ class PrimitiveCharacterSerializationTest extends AbstractIntegrationTest {
 
     @ParameterizedTest
     @NullSource
-    @ParameterizedTestSources.AttributeValuesWithoutStringSource
+    @AttributeValueSource.WithoutString
     void deserializePrimitiveChar_nullCases_returnsNullCharacter(AttributeValue attributeValue) {
         char value = SchemaAttributeValueSerializer.deserializePrimitiveChar(attributeValue);
         assertThat(value).isEqualTo('\0');

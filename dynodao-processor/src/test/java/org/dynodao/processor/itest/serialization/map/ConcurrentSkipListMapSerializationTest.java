@@ -2,7 +2,7 @@ package org.dynodao.processor.itest.serialization.map;
 
 import com.amazonaws.services.dynamodbv2.model.AttributeValue;
 import org.dynodao.processor.itest.AbstractIntegrationTest;
-import org.dynodao.processor.test.ParameterizedTestSources;
+import org.dynodao.processor.test.params.AttributeValueSource;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -39,7 +39,7 @@ class ConcurrentSkipListMapSerializationTest extends AbstractIntegrationTest {
 
     @ParameterizedTest
     @NullSource
-    @ParameterizedTestSources.AttributeValuesWithoutMapSource
+    @AttributeValueSource.WithoutMap
     void deserializeConcurrentSkipListMapOfString_nullCases_returnsNull(AttributeValue attributeValue) {
         ConcurrentSkipListMap<String, String> value = SchemaAttributeValueSerializer.deserializeConcurrentSkipListMapOfString(attributeValue);
         assertThat(value).isNull();
@@ -55,7 +55,7 @@ class ConcurrentSkipListMapSerializationTest extends AbstractIntegrationTest {
     }
 
     @ParameterizedTest
-    @ParameterizedTestSources.AttributeValuesWithoutStringSource
+    @AttributeValueSource.WithoutString
     void deserializeConcurrentSkipListMapOfString_incorrectTypesInMap_returnsConcurrentSkipListMapWithoutItems(AttributeValue attributeValue) {
         ConcurrentSkipListMap<String, String> value = SchemaAttributeValueSerializer.deserializeConcurrentSkipListMapOfString(new AttributeValue().withM(mapOf("key", attributeValue)));
         assertThat(value).isEmpty();

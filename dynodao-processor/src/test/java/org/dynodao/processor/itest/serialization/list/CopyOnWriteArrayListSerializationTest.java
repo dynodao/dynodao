@@ -2,7 +2,7 @@ package org.dynodao.processor.itest.serialization.list;
 
 import com.amazonaws.services.dynamodbv2.model.AttributeValue;
 import org.dynodao.processor.itest.AbstractIntegrationTest;
-import org.dynodao.processor.test.ParameterizedTestSources;
+import org.dynodao.processor.test.params.AttributeValueSource;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -44,7 +44,7 @@ class CopyOnWriteArrayListSerializationTest extends AbstractIntegrationTest {
 
     @ParameterizedTest
     @NullSource
-    @ParameterizedTestSources.AttributeValuesWithoutListSource
+    @AttributeValueSource.WithoutList
     void deserializeCopyOnWriteArrayListOfString_nullCases_returnsNull(AttributeValue attributeValue) {
         CopyOnWriteArrayList<String> value = SchemaAttributeValueSerializer.deserializeCopyOnWriteArrayListOfString(attributeValue);
         assertThat(value).isNull();
@@ -65,7 +65,7 @@ class CopyOnWriteArrayListSerializationTest extends AbstractIntegrationTest {
 
     @ParameterizedTest
     @NullSource
-    @ParameterizedTestSources.AttributeValuesWithoutStringSource
+    @AttributeValueSource.WithoutString
     void deserializeCopyOnWriteArrayListOfString_incorrectTypesInList_returnsCopyOnWriteArrayListOfNulls(AttributeValue attributeValue) {
         CopyOnWriteArrayList<String> value = SchemaAttributeValueSerializer.deserializeCopyOnWriteArrayListOfString(new AttributeValue().withL(listOf(attributeValue)));
         assertThat(value).containsOnlyNulls().hasSize(1);
@@ -73,7 +73,7 @@ class CopyOnWriteArrayListSerializationTest extends AbstractIntegrationTest {
 
     @ParameterizedTest
     @NullSource
-    @ParameterizedTestSources.AttributeValuesWithoutStringSource
+    @AttributeValueSource.WithoutString
     void deserializeCopyOnWriteArrayListOfString_incorrectTypesInListMultipleItems_returnsCopyOnWriteArrayListWithValueAndNull(AttributeValue attributeValue) {
         CopyOnWriteArrayList<String> value = SchemaAttributeValueSerializer.deserializeCopyOnWriteArrayListOfString(new AttributeValue().withL(listOf(new AttributeValue("value"), attributeValue)));
         assertThat(value).containsExactly("value", null);

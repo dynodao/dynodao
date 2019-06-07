@@ -2,7 +2,7 @@ package org.dynodao.processor.itest.serialization.map;
 
 import com.amazonaws.services.dynamodbv2.model.AttributeValue;
 import org.dynodao.processor.itest.AbstractIntegrationTest;
-import org.dynodao.processor.test.ParameterizedTestSources;
+import org.dynodao.processor.test.params.AttributeValueSource;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -43,7 +43,7 @@ class HashMapSerializationTest extends AbstractIntegrationTest {
 
     @ParameterizedTest
     @NullSource
-    @ParameterizedTestSources.AttributeValuesWithoutMapSource
+    @AttributeValueSource.WithoutMap
     void deserializeHashMapOfString_nullCases_returnsNull(AttributeValue attributeValue) {
         HashMap<String, String> value = SchemaAttributeValueSerializer.deserializeHashMapOfString(attributeValue);
         assertThat(value).isNull();
@@ -62,14 +62,14 @@ class HashMapSerializationTest extends AbstractIntegrationTest {
     }
 
     @ParameterizedTest
-    @ParameterizedTestSources.AttributeValuesWithoutStringSource
+    @AttributeValueSource.WithoutString
     void deserializeHashMapOfString_incorrectTypesInMap_returnsHashMapWithoutItems(AttributeValue attributeValue) {
         HashMap<String, String> value = SchemaAttributeValueSerializer.deserializeHashMapOfString(new AttributeValue().withM(mapOf("key", attributeValue)));
         assertThat(value).isEmpty();
     }
 
     @ParameterizedTest
-    @ParameterizedTestSources.AttributeValuesWithoutStringSource
+    @AttributeValueSource.WithoutString
     void deserializeHashMapOfString_incorrectTypesInMapMultipleItems_returnsHashMapOnlyWithCorrectTypes(AttributeValue attributeValue) {
         HashMap<String, String> value = SchemaAttributeValueSerializer.deserializeHashMapOfString(new AttributeValue().withM(
                 mapOf("present", new AttributeValue("value"), "non-present", attributeValue)));

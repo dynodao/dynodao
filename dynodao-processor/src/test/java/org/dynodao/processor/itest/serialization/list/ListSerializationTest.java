@@ -2,7 +2,7 @@ package org.dynodao.processor.itest.serialization.list;
 
 import com.amazonaws.services.dynamodbv2.model.AttributeValue;
 import org.dynodao.processor.itest.AbstractIntegrationTest;
-import org.dynodao.processor.test.ParameterizedTestSources;
+import org.dynodao.processor.test.params.AttributeValueSource;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -44,7 +44,7 @@ class ListSerializationTest extends AbstractIntegrationTest {
 
     @ParameterizedTest
     @NullSource
-    @ParameterizedTestSources.AttributeValuesWithoutListSource
+    @AttributeValueSource.WithoutList
     void deserializeListOfString_nullCases_returnsNull(AttributeValue attributeValue) {
         List<String> value = SchemaAttributeValueSerializer.deserializeListOfString(attributeValue);
         assertThat(value).isNull();
@@ -67,7 +67,7 @@ class ListSerializationTest extends AbstractIntegrationTest {
 
     @ParameterizedTest
     @NullSource
-    @ParameterizedTestSources.AttributeValuesWithoutStringSource
+    @AttributeValueSource.WithoutString
     void deserializeListOfString_incorrectTypesInList_returnsListOfNulls(AttributeValue attributeValue) {
         List<String> value = SchemaAttributeValueSerializer.deserializeListOfString(new AttributeValue().withL(listOf(attributeValue)));
         assertThat(value)
@@ -77,7 +77,7 @@ class ListSerializationTest extends AbstractIntegrationTest {
 
     @ParameterizedTest
     @NullSource
-    @ParameterizedTestSources.AttributeValuesWithoutStringSource
+    @AttributeValueSource.WithoutString
     void deserializeListOfString_incorrectTypesInListMultipleItems_returnsListWithValueAndNull(AttributeValue attributeValue) {
         List<String> value = SchemaAttributeValueSerializer.deserializeListOfString(new AttributeValue().withL(listOf(new AttributeValue("value"), attributeValue)));
         assertThat(value)

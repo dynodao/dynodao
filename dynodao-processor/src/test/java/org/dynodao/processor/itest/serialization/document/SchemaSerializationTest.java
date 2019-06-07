@@ -3,7 +3,7 @@ package org.dynodao.processor.itest.serialization.document;
 import com.amazonaws.services.dynamodbv2.model.AttributeValue;
 import org.dynodao.processor.itest.AbstractIntegrationTest;
 import org.dynodao.processor.test.PackageScanner;
-import org.dynodao.processor.test.ParameterizedTestSources;
+import org.dynodao.processor.test.params.AttributeValueSource;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ParameterContext;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -67,7 +67,7 @@ class SchemaSerializationTest extends AbstractIntegrationTest {
 
     @ParameterizedTest
     @NullSource
-    @ParameterizedTestSources.AttributeValuesWithoutMapSource
+    @AttributeValueSource.WithoutMap
     void deserializeSchema_nullCases_returnsNull(AttributeValue attributeValue) {
         Schema value = SchemaAttributeValueSerializer.deserializeSchema(attributeValue);
         assertThat(value).isNull();
@@ -103,7 +103,7 @@ class SchemaSerializationTest extends AbstractIntegrationTest {
     }
 
     @ParameterizedTest
-    @ParameterizedTestSources.AttributeValuesWithoutStringSource
+    @AttributeValueSource.WithoutString
     void deserializeSchema_keysHaveWrongTypes_returnsSchemaWithNullFields(AttributeValue attributeValue) {
         Schema value = SchemaAttributeValueSerializer.deserializeSchema(new AttributeValue().withM(singletonMap("hashKey", attributeValue)));
         assertThat(value).isEqualTo(schema(null, false, null, null, null));
@@ -146,7 +146,7 @@ class SchemaSerializationTest extends AbstractIntegrationTest {
     }
 
     @ParameterizedTest
-    @ParameterizedTestSources.AttributeValuesWithoutStringSource
+    @AttributeValueSource.WithoutString
     void deserializeSchemaFromItem_keysHaveWrongTypes_returnsDocumentWithNullFields(AttributeValue attributeValue) {
         Schema value = SchemaAttributeValueSerializer.deserializeSchemaFromItem(singletonMap("hashKey", attributeValue));
         assertThat(value).isEqualTo(schema(null, false, null, null, null));

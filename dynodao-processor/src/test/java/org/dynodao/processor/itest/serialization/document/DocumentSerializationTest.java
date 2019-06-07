@@ -2,7 +2,7 @@ package org.dynodao.processor.itest.serialization.document;
 
 import com.amazonaws.services.dynamodbv2.model.AttributeValue;
 import org.dynodao.processor.itest.AbstractIntegrationTest;
-import org.dynodao.processor.test.ParameterizedTestSources;
+import org.dynodao.processor.test.params.AttributeValueSource;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
@@ -59,7 +59,7 @@ class DocumentSerializationTest extends AbstractIntegrationTest {
 
     @ParameterizedTest
     @NullSource
-    @ParameterizedTestSources.AttributeValuesWithoutMapSource
+    @AttributeValueSource.WithoutMap
     void deserializeDocument_nullCases_returnsNull(AttributeValue attributeValue) {
         Document value = SchemaAttributeValueSerializer.deserializeDocument(attributeValue);
         assertThat(value).isNull();
@@ -94,7 +94,7 @@ class DocumentSerializationTest extends AbstractIntegrationTest {
     }
 
     @ParameterizedTest
-    @ParameterizedTestSources.AttributeValuesWithoutStringSource
+    @AttributeValueSource.WithoutString
     void deserializeDocument_keysHaveWrongTypes_returnsDocumentWithNullFields(AttributeValue attributeValue) {
         Document value = SchemaAttributeValueSerializer.deserializeDocument(new AttributeValue().withM(singletonMap("attribute1", attributeValue)));
         assertThat(value).isEqualTo(document(null, null, null));
@@ -136,7 +136,7 @@ class DocumentSerializationTest extends AbstractIntegrationTest {
     }
 
     @ParameterizedTest
-    @ParameterizedTestSources.AttributeValuesWithoutStringSource
+    @AttributeValueSource.WithoutString
     void deserializeDocumentFromItem_keysHaveWrongTypes_returnsDocumentWithNullFields(AttributeValue attributeValue) {
         Document value = SchemaAttributeValueSerializer.deserializeDocumentFromItem(singletonMap("attribute1", attributeValue));
         assertThat(value).isEqualTo(document(null, null, null));

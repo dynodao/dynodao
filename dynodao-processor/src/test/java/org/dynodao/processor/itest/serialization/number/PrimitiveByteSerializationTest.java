@@ -2,7 +2,7 @@ package org.dynodao.processor.itest.serialization.number;
 
 import com.amazonaws.services.dynamodbv2.model.AttributeValue;
 import org.dynodao.processor.itest.AbstractIntegrationTest;
-import org.dynodao.processor.test.ParameterizedTestSources;
+import org.dynodao.processor.test.params.AttributeValueSource;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.NullSource;
@@ -25,7 +25,7 @@ class PrimitiveByteSerializationTest extends AbstractIntegrationTest {
 
     @ParameterizedTest
     @NullSource
-    @ParameterizedTestSources.AttributeValuesWithoutNumberSource
+    @AttributeValueSource.WithoutNumber
     void deserializePrimitiveByte_nullCases_returnsZero(AttributeValue attributeValue) {
         byte value = SchemaAttributeValueSerializer.deserializePrimitiveByte(attributeValue);
         assertThat(value).isZero();

@@ -2,7 +2,7 @@ package org.dynodao.processor.itest.serialization.bool;
 
 import com.amazonaws.services.dynamodbv2.model.AttributeValue;
 import org.dynodao.processor.itest.AbstractIntegrationTest;
-import org.dynodao.processor.test.ParameterizedTestSources;
+import org.dynodao.processor.test.params.AttributeValueSource;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.NullSource;
 import org.junit.jupiter.params.provider.ValueSource;
@@ -32,7 +32,7 @@ class BooleanSerializationTest extends AbstractIntegrationTest {
 
     @ParameterizedTest
     @NullSource
-    @ParameterizedTestSources.AttributeValuesWithoutBooleanSource
+    @AttributeValueSource.WithoutBoolean
     void deserializeBoolean_nullCases_returnsNull(AttributeValue attributeValue) {
         Boolean value = SchemaAttributeValueSerializer.deserializeBoolean(attributeValue);
         assertThat(value).isNull();

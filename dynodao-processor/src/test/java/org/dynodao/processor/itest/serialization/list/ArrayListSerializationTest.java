@@ -2,7 +2,7 @@ package org.dynodao.processor.itest.serialization.list;
 
 import com.amazonaws.services.dynamodbv2.model.AttributeValue;
 import org.dynodao.processor.itest.AbstractIntegrationTest;
-import org.dynodao.processor.test.ParameterizedTestSources;
+import org.dynodao.processor.test.params.AttributeValueSource;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -44,7 +44,7 @@ class ArrayListSerializationTest extends AbstractIntegrationTest {
 
     @ParameterizedTest
     @NullSource
-    @ParameterizedTestSources.AttributeValuesWithoutListSource
+    @AttributeValueSource.WithoutList
     void deserializeArrayListOfString_nullCases_returnsNull(AttributeValue attributeValue) {
         ArrayList<String> value = SchemaAttributeValueSerializer.deserializeArrayListOfString(attributeValue);
         assertThat(value).isNull();
@@ -65,7 +65,7 @@ class ArrayListSerializationTest extends AbstractIntegrationTest {
 
     @ParameterizedTest
     @NullSource
-    @ParameterizedTestSources.AttributeValuesWithoutStringSource
+    @AttributeValueSource.WithoutString
     void deserializeArrayListOfString_incorrectTypesInList_returnsArrayListOfNulls(AttributeValue attributeValue) {
         ArrayList<String> value = SchemaAttributeValueSerializer.deserializeArrayListOfString(new AttributeValue().withL(listOf(attributeValue)));
         assertThat(value).containsOnlyNulls().hasSize(1);
@@ -73,7 +73,7 @@ class ArrayListSerializationTest extends AbstractIntegrationTest {
 
     @ParameterizedTest
     @NullSource
-    @ParameterizedTestSources.AttributeValuesWithoutStringSource
+    @AttributeValueSource.WithoutString
     void deserializeArrayListOfString_incorrectTypesInListMultipleItems_returnsArrayListWithValueAndNull(AttributeValue attributeValue) {
         ArrayList<String> value = SchemaAttributeValueSerializer.deserializeArrayListOfString(new AttributeValue().withL(listOf(new AttributeValue("value"), attributeValue)));
         assertThat(value).containsExactly("value", null);

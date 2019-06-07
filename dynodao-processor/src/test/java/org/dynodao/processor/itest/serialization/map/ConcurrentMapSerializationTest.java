@@ -2,7 +2,7 @@ package org.dynodao.processor.itest.serialization.map;
 
 import com.amazonaws.services.dynamodbv2.model.AttributeValue;
 import org.dynodao.processor.itest.AbstractIntegrationTest;
-import org.dynodao.processor.test.ParameterizedTestSources;
+import org.dynodao.processor.test.params.AttributeValueSource;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -41,7 +41,7 @@ class ConcurrentMapSerializationTest extends AbstractIntegrationTest {
 
     @ParameterizedTest
     @NullSource
-    @ParameterizedTestSources.AttributeValuesWithoutMapSource
+    @AttributeValueSource.WithoutMap
     void deserializeConcurrentMapOfString_nullCases_returnsNull(AttributeValue attributeValue) {
         ConcurrentMap<String, String> value = SchemaAttributeValueSerializer.deserializeConcurrentMapOfString(attributeValue);
         assertThat(value).isNull();
@@ -59,14 +59,14 @@ class ConcurrentMapSerializationTest extends AbstractIntegrationTest {
     }
 
     @ParameterizedTest
-    @ParameterizedTestSources.AttributeValuesWithoutStringSource
+    @AttributeValueSource.WithoutString
     void deserializeConcurrentMapOfString_incorrectTypesInMap_returnsConcurrentHashMapWithoutItems(AttributeValue attributeValue) {
         ConcurrentMap<String, String> value = SchemaAttributeValueSerializer.deserializeConcurrentMapOfString(new AttributeValue().withM(mapOf("key", attributeValue)));
         assertThat(value).isEmpty();
     }
 
     @ParameterizedTest
-    @ParameterizedTestSources.AttributeValuesWithoutStringSource
+    @AttributeValueSource.WithoutString
     void deserializeConcurrentMapOfString_incorrectTypesInMapMultipleItems_returnsConcurrentHashMapOnlyWithCorrectTypes(AttributeValue attributeValue) {
         ConcurrentMap<String, String> value = SchemaAttributeValueSerializer.deserializeConcurrentMapOfString(new AttributeValue().withM(
                 mapOf("present", new AttributeValue("value"), "non-present", attributeValue)));

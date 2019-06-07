@@ -2,7 +2,7 @@ package org.dynodao.processor.itest.serialization.string;
 
 import com.amazonaws.services.dynamodbv2.model.AttributeValue;
 import org.dynodao.processor.itest.AbstractIntegrationTest;
-import org.dynodao.processor.test.ParameterizedTestSources;
+import org.dynodao.processor.test.params.AttributeValueSource;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EmptySource;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
@@ -34,7 +34,7 @@ class StringSerializationTest extends AbstractIntegrationTest {
 
     @ParameterizedTest
     @NullSource
-    @ParameterizedTestSources.AttributeValuesWithoutStringSource
+    @AttributeValueSource.WithoutString
     void deserializeString_nullCases_returnsNull(AttributeValue attributeValue) {
         String value = SchemaAttributeValueSerializer.deserializeString(attributeValue);
         assertThat(value).isNull();

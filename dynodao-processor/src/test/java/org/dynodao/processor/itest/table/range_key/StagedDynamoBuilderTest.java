@@ -11,7 +11,7 @@ import com.amazonaws.services.dynamodbv2.model.QueryRequest;
 import com.amazonaws.services.dynamodbv2.model.ScalarAttributeType;
 import com.amazonaws.services.dynamodbv2.model.ScanRequest;
 import org.dynodao.processor.test.AbstractUnitTest;
-import org.dynodao.processor.test.ParameterizedTestSources;
+import org.dynodao.processor.test.params.ParallelScanTotalSegmentsSource;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 
@@ -53,7 +53,7 @@ class TableSchemaTest extends AbstractUnitTest {
     }
 
     @ParameterizedTest
-    @ParameterizedTestSources.ParallelScanTotalSegmentsSource
+    @ParallelScanTotalSegmentsSource
     void asParallelScanRequest_onlyUseCase_returnsCorrectRequest(int totalSegments) {
         ScanRequest request = new SchemaStagedDynamoBuilder()
                 .usingTable()
