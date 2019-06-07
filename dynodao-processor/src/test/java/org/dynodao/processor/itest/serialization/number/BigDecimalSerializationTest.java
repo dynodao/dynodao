@@ -1,15 +1,23 @@
 package org.dynodao.processor.itest.serialization.number;
 
 import com.amazonaws.services.dynamodbv2.model.AttributeValue;
-import org.dynodao.processor.itest.AbstractSourceCompilingTest;
+import org.dynodao.processor.itest.AbstractIntegrationTest;
+import org.dynodao.processor.test.ParameterizedTestSources;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.params.provider.NullSource;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import java.math.BigDecimal;
-import java.math.BigInteger;
+import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-class BigDecimalSerializationTest extends AbstractSourceCompilingTest {
+class BigDecimalSerializationTest extends AbstractIntegrationTest {
+
+    private static final String TABLE = "things";
+    private static final String HASH_KEY_VALUE = "hashKey";
 
     @Test
     void serializeBigDecimal_null_returnsNullAttributeValue() {
@@ -17,41 +25,49 @@ class BigDecimalSerializationTest extends AbstractSourceCompilingTest {
         assertThat(value).isEqualTo(new AttributeValue().withNULL(true));
     }
 
-    @Test
-    void serializeBigDecimal_smallValue_returnsAttributeValueWithNumber() {
-        AttributeValue value = SchemaAttributeValueSerializer.serializeBigDecimal(new BigDecimal("1"));
-        assertThat(value).isEqualTo(new AttributeValue().withN("1"));
+    @ParameterizedTest
+    @ValueSource(strings = { "0", "1", "1e10", "-1", "1e-10", "-1e-10" })
+    void serializeBigDecimal_numberValues_returnsNumberAttributeValueUsingPlainString(BigDecimal bigDecimal) {
+        AttributeValue value = SchemaAttributeValueSerializer.serializeBigDecimal(bigDecimal);
+        assertThat(value).isEqualTo(new AttributeValue().withN(bigDecimal.toPlainString()));
     }
 
-    @Test
-    void serializeBigDecimal_largeValueWithExponent_returnsAttributeValueWithNumber() {
-        BigDecimal largeDecimal = new BigDecimal(BigInteger.TEN, 10);
-        AttributeValue value = SchemaAttributeValueSerializer.serializeBigDecimal(largeDecimal);
-        assertThat(value).isEqualTo(new AttributeValue().withN(largeDecimal.toPlainString()));
-    }
-
-    @Test
-    void deserializeBigDecimal_null_returnsNull() {
-        BigDecimal value = SchemaAttributeValueSerializer.deserializeBigDecimal(null);
+    @ParameterizedTest
+    @NullSource
+    @MethodSource(ParameterizedTestSources.ATTRIBUTE_VALUES_WITHOUT_NUMBER_SOURCE)
+    void deserializeBigDecimal_nullCases_returnsNull(AttributeValue attributeValue) {
+        BigDecimal value = SchemaAttributeValueSerializer.deserializeBigDecimal(attributeValue);
         assertThat(value).isNull();
     }
 
-    @Test
-    void deserializeBigDecimal_nullAttributeValue_returnsNull() {
-        BigDecimal value = SchemaAttributeValueSerializer.deserializeBigDecimal(new AttributeValue().withNULL(true));
-        assertThat(value).isNull();
+    @ParameterizedTest
+    @ValueSource(strings = { "0", "1", "-1", "10.123123123", "-1029381092.123123" })
+    void deserializeBigDecimal_numberValue_returnsBigDecimalValue(String numberValue) {
+        BigDecimal value = SchemaAttributeValueSerializer.deserializeBigDecimal(new AttributeValue().withN(numberValue));
+        assertThat(value).isEqualTo(new BigDecimal(numberValue));
     }
 
-    @Test
-    void deserializeBigDecimal_numberValueNull_returnsNull() {
-        BigDecimal value = SchemaAttributeValueSerializer.deserializeBigDecimal(new AttributeValue().withS("not number"));
-        assertThat(value).isNull();
+    @ParameterizedTest
+    @NullSource
+    @ValueSource(strings = { "0", "1", "1e10", "-1", "1e-10", "-1e-10" })
+    void putAndGet_symmetricCases_returnsItem(BigDecimal bigDecimal) {
+        Schema schema = schema(bigDecimal == null ? null : new BigDecimal(bigDecimal.toPlainString()));
+        put(schema);
+        Stream<Schema> items = dynoDao.get(new SchemaStagedDynamoBuilder()
+                .usingTable()
+                .withHashKey(HASH_KEY_VALUE));
+        assertThat(items).containsExactly(schema);
     }
 
-    @Test
-    void deserializeBigDecimal_numberValue_returnsBigDecimalValue() {
-        BigDecimal value = SchemaAttributeValueSerializer.deserializeBigDecimal(new AttributeValue().withN("1"));
-        assertThat(value).isEqualTo(new BigDecimal("1"));
+    private void put(Schema item) {
+        amazonDynamoDb.putItem(TABLE, SchemaAttributeValueSerializer.serializeSchemaAsItem(item));
+    }
+
+    private Schema schema(BigDecimal bigDecimal) {
+        Schema schema = new Schema();
+        schema.setHashKey(HASH_KEY_VALUE);
+        schema.setBigDecimal(bigDecimal);
+        return schema;
     }
 
 }
