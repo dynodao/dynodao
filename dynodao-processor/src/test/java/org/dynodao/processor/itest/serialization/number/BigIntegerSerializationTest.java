@@ -8,6 +8,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.NullSource;
 
+import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.stream.Stream;
 
@@ -59,9 +60,11 @@ class BigIntegerSerializationTest extends AbstractIntegrationTest {
     }
 
     static Stream<BigInteger> bigIntegerSources() {
-        return Stream.of(0, 1, -1, Integer.MAX_VALUE, Integer.MIN_VALUE, Long.MAX_VALUE, Long.MAX_VALUE, "123123123123123123123123123123123")
+        return Stream.of(0, 1, -1, Integer.MAX_VALUE, Integer.MIN_VALUE, Long.MAX_VALUE, Long.MAX_VALUE,
+                "9.9999999999999999999999999999999999999E+125", "-9.9999999999999999999999999999999999999E+125")
                 .map(String::valueOf)
-                .map(BigInteger::new);
+                .map(BigDecimal::new)
+                .map(BigDecimal::toBigInteger);
     }
 
     private void put(Schema item) {

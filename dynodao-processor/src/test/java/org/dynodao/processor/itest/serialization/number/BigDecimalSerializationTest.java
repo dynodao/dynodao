@@ -59,7 +59,8 @@ class BigDecimalSerializationTest extends AbstractIntegrationTest {
     }
 
     static Stream<BigDecimal> bigDecimalSources() {
-        return Stream.of(0, 1, -1, Integer.MAX_VALUE, Integer.MIN_VALUE, Long.MAX_VALUE, Long.MAX_VALUE, "1e10", "-1e10", "1e-10", "-1e-10")
+        return Stream.of(0, 1, -1, Integer.MAX_VALUE, Integer.MIN_VALUE, Long.MAX_VALUE, Long.MAX_VALUE, "1e10", "-1e10", "1e-10", "-1e-10",
+                "1E-130", "9.9999999999999999999999999999999999999E+125", "-9.9999999999999999999999999999999999999E+125", "-1E-130")
                 .map(String::valueOf)
                 .map(BigDecimal::new);
     }

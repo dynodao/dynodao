@@ -1,12 +1,21 @@
 package org.dynodao.processor.itest.serialization.number;
 
 import com.amazonaws.services.dynamodbv2.model.AttributeValue;
-import org.dynodao.processor.itest.AbstractSourceCompilingTest;
+import org.dynodao.processor.itest.AbstractIntegrationTest;
+import org.dynodao.processor.test.ParameterizedTestSources;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.params.provider.NullSource;
+
+import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-class IntegerSerializationTest extends AbstractSourceCompilingTest {
+class IntegerSerializationTest extends AbstractIntegrationTest {
+
+    private static final String TABLE = "things";
+    private static final String HASH_KEY_VALUE = "hashKey";
 
     @Test
     void serializeInteger_null_returnsNullAttributeValue() {
@@ -14,34 +23,56 @@ class IntegerSerializationTest extends AbstractSourceCompilingTest {
         assertThat(value).isEqualTo(new AttributeValue().withNULL(true));
     }
 
-    @Test
-    void serializeInteger_integer_returnsAttributeValueWithNumber() {
-        AttributeValue value = SchemaAttributeValueSerializer.serializeInteger(new Integer("1"));
-        assertThat(value).isEqualTo(new AttributeValue().withN("1"));
+    @ParameterizedTest
+    @MethodSource("integerSources")
+    void serializeInteger_integer_returnsAttributeValueWithNumber(Integer integerValue) {
+        AttributeValue value = SchemaAttributeValueSerializer.serializeInteger(integerValue);
+        assertThat(value).isEqualTo(new AttributeValue().withN(String.valueOf(integerValue)));
     }
 
-    @Test
-    void deserializeInteger_null_returnsNull() {
-        Integer value = SchemaAttributeValueSerializer.deserializeInteger(null);
+    @ParameterizedTest
+    @NullSource
+    @MethodSource(ParameterizedTestSources.ATTRIBUTE_VALUES_WITHOUT_NUMBER_SOURCE)
+    void deserializeInteger_nullCases_returnsNull(AttributeValue attributeValue) {
+        Integer value = SchemaAttributeValueSerializer.deserializeInteger(attributeValue);
         assertThat(value).isNull();
     }
 
-    @Test
-    void deserializeInteger_nullAttributeValue_returnsNull() {
-        Integer value = SchemaAttributeValueSerializer.deserializeInteger(new AttributeValue().withNULL(true));
-        assertThat(value).isNull();
+    @ParameterizedTest
+    @MethodSource("integerSources")
+    void deserializeInteger_numberValue_returnsIntegerValue(Integer integerValue) {
+        Integer value = SchemaAttributeValueSerializer.deserializeInteger(new AttributeValue().withN(String.valueOf(integerValue)));
+        assertThat(value).isEqualTo(integerValue);
     }
 
-    @Test
-    void deserializeInteger_numberValueNull_returnsNull() {
-        Integer value = SchemaAttributeValueSerializer.deserializeInteger(new AttributeValue().withS("not number"));
-        assertThat(value).isNull();
+    @ParameterizedTest
+    @NullSource
+    @MethodSource("integerSources")
+    void putAndGet_symmetricCases_returnsItem(Integer integerValue) {
+        Schema schema = schema(integerValue);
+        put(schema);
+        Stream<Schema> items = dynoDao.get(new SchemaStagedDynamoBuilder()
+                .usingTable()
+                .withHashKey(HASH_KEY_VALUE));
+        assertThat(items).containsExactly(schema);
     }
 
-    @Test
-    void deserializeInteger_numberValue_returnsIntegerValue() {
-        Integer value = SchemaAttributeValueSerializer.deserializeInteger(new AttributeValue().withN("1"));
-        assertThat(value).isEqualTo(new Integer("1"));
+    static Stream<Integer> integerSources() {
+        // integer can't store the max number value, so use max/min integer instead
+        return Stream.of(0, 1, -1, Integer.MAX_VALUE, -Integer.MAX_VALUE, Integer.MIN_VALUE)
+                .map(String::valueOf)
+                .map(Integer::new);
+    }
+
+    private void put(Schema item) {
+        amazonDynamoDb.putItem(TABLE, SchemaAttributeValueSerializer.serializeSchemaAsItem(item));
+    }
+
+    private Schema schema(Integer integerValue) {
+        Schema schema = new Schema();
+        schema.setHashKey(HASH_KEY_VALUE);
+        schema.setIntegerObject(integerValue);
+        return schema;
     }
 
 }

@@ -58,7 +58,8 @@ class DoubleSerializationTest extends AbstractIntegrationTest {
     }
 
     static Stream<Double> doubleSources() {
-        return Stream.of(0, 1, -1, Double.MIN_VALUE, Double.MAX_VALUE, Double.POSITIVE_INFINITY, Double.NEGATIVE_INFINITY, Double.NaN, Double.MIN_NORMAL)
+        // double precision can't store the max number value, so remove some of the 9s
+        return Stream.of(0, 1, -1, "1E-130", "9.9999999E+125", "-9.9999999E+125", "-1E-130")
                 .map(String::valueOf)
                 .map(Double::new);
     }
