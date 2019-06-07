@@ -1,17 +1,26 @@
 package org.dynodao.processor.itest.serialization.list;
 
 import com.amazonaws.services.dynamodbv2.model.AttributeValue;
-import org.dynodao.processor.itest.AbstractSourceCompilingTest;
+import org.dynodao.processor.itest.AbstractIntegrationTest;
+import org.dynodao.processor.test.ParameterizedTestSources;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.params.provider.NullSource;
 
 import java.util.Arrays;
 import java.util.LinkedList;
+import java.util.List;
+import java.util.stream.Stream;
 
-import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonList;
+import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.Assertions.assertThat;
 
-class LinkedListSerializationTest extends AbstractSourceCompilingTest {
+class LinkedListSerializationTest extends AbstractIntegrationTest {
+
+    private static final String TABLE = "things";
+    private static final String HASH_KEY_VALUE = "hashKey";
 
     @Test
     void serializeLinkedListOfString_null_returnsNullAttributeValue() {
@@ -19,129 +28,88 @@ class LinkedListSerializationTest extends AbstractSourceCompilingTest {
         assertThat(value).isEqualTo(new AttributeValue().withNULL(true));
     }
 
-    @Test
-    void serializeLinkedListOfString_emptyList_returnsAttributeValueWithEmptyMap() {
-        AttributeValue value = SchemaAttributeValueSerializer.serializeLinkedListOfString(listOf());
-        assertThat(value).isEqualTo(new AttributeValue().withL(emptyList()));
+    @ParameterizedTest
+    @MethodSource("linkedListsOfStringsSource")
+    void serializeLinkedListOfString_listCases_returnsListAttributeValue(LinkedList<String> linkedList) {
+        AttributeValue value = SchemaAttributeValueSerializer.serializeLinkedListOfString(linkedList);
+        assertThat(value).isEqualTo(new AttributeValue().withL(linkedList.stream()
+                .map(string -> string == null ? new AttributeValue().withNULL(true) : new AttributeValue(string))
+                .collect(toList())));
     }
 
-    @Test
-    void serializeLinkedListOfString_singletonListWithValue_returnsAttributeValueWithSingleSerializedValue() {
-        AttributeValue value = SchemaAttributeValueSerializer.serializeLinkedListOfString(listOf("value"));
-        assertThat(value).isEqualTo(new AttributeValue().withL(new AttributeValue("value")));
+    static Stream<LinkedList<String>> linkedListsOfStringsSource() {
+        return Stream.of(listOf(), listOf("value"), listOf("value1", "value2"),
+                listOf(null), listOf("value1", null), listOf(null, "value2"), listOf(null, null));
     }
 
-    @Test
-    void serializeLinkedListOfString_singletonListWithNull_returnsAttributeValueWithNullAttributeValue() {
-        AttributeValue value = SchemaAttributeValueSerializer.serializeLinkedListOfString(listOf(null));
-        assertThat(value).isEqualTo(new AttributeValue().withL(new AttributeValue().withNULL(true)));
-    }
-
-    @Test
-    void serializeLinkedListOfString_listWithMultipleValues_returnsAttributeValueWithSerializedList() {
-        AttributeValue value = SchemaAttributeValueSerializer.serializeLinkedListOfString(listOf("value1", "value2"));
-        assertThat(value).isEqualTo(new AttributeValue().withL(new AttributeValue("value1"), new AttributeValue("value2")));
-    }
-
-    @Test
-    void serializeLinkedListOfString_listWithSomeNullValues_returnsAttributeValueWithSerializeList() {
-        AttributeValue value = SchemaAttributeValueSerializer.serializeLinkedListOfString(listOf("value1", null));
-        assertThat(value).isEqualTo(new AttributeValue().withL(new AttributeValue("value1"), new AttributeValue().withNULL(true)));
-    }
-
-    @Test
-    void serializeLinkedListOfString_listWithAllNullValues_returnsAttributeValueWithSerializeList() {
-        AttributeValue value = SchemaAttributeValueSerializer.serializeLinkedListOfString(listOf(null, null));
-        assertThat(value).isEqualTo(new AttributeValue().withL(new AttributeValue().withNULL(true), new AttributeValue().withNULL(true)));
-    }
-
-    @Test
-    void deserializeLinkedListOfString_null_returnsNull() {
-        LinkedList<String> value = SchemaAttributeValueSerializer.deserializeLinkedListOfString(null);
+    @ParameterizedTest
+    @NullSource
+    @MethodSource(ParameterizedTestSources.ATTRIBUTE_VALUES_WITHOUT_LIST_SOURCE)
+    void deserializeLinkedListOfString_nullCases_returnsNull(AttributeValue attributeValue) {
+        LinkedList<String> value = SchemaAttributeValueSerializer.deserializeLinkedListOfString(attributeValue);
         assertThat(value).isNull();
     }
 
-    @Test
-    void deserializeLinkedListOfString_nullAttributeValue_returnsNull() {
-        LinkedList<String> value = SchemaAttributeValueSerializer.deserializeLinkedListOfString(new AttributeValue().withNULL(true));
-        assertThat(value).isNull();
+    @ParameterizedTest
+    @MethodSource("listsOfStringAttributeValues")
+    void deserializeLinkedListOfString_correctTypesInList_returnsLinkedList(List<AttributeValue> attributeValueList) {
+        LinkedList<String> value = SchemaAttributeValueSerializer.deserializeLinkedListOfString(new AttributeValue().withL(attributeValueList));
+        assertThat(value).containsExactly(attributeValueList.stream()
+                .map(AttributeValue::getS)
+                .toArray(String[]::new));
     }
 
-    @Test
-    void deserializeLinkedListOfString_listValueNull_returnsNull() {
-        LinkedList<String> value = SchemaAttributeValueSerializer.deserializeLinkedListOfString(new AttributeValue().withS("not list"));
-        assertThat(value).isNull();
+    static Stream<List<AttributeValue>> listsOfStringAttributeValues() {
+        return Stream.of(listOf(), listOf(new AttributeValue("value")), listOf(new AttributeValue("value1"), new AttributeValue("value2")));
     }
 
-    @Test
-    void deserializeLinkedListOfString_emptyMap_returnsEmptyLinkedList() {
-        LinkedList<String> value = SchemaAttributeValueSerializer.deserializeLinkedListOfString(new AttributeValue().withL(emptyList()));
-        assertThat(value).isEmpty();
-    }
-
-    @Test
-    void deserializeLinkedListOfString_singletonListWithValue_returnsSingletonLinkedList() {
-        LinkedList<String> value = SchemaAttributeValueSerializer.deserializeLinkedListOfString(new AttributeValue().withL(singletonList(new AttributeValue("value"))));
-        assertThat(value).containsExactly("value");
-    }
-
-    @Test
-    void deserializeLinkedListOfString_singletonListWithNull_returnsSingletonLinkedList() {
-        LinkedList<String> value = SchemaAttributeValueSerializer.deserializeLinkedListOfString(new AttributeValue().withL(singletonList(null)));
+    @ParameterizedTest
+    @NullSource
+    @MethodSource(ParameterizedTestSources.ATTRIBUTE_VALUES_WITHOUT_STRING_SOURCE)
+    void deserializeLinkedListOfString_incorrectTypesInList_returnsLinkedListOfNulls(AttributeValue attributeValue) {
+        LinkedList<String> value = SchemaAttributeValueSerializer.deserializeLinkedListOfString(new AttributeValue().withL(listOf(attributeValue)));
         assertThat(value).containsOnlyNulls().hasSize(1);
     }
 
-    @Test
-    void deserializeLinkedListOfString_singletonListWithNullAttributeValue_returnsSingletonLinkedList() {
-        LinkedList<String> value = SchemaAttributeValueSerializer.deserializeLinkedListOfString(new AttributeValue().withL(singletonList(new AttributeValue().withNULL(true))));
-        assertThat(value).containsOnlyNulls().hasSize(1);
+    @ParameterizedTest
+    @NullSource
+    @MethodSource(ParameterizedTestSources.ATTRIBUTE_VALUES_WITHOUT_STRING_SOURCE)
+    void deserializeLinkedListOfString_incorrectTypesInListMultipleItems_returnsLinkedListWithValueAndNull(AttributeValue attributeValue) {
+        LinkedList<String> value = SchemaAttributeValueSerializer.deserializeLinkedListOfString(new AttributeValue().withL(listOf(new AttributeValue("value"), attributeValue)));
+        assertThat(value).containsExactly("value", null);
     }
 
-    @Test
-    void deserializeLinkedListOfString_listWithMultipleValues_returnsLinkedListWithValues() {
-        LinkedList<String> value = SchemaAttributeValueSerializer.deserializeLinkedListOfString(new AttributeValue().withL(listOf(new AttributeValue("value1"), new AttributeValue("value2"))));
-        assertThat(value).containsExactly("value1", "value2");
+    @ParameterizedTest
+    @MethodSource("linkedListsOfStringsSource")
+    void putAndGet_symmetricCases_returnsItem(LinkedList<String> linkedList) {
+        Schema schema = schema(linkedList);
+        put(schema);
+        Stream<Schema> items = dynoDao.get(new SchemaStagedDynamoBuilder()
+                .usingTable()
+                .withHashKey(HASH_KEY_VALUE));
+        assertThat(items).containsExactly(schema);
     }
 
-    @Test
-    void deserializeLinkedListOfString_listWithMultipleValuesSomeNull_returnsLinkedListWithValueAndNull() {
-        LinkedList<String> value = SchemaAttributeValueSerializer.deserializeLinkedListOfString(new AttributeValue().withL(listOf(new AttributeValue("value1"), null)));
-        assertThat(value).containsExactly("value1", null);
+    private void put(Schema item) {
+        amazonDynamoDb.putItem(TABLE, SchemaAttributeValueSerializer.serializeSchemaAsItem(item));
     }
 
-    @Test
-    void deserializeLinkedListOfString_listWithMultipleValuesSomeNullAttributeValue_returnsLinkedListWithValueAndNull() {
-        LinkedList<String> value = SchemaAttributeValueSerializer.deserializeLinkedListOfString(new AttributeValue().withL(listOf(new AttributeValue("value1"), new AttributeValue().withNULL(true))));
-        assertThat(value).containsExactly("value1", null);
+    private Schema schema(LinkedList<String> linkedList) {
+        Schema schema = new Schema();
+        schema.setHashKey(HASH_KEY_VALUE);
+        schema.setLinkedList(linkedList);
+        return schema;
     }
 
-    @Test
-    void deserializeLinkedListOfString_listWithMultipleValuesAllNull_returnsLinkedListAllNull() {
-        LinkedList<String> value = SchemaAttributeValueSerializer.deserializeLinkedListOfString(new AttributeValue().withL(listOf(null, null)));
-        assertThat(value).containsExactly(null, null);
-    }
-
-    @Test
-    void deserializeLinkedListOfString_listWithMultipleValuesAllNullAttributeValue_returnsLinkedListAllNull() {
-        LinkedList<String> value = SchemaAttributeValueSerializer.deserializeLinkedListOfString(new AttributeValue().withL(listOf(new AttributeValue().withNULL(true), new AttributeValue().withNULL(true))));
-        assertThat(value).containsExactly(null, null);
-    }
-
-    @Test
-    void deserializeLinkedListOfString_mapWithMultipleValuesAllMixedNulls_returnsLinkedListAllNull() {
-        LinkedList<String> value = SchemaAttributeValueSerializer.deserializeLinkedListOfString(new AttributeValue().withL(listOf(null, new AttributeValue().withNULL(true))));
-        assertThat(value).containsExactly(null, null);
-    }
-
-    private <T> LinkedList<T> listOf() {
+    private static <T> LinkedList<T> listOf() {
         return new LinkedList<>();
     }
 
-    private <T> LinkedList<T> listOf(T value) {
+    private static <T> LinkedList<T> listOf(T value) {
         return new LinkedList<>(singletonList(value));
     }
 
-    private <T> LinkedList<T> listOf(T value1, T value2) {
+    private static <T> LinkedList<T> listOf(T value1, T value2) {
         return new LinkedList<>(Arrays.asList(value1, value2));
     }
 
