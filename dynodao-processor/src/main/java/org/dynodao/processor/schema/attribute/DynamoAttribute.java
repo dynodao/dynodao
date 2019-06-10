@@ -98,7 +98,7 @@ public interface DynamoAttribute {
      */
     default List<DynamoAttribute> getNestedAttributesRecursively() {
         List<DynamoAttribute> attributes = new ArrayList<>();
-        DynamoAttributeVisitor<?, ?> visitor = new SimpleDynamoAttributeVisitor<Void, Void>(null) {
+        DynamoAttributeVisitor<?, ?> visitor = new SimpleDynamoAttributeVisitor<Void, Void>() {
 
             @Override
             protected Void defaultAction(DynamoAttribute attribute, Void arg) {
