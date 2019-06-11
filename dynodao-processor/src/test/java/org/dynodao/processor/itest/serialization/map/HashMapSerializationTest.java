@@ -79,6 +79,17 @@ class HashMapSerializationTest extends AbstractIntegrationTest {
     }
 
     @ParameterizedTest
+    @MethodSource("hashMapsWithNullsSource")
+    void deserializeHashMapOfString_nullsInMap_returnsHashMapWithoutNulls(HashMap<String, String> hashMap) {
+        AttributeValue attributeValue = new AttributeValue().withM(hashMap.entrySet().stream()
+                .collect(toMap(e -> e.getKey(), e -> new AttributeValue(e.getValue()))));
+        HashMap<String, String> value = SchemaAttributeValueSerializer.deserializeHashMapOfString(attributeValue);
+        assertThat(value).isEqualTo(hashMap.entrySet().stream()
+                .collect(toMap(e -> e.getKey(), e -> e.getValue())));
+    }
+
+
+    @ParameterizedTest
     @AttributeValueSource.WithoutString
     void deserializeHashMapOfString_incorrectTypesInMapMultipleItems_returnsHashMapOnlyWithCorrectTypes(AttributeValue attributeValue) {
         HashMap<String, String> value = SchemaAttributeValueSerializer.deserializeHashMapOfString(new AttributeValue().withM(
