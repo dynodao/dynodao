@@ -19,6 +19,7 @@ import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.SimpleTypeVisitor8;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -98,7 +99,7 @@ class MapTypeSchemaParser implements SchemaParser {
                 .addStatement("$T it = $N.entrySet().iterator()", getIteratorOf(typeMirror), map)
                 .beginControlFlow("while (it.hasNext())")
                 .addStatement("$T entry = it.next()", getMapEntryOf(typeMirror))
-                .beginControlFlow("if (entry.getValue() != null)")
+                .beginControlFlow("if (entry.getKey() != null && entry.getValue() != null)")
                 .addStatement("attrValueMap.put(entry.getKey(), $L(entry.getValue()))", valueSerializationMethod)
                 .endControlFlow()
                 .endControlFlow()

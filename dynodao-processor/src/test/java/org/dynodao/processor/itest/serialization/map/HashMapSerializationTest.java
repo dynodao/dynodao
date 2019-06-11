@@ -31,13 +31,25 @@ class HashMapSerializationTest extends AbstractIntegrationTest {
     void serializeHashMapOfString_mapCases_returnsMapAttributeValue(HashMap<String, String> hashMap) {
         AttributeValue value = SchemaAttributeValueSerializer.serializeHashMapOfString(hashMap);
         assertThat(value).isEqualTo(new AttributeValue().withM(hashMap.entrySet().stream()
-                .filter(e -> e.getValue() != null)
                 .collect(toMap(e -> e.getKey(), e -> new AttributeValue(e.getValue())))));
     }
 
     static Stream<HashMap<String, String>> hashMapsOfStringsSource() {
-        return Stream.of(mapOf(), mapOf("key", "value"), mapOf("key1", "value1", "key2", "value2"),
-                mapOf("key", null), mapOf("key1", null, "key2", "value2"), mapOf("key1", "value1", "key2", null),
+        return Stream.of(mapOf(), mapOf("key", "value"), mapOf("key1", "value1", "key2", "value2"));
+    }
+
+    @ParameterizedTest
+    @MethodSource("hashMapsWithNullsSource")
+    void serializeHashMapOfString_mapCasesWithNulls_returnsMapAttributeValueExcludingNulls(HashMap<String, String> hashMap) {
+        AttributeValue value = SchemaAttributeValueSerializer.serializeHashMapOfString(hashMap);
+        assertThat(value).isEqualTo(new AttributeValue().withM(hashMap.entrySet().stream()
+                .filter(e -> e.getKey() != null)
+                .filter(e -> e.getValue() != null)
+                .collect(toMap(e -> e.getKey(), e -> new AttributeValue(e.getValue())))));
+    }
+
+    static Stream<HashMap<String, String>> hashMapsWithNullsSource() {
+        return Stream.of(mapOf("key", null), mapOf("key1", null, "key2", "value2"), mapOf("key1", "value1", "key2", null),
                 mapOf("key1", null, "key2", null), mapOf(null, "value"), mapOf(null, null));
     }
 
@@ -53,11 +65,9 @@ class HashMapSerializationTest extends AbstractIntegrationTest {
     @MethodSource("hashMapsOfStringsSource")
     void deserializeHashMapOfString_correctTypesInMap_returnsHashMap(HashMap<String, String> hashMap) {
         AttributeValue attributeValue = new AttributeValue().withM(hashMap.entrySet().stream()
-                .filter(e -> e.getValue() != null)
                 .collect(toMap(e -> e.getKey(), e -> new AttributeValue(e.getValue()))));
         HashMap<String, String> value = SchemaAttributeValueSerializer.deserializeHashMapOfString(attributeValue);
         assertThat(value).isEqualTo(hashMap.entrySet().stream()
-                .filter(e -> e.getValue() != null)
                 .collect(toMap(e -> e.getKey(), e -> e.getValue())));
     }
 
@@ -86,6 +96,21 @@ class HashMapSerializationTest extends AbstractIntegrationTest {
                 .withHashKey(HASH_KEY_VALUE));
 
         HashMap<String, String> expected = hashMap.entrySet().stream()
+                .collect(toMap(e -> e.getKey(), e -> e.getValue(), (l, r) -> l, HashMap::new));
+        assertThat(items).containsExactly(schema(expected));
+    }
+
+    @ParameterizedTest
+    @MethodSource("hashMapsWithNullsSource")
+    void putAndGet_asymmetricCases_returnsItemWithoutNulls(HashMap<String, String> hashMap) {
+        Schema schema = schema(hashMap);
+        put(schema);
+        Stream<Schema> items = dynoDao.get(new SchemaStagedDynamoBuilder()
+                .usingTable()
+                .withHashKey(HASH_KEY_VALUE));
+
+        HashMap<String, String> expected = hashMap.entrySet().stream()
+                .filter(e -> e.getKey() != null)
                 .filter(e -> e.getValue() != null)
                 .collect(toMap(e -> e.getKey(), e -> e.getValue(), (l, r) -> l, HashMap::new));
         assertThat(items).containsExactly(schema(expected));
