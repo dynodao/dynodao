@@ -82,9 +82,12 @@ class HashMapSerializationTest extends AbstractIntegrationTest {
     @MethodSource("hashMapsWithNullsSource")
     void deserializeHashMapOfString_nullsInMap_returnsHashMapWithoutNulls(HashMap<String, String> hashMap) {
         AttributeValue attributeValue = new AttributeValue().withM(hashMap.entrySet().stream()
+                .filter(e -> e.getKey() != null) // keys can't be null
                 .collect(toMap(e -> e.getKey(), e -> new AttributeValue(e.getValue()))));
         HashMap<String, String> value = SchemaAttributeValueSerializer.deserializeHashMapOfString(attributeValue);
         assertThat(value).isEqualTo(hashMap.entrySet().stream()
+                .filter(e -> e.getKey() != null)
+                .filter(e -> e.getValue() != null)
                 .collect(toMap(e -> e.getKey(), e -> e.getValue())));
     }
 
