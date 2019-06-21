@@ -1,49 +1,81 @@
 package org.dynodao.processor.itest.serialization.number;
 
 import com.amazonaws.services.dynamodbv2.model.AttributeValue;
-import org.dynodao.processor.itest.AbstractSourceCompilingTest;
+import org.dynodao.processor.itest.AbstractIntegrationTest;
+import org.dynodao.processor.test.params.AttributeValueSource;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.params.provider.NullSource;
 
+import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-class BigIntegerSerializationTest extends AbstractSourceCompilingTest {
+class BigIntegerSerializationTest extends AbstractIntegrationTest {
+
+    private static final String TABLE = "things";
+    private static final String HASH_KEY_VALUE = "hashKey";
 
     @Test
-    void serializeBigInteger_null_returnsNullAttributeValue() {
-        AttributeValue value = SchemaAttributeValueSerializer.serializeBigInteger(null);
+    void serializeBigDecimal_null_returnsNullAttributeValue() {
+        AttributeValue value = SchemaAttributeValueSerializer.serializeBigDecimal(null);
         assertThat(value).isEqualTo(new AttributeValue().withNULL(true));
     }
 
-    @Test
-    void serializeBigInteger_bigInteger_returnsAttributeValueWithNumber() {
-        AttributeValue value = SchemaAttributeValueSerializer.serializeBigInteger(new BigInteger("1"));
-        assertThat(value).isEqualTo(new AttributeValue().withN("1"));
+    @ParameterizedTest
+    @MethodSource("bigIntegerSources")
+    void serializeBigInteger_numberValues_returnsNumberAttributeValue(BigInteger bigInteger) {
+        AttributeValue value = SchemaAttributeValueSerializer.serializeBigInteger(bigInteger);
+        assertThat(value).isEqualTo(new AttributeValue().withN(bigInteger.toString()));
     }
 
-    @Test
-    void deserializeBigInteger_null_returnsNull() {
-        BigInteger value = SchemaAttributeValueSerializer.deserializeBigInteger(null);
+    @ParameterizedTest
+    @NullSource
+    @AttributeValueSource.WithoutNumber
+    void deserializeBigInteger_nullCases_returnsNull(AttributeValue attributeValue) {
+        BigInteger value = SchemaAttributeValueSerializer.deserializeBigInteger(attributeValue);
         assertThat(value).isNull();
     }
 
-    @Test
-    void deserializeBigInteger_nullAttributeValue_returnsNull() {
-        BigInteger value = SchemaAttributeValueSerializer.deserializeBigInteger(new AttributeValue().withNULL(true));
-        assertThat(value).isNull();
+    @ParameterizedTest
+    @MethodSource("bigIntegerSources")
+    void deserializeBigInteger_numberValue_returnsBigIntegerValue(BigInteger bigInteger) {
+        BigInteger value = SchemaAttributeValueSerializer.deserializeBigInteger(new AttributeValue().withN(bigInteger.toString()));
+        assertThat(value).isEqualTo(bigInteger);
     }
 
-    @Test
-    void deserializeBigInteger_numberValueNull_returnsNull() {
-        BigInteger value = SchemaAttributeValueSerializer.deserializeBigInteger(new AttributeValue().withS("not number"));
-        assertThat(value).isNull();
+    @ParameterizedTest
+    @NullSource
+    @MethodSource("bigIntegerSources")
+    void putAndGet_symmetricCases_returnsItem(BigInteger bigInteger) {
+        Schema schema = schema(bigInteger);
+        put(schema);
+        Stream<Schema> items = dynoDao.get(new SchemaStagedDynamoBuilder()
+                .usingTable()
+                .withHashKey(HASH_KEY_VALUE));
+        assertThat(items).containsExactly(schema);
     }
 
-    @Test
-    void deserializeBigInteger_numberValue_returnsBigIntegerValue() {
-        BigInteger value = SchemaAttributeValueSerializer.deserializeBigInteger(new AttributeValue().withN("1"));
-        assertThat(value).isEqualTo(new BigInteger("1"));
+    static Stream<BigInteger> bigIntegerSources() {
+        return Stream.of(0, 1, -1, Integer.MAX_VALUE, Integer.MIN_VALUE, Long.MAX_VALUE, Long.MAX_VALUE,
+                "9.9999999999999999999999999999999999999E+125", "-9.9999999999999999999999999999999999999E+125")
+                .map(String::valueOf)
+                .map(BigDecimal::new)
+                .map(BigDecimal::toBigInteger);
+    }
+
+    private void put(Schema item) {
+        amazonDynamoDb.putItem(TABLE, SchemaAttributeValueSerializer.serializeSchemaAsItem(item));
+    }
+
+    private Schema schema(BigInteger bigInteger) {
+        Schema schema = new Schema();
+        schema.setHashKey(HASH_KEY_VALUE);
+        schema.setBigInteger(bigInteger);
+        return schema;
     }
 
 }

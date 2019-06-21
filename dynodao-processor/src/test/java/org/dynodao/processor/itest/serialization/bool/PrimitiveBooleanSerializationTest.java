@@ -1,41 +1,63 @@
 package org.dynodao.processor.itest.serialization.bool;
 
 import com.amazonaws.services.dynamodbv2.model.AttributeValue;
-import org.dynodao.processor.itest.AbstractSourceCompilingTest;
-import org.junit.jupiter.api.Test;
+import org.dynodao.processor.itest.AbstractIntegrationTest;
+import org.dynodao.processor.test.params.AttributeValueSource;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.NullSource;
+import org.junit.jupiter.params.provider.ValueSource;
+
+import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-class PrimitiveBooleanSerializationTest extends AbstractSourceCompilingTest {
+class PrimitiveBooleanSerializationTest extends AbstractIntegrationTest {
 
-    @Test
-    void serializePrimitiveBoolean_onlyUseCase_returnsAttributeValueWithBoolean() {
-        AttributeValue value = SchemaAttributeValueSerializer.serializePrimitiveBoolean(true);
-        assertThat(value).isEqualTo(new AttributeValue().withBOOL(true));
+    private static final String TABLE = "things";
+    private static final String HASH_KEY_VALUE = "hashKey";
+
+    @ParameterizedTest
+    @ValueSource(booleans = { true, false })
+    void serializePrimitiveBoolean_booleanValue_returnsAttributeValueWithBoolean(boolean bool) {
+        AttributeValue value = SchemaAttributeValueSerializer.serializePrimitiveBoolean(bool);
+        assertThat(value).isEqualTo(new AttributeValue().withBOOL(bool));
     }
 
-    @Test
-    void deserializePrimitiveBoolean_null_returnsFalse() {
-        boolean value = SchemaAttributeValueSerializer.deserializePrimitiveBoolean(null);
+    @ParameterizedTest
+    @NullSource
+    @AttributeValueSource.WithoutBoolean
+    void deserializePrimitiveBoolean_nullCases_returnsFalse(AttributeValue attributeValue) {
+        boolean value = SchemaAttributeValueSerializer.deserializePrimitiveBoolean(attributeValue);
         assertThat(value).isFalse();
     }
 
-    @Test
-    void deserializePrimitiveBoolean_nullAttributeValue_returnsFalse() {
-        boolean value = SchemaAttributeValueSerializer.deserializePrimitiveBoolean(new AttributeValue().withNULL(true));
-        assertThat(value).isFalse();
+    @ParameterizedTest
+    @ValueSource(booleans = { true, false })
+    void deserializePrimitiveBoolean_booleanValue_returnsBooleanValue(boolean bool) {
+        boolean value = SchemaAttributeValueSerializer.deserializePrimitiveBoolean(new AttributeValue().withBOOL(bool));
+        assertThat(value).isEqualTo(bool);
     }
 
-    @Test
-    void deserializePrimitiveBoolean_booleanValueNull_returnsFalse() {
-        boolean value = SchemaAttributeValueSerializer.deserializePrimitiveBoolean(new AttributeValue().withS("not bool"));
-        assertThat(value).isFalse();
+    @ParameterizedTest
+    @ValueSource(booleans = { true, false })
+    void putAndGet_symmetricCases_returnsItem(boolean bool) {
+        Schema schema = schema(bool);
+        put(schema);
+        Stream<Schema> items = dynoDao.get(new SchemaStagedDynamoBuilder()
+                .usingTable()
+                .withHashKey(HASH_KEY_VALUE));
+        assertThat(items).containsExactly(schema);
     }
 
-    @Test
-    void deserializePrimitiveBoolean_booleanValue_returnsBooleanValue() {
-        boolean value = SchemaAttributeValueSerializer.deserializePrimitiveBoolean(new AttributeValue().withBOOL(true));
-        assertThat(value).isTrue();
+    private void put(Schema item) {
+        amazonDynamoDb.putItem(TABLE, SchemaAttributeValueSerializer.serializeSchemaAsItem(item));
+    }
+
+    private Schema schema(boolean booleanValue) {
+        Schema schema = new Schema();
+        schema.setHashKey(HASH_KEY_VALUE);
+        schema.setPrimitiveBoolean(booleanValue);
+        return schema;
     }
 
 }

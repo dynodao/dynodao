@@ -1,18 +1,26 @@
 package org.dynodao.processor.itest.serialization.list;
 
 import com.amazonaws.services.dynamodbv2.model.AttributeValue;
-import org.dynodao.processor.itest.AbstractSourceCompilingTest;
+import org.dynodao.processor.itest.AbstractIntegrationTest;
+import org.dynodao.processor.test.params.AttributeValueSource;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.params.provider.NullSource;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Stream;
 
-import static java.util.Collections.emptyList;
 import static java.util.Collections.singletonList;
+import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.Assertions.assertThat;
 
-class ListSerializationTest extends AbstractSourceCompilingTest {
+class ListSerializationTest extends AbstractIntegrationTest {
+
+    private static final String TABLE = "things";
+    private static final String HASH_KEY_VALUE = "hashKey";
 
     @Test
     void serializeListOfString_null_returnsNullAttributeValue() {
@@ -20,142 +28,95 @@ class ListSerializationTest extends AbstractSourceCompilingTest {
         assertThat(value).isEqualTo(new AttributeValue().withNULL(true));
     }
 
-    @Test
-    void serializeListOfString_emptyList_returnsAttributeValueWithEmptyMap() {
-        AttributeValue value = SchemaAttributeValueSerializer.serializeListOfString(emptyList());
-        assertThat(value).isEqualTo(new AttributeValue().withL(emptyList()));
+    @ParameterizedTest
+    @MethodSource("listsOfStringsSource")
+    void serializeListOfString_listCases_returnsListAttributeValue(List<String> list) {
+        AttributeValue value = SchemaAttributeValueSerializer.serializeListOfString(list);
+        assertThat(value).isEqualTo(new AttributeValue().withL(list.stream()
+                .map(string -> string == null ? new AttributeValue().withNULL(true) : new AttributeValue(string))
+                .collect(toList())));
     }
 
-    @Test
-    void serializeListOfString_singletonListWithValue_returnsAttributeValueWithSingleSerializedValue() {
-        AttributeValue value = SchemaAttributeValueSerializer.serializeListOfString(singletonList("value"));
-        assertThat(value).isEqualTo(new AttributeValue().withL(new AttributeValue("value")));
+    static Stream<List<String>> listsOfStringsSource() {
+        return Stream.of(listOf(), listOf("value"), listOf("value1", "value2"),
+                listOf(null), listOf("value1", null), listOf(null, "value2"), listOf(null, null));
     }
 
-    @Test
-    void serializeListOfString_singletonListWithNull_returnsAttributeValueWithNullAttributeValue() {
-        AttributeValue value = SchemaAttributeValueSerializer.serializeListOfString(singletonList(null));
-        assertThat(value).isEqualTo(new AttributeValue().withL(new AttributeValue().withNULL(true)));
-    }
-
-    @Test
-    void serializeListOfString_listWithMultipleValues_returnsAttributeValueWithSerializedList() {
-        AttributeValue value = SchemaAttributeValueSerializer.serializeListOfString(listOf("value1", "value2"));
-        assertThat(value).isEqualTo(new AttributeValue().withL(new AttributeValue("value1"), new AttributeValue("value2")));
-    }
-
-    @Test
-    void serializeListOfString_listWithSomeNullValues_returnsAttributeValueWithSerializeList() {
-        AttributeValue value = SchemaAttributeValueSerializer.serializeListOfString(listOf("value1", null));
-        assertThat(value).isEqualTo(new AttributeValue().withL(new AttributeValue("value1"), new AttributeValue().withNULL(true)));
-    }
-
-    @Test
-    void serializeListOfString_listWithAllNullValues_returnsAttributeValueWithSerializeList() {
-        AttributeValue value = SchemaAttributeValueSerializer.serializeListOfString(listOf(null, null));
-        assertThat(value).isEqualTo(new AttributeValue().withL(new AttributeValue().withNULL(true), new AttributeValue().withNULL(true)));
-    }
-
-    @Test
-    void deserializeListOfString_null_returnsNull() {
-        List<String> value = SchemaAttributeValueSerializer.deserializeListOfString(null);
+    @ParameterizedTest
+    @NullSource
+    @AttributeValueSource.WithoutList
+    void deserializeListOfString_nullCases_returnsNull(AttributeValue attributeValue) {
+        List<String> value = SchemaAttributeValueSerializer.deserializeListOfString(attributeValue);
         assertThat(value).isNull();
     }
 
-    @Test
-    void deserializeListOfString_nullAttributeValue_returnsNull() {
-        List<String> value = SchemaAttributeValueSerializer.deserializeListOfString(new AttributeValue().withNULL(true));
-        assertThat(value).isNull();
-    }
-
-    @Test
-    void deserializeListOfString_listValueNull_returnsNull() {
-        List<String> value = SchemaAttributeValueSerializer.deserializeListOfString(new AttributeValue().withS("not list"));
-        assertThat(value).isNull();
-    }
-
-    @Test
-    void deserializeListOfString_emptyMap_returnsEmptyArrayList() {
-        List<String> value = SchemaAttributeValueSerializer.deserializeListOfString(new AttributeValue().withL(emptyList()));
+    @ParameterizedTest
+    @MethodSource("listsOfStringAttributeValues")
+    void deserializeListOfString_correctTypesInList_returnsList(List<AttributeValue> attributeValueList) {
+        List<String> value = SchemaAttributeValueSerializer.deserializeListOfString(new AttributeValue().withL(attributeValueList));
         assertThat(value)
                 .isInstanceOf(ArrayList.class)
-                .isEmpty();
+                .containsExactly(attributeValueList.stream()
+                    .map(AttributeValue::getS)
+                    .toArray(String[]::new));
     }
 
-    @Test
-    void deserializeListOfString_singletonListWithValue_returnsSingletonArrayList() {
-        List<String> value = SchemaAttributeValueSerializer.deserializeListOfString(new AttributeValue().withL(singletonList(new AttributeValue("value"))));
-        assertThat(value)
-                .isInstanceOf(ArrayList.class)
-                .containsExactly("value");
+    static Stream<List<AttributeValue>> listsOfStringAttributeValues() {
+        return Stream.of(listOf(), listOf(new AttributeValue("value")), listOf(new AttributeValue("value1"), new AttributeValue("value2")));
     }
 
-    @Test
-    void deserializeListOfString_singletonListWithNull_returnsSingletonArrayList() {
-        List<String> value = SchemaAttributeValueSerializer.deserializeListOfString(new AttributeValue().withL(singletonList(null)));
+    @ParameterizedTest
+    @NullSource
+    @AttributeValueSource.WithoutString
+    void deserializeListOfString_incorrectTypesInList_returnsListOfNulls(AttributeValue attributeValue) {
+        List<String> value = SchemaAttributeValueSerializer.deserializeListOfString(new AttributeValue().withL(listOf(attributeValue)));
         assertThat(value)
                 .isInstanceOf(ArrayList.class)
                 .containsOnlyNulls().hasSize(1);
     }
 
-    @Test
-    void deserializeListOfString_singletonListWithNullAttributeValue_returnsSingletonArrayList() {
-        List<String> value = SchemaAttributeValueSerializer.deserializeListOfString(new AttributeValue().withL(singletonList(new AttributeValue().withNULL(true))));
+    @ParameterizedTest
+    @NullSource
+    @AttributeValueSource.WithoutString
+    void deserializeListOfString_incorrectTypesInListMultipleItems_returnsListWithValueAndNull(AttributeValue attributeValue) {
+        List<String> value = SchemaAttributeValueSerializer.deserializeListOfString(new AttributeValue().withL(listOf(new AttributeValue("value"), attributeValue)));
         assertThat(value)
                 .isInstanceOf(ArrayList.class)
-                .containsOnlyNulls().hasSize(1);
+                .containsExactly("value", null);
     }
 
-    @Test
-    void deserializeListOfString_listWithMultipleValues_returnsArrayListWithValues() {
-        List<String> value = SchemaAttributeValueSerializer.deserializeListOfString(new AttributeValue().withL(listOf(new AttributeValue("value1"), new AttributeValue("value2"))));
-        assertThat(value)
-                .isInstanceOf(ArrayList.class)
-                .containsExactly("value1", "value2");
+    @ParameterizedTest
+    @MethodSource("listsOfStringsSource")
+    void putAndGet_symmetricCases_returnsItem(List<String> list) {
+        Schema schema = schema(list);
+        put(schema);
+        Stream<Schema> items = dynoDao.get(new SchemaStagedDynamoBuilder()
+                .usingTable()
+                .withHashKey(HASH_KEY_VALUE));
+        assertThat(items).containsExactly(schema);
     }
 
-    @Test
-    void deserializeListOfString_listWithMultipleValuesSomeNull_returnsArrayListWithValueAndNull() {
-        List<String> value = SchemaAttributeValueSerializer.deserializeListOfString(new AttributeValue().withL(listOf(new AttributeValue("value1"), null)));
-        assertThat(value)
-                .isInstanceOf(ArrayList.class)
-                .containsExactly("value1", null);
+    private void put(Schema item) {
+        amazonDynamoDb.putItem(TABLE, SchemaAttributeValueSerializer.serializeSchemaAsItem(item));
     }
 
-    @Test
-    void deserializeListOfString_listWithMultipleValuesSomeNullAttributeValue_returnsArrayListWithValueAndNull() {
-        List<String> value = SchemaAttributeValueSerializer.deserializeListOfString(new AttributeValue().withL(listOf(new AttributeValue("value1"), new AttributeValue().withNULL(true))));
-        assertThat(value)
-                .isInstanceOf(ArrayList.class)
-                .containsExactly("value1", null);
+    private Schema schema(List<String> list) {
+        Schema schema = new Schema();
+        schema.setHashKey(HASH_KEY_VALUE);
+        schema.setList(list);
+        return schema;
     }
 
-    @Test
-    void deserializeListOfString_listWithMultipleValuesAllNull_returnsArrayListAllNull() {
-        List<String> value = SchemaAttributeValueSerializer.deserializeListOfString(new AttributeValue().withL(listOf(null, null)));
-        assertThat(value)
-                .isInstanceOf(ArrayList.class)
-                .containsExactly(null, null);
+    private static <T> List<T> listOf() {
+        return new ArrayList<>();
     }
 
-    @Test
-    void deserializeListOfString_listWithMultipleValuesAllNullAttributeValue_returnsArrayListAllNull() {
-        List<String> value = SchemaAttributeValueSerializer.deserializeListOfString(new AttributeValue().withL(listOf(new AttributeValue().withNULL(true), new AttributeValue().withNULL(true))));
-        assertThat(value)
-                .isInstanceOf(ArrayList.class)
-                .containsExactly(null, null);
+    private static <T> List<T> listOf(T value) {
+        return new ArrayList<>(singletonList(value));
     }
 
-    @Test
-    void deserializeListOfString_mapWithMultipleValuesAllMixedNulls_returnsArrayListAllNull() {
-        List<String> value = SchemaAttributeValueSerializer.deserializeListOfString(new AttributeValue().withL(listOf(null, new AttributeValue().withNULL(true))));
-        assertThat(value)
-                .isInstanceOf(ArrayList.class)
-                .containsExactly(null, null);
-    }
-
-    private <T> List<T> listOf(T value1, T value2) {
-        return Arrays.asList(value1, value2);
+    private static <T> List<T> listOf(T value1, T value2) {
+        return new ArrayList<>(Arrays.asList(value1, value2));
     }
 
 }

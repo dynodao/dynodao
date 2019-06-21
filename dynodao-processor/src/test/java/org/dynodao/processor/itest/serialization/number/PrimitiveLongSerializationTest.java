@@ -1,41 +1,71 @@
 package org.dynodao.processor.itest.serialization.number;
 
 import com.amazonaws.services.dynamodbv2.model.AttributeValue;
-import org.dynodao.processor.itest.AbstractSourceCompilingTest;
-import org.junit.jupiter.api.Test;
+import org.dynodao.processor.itest.AbstractIntegrationTest;
+import org.dynodao.processor.test.params.AttributeValueSource;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.params.provider.NullSource;
+
+import java.util.stream.LongStream;
+import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-class PrimitiveLongSerializationTest extends AbstractSourceCompilingTest {
+class PrimitiveLongSerializationTest extends AbstractIntegrationTest {
 
-    @Test
-    void serializePrimitiveLong_onlyUseCase_returnsAttributeValueWithNumber() {
-        AttributeValue value = SchemaAttributeValueSerializer.serializePrimitiveLong(1L);
-        assertThat(value).isEqualTo(new AttributeValue().withN("1"));
+    private static final String TABLE = "things";
+    private static final String HASH_KEY_VALUE = "hashKey";
+
+    @ParameterizedTest
+    @MethodSource("longSources")
+    void serializePrimitiveLong_onlyUseCase_returnsAttributeValueWithNumber(long longValue) {
+        AttributeValue value = SchemaAttributeValueSerializer.serializePrimitiveLong(longValue);
+        assertThat(value).isEqualTo(new AttributeValue().withN(String.valueOf(longValue)));
     }
 
-    @Test
-    void deserializePrimitiveLong_null_returnsZero() {
-        long value = SchemaAttributeValueSerializer.deserializePrimitiveLong(null);
+    @ParameterizedTest
+    @NullSource
+    @AttributeValueSource.WithoutNumber
+    void deserializePrimitiveLong_nullCases_returnsZero(AttributeValue attributeValue) {
+        long value = SchemaAttributeValueSerializer.deserializePrimitiveLong(attributeValue);
         assertThat(value).isZero();
     }
 
-    @Test
-    void deserializePrimitiveLong_nullAttributeValue_returnsZero() {
-        long value = SchemaAttributeValueSerializer.deserializePrimitiveLong(new AttributeValue().withNULL(true));
-        assertThat(value).isZero();
+    @ParameterizedTest
+    @MethodSource("longSources")
+    void deserializePrimitiveLong_numberValue_returnsLongValue(long longValue) {
+        long value = SchemaAttributeValueSerializer.deserializePrimitiveLong(new AttributeValue().withN(String.valueOf(longValue)));
+        assertThat(value).isEqualTo(longValue);
     }
 
-    @Test
-    void deserializePrimitiveLong_numberValueNull_returnsZero() {
-        long value = SchemaAttributeValueSerializer.deserializePrimitiveLong(new AttributeValue().withS("not number"));
-        assertThat(value).isZero();
+    @ParameterizedTest
+    @MethodSource("longSources")
+    void putAndGet_symmetricCases_returnsItem(long longValue) {
+        Schema schema = schema(longValue);
+        put(schema);
+        Stream<Schema> items = dynoDao.get(new SchemaStagedDynamoBuilder()
+                .usingTable()
+                .withHashKey(HASH_KEY_VALUE));
+        assertThat(items).containsExactly(schema);
     }
 
-    @Test
-    void deserializePrimitiveLong_numberValue_returnsLongValue() {
-        long value = SchemaAttributeValueSerializer.deserializePrimitiveLong(new AttributeValue().withN("1"));
-        assertThat(value).isEqualTo(1L);
+    static LongStream longSources() {
+        // long can't store the max number value, so use max/min long instead
+        return Stream.of(0, 1, -1, Long.MAX_VALUE, -Long.MAX_VALUE, Long.MIN_VALUE)
+                .map(String::valueOf)
+                .mapToLong(Long::new);
+    }
+
+    private void put(Schema item) {
+        amazonDynamoDb.putItem(TABLE, SchemaAttributeValueSerializer.serializeSchemaAsItem(item));
+    }
+
+    private Schema schema(long longValue) {
+        Schema schema = new Schema();
+        schema.setHashKey(HASH_KEY_VALUE);
+        schema.setPrimitiveLong(longValue);
+        return schema;
     }
 
 }

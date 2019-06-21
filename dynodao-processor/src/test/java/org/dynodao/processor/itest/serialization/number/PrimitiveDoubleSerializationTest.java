@@ -1,41 +1,71 @@
 package org.dynodao.processor.itest.serialization.number;
 
 import com.amazonaws.services.dynamodbv2.model.AttributeValue;
-import org.dynodao.processor.itest.AbstractSourceCompilingTest;
-import org.junit.jupiter.api.Test;
+import org.dynodao.processor.itest.AbstractIntegrationTest;
+import org.dynodao.processor.test.params.AttributeValueSource;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.params.provider.NullSource;
+
+import java.util.stream.DoubleStream;
+import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-class PrimitiveDoubleSerializationTest extends AbstractSourceCompilingTest {
+class PrimitiveDoubleSerializationTest extends AbstractIntegrationTest {
 
-    @Test
-    void serializePrimitiveDouble_onlyUseCase_returnsAttributeValueWithNumber() {
-        AttributeValue value = SchemaAttributeValueSerializer.serializePrimitiveDouble(0.125);
-        assertThat(value).isEqualTo(new AttributeValue().withN("0.125"));
+    private static final String TABLE = "things";
+    private static final String HASH_KEY_VALUE = "hashKey";
+
+    @ParameterizedTest
+    @MethodSource("doubleSources")
+    void serializePrimitiveDouble_onlyUseCase_returnsAttributeValueWithNumber(double doubleValue) {
+        AttributeValue value = SchemaAttributeValueSerializer.serializePrimitiveDouble(doubleValue);
+        assertThat(value).isEqualTo(new AttributeValue().withN(String.valueOf(doubleValue)));
     }
 
-    @Test
-    void deserializePrimitiveDouble_null_returnsZero() {
-        double value = SchemaAttributeValueSerializer.deserializePrimitiveDouble(null);
+    @ParameterizedTest
+    @NullSource
+    @AttributeValueSource.WithoutNumber
+    void deserializePrimitiveDouble_nullCases_returnsZero(AttributeValue attributeValue) {
+        double value = SchemaAttributeValueSerializer.deserializePrimitiveDouble(attributeValue);
         assertThat(value).isZero();
     }
 
-    @Test
-    void deserializePrimitiveDouble_nullAttributeValue_returnsZero() {
-        double value = SchemaAttributeValueSerializer.deserializePrimitiveDouble(new AttributeValue().withNULL(true));
-        assertThat(value).isZero();
+    @ParameterizedTest
+    @MethodSource("doubleSources")
+    void deserializePrimitiveDouble_numberValue_returnsDoubleValue(double doubleValue) {
+        double value = SchemaAttributeValueSerializer.deserializePrimitiveDouble(new AttributeValue().withN(String.valueOf(doubleValue)));
+        assertThat(value).isEqualTo(doubleValue);
     }
 
-    @Test
-    void deserializePrimitiveDouble_numberValueNull_returnsZero() {
-        double value = SchemaAttributeValueSerializer.deserializePrimitiveDouble(new AttributeValue().withS("not number"));
-        assertThat(value).isZero();
+    @ParameterizedTest
+    @MethodSource("doubleSources")
+    void putAndGet_symmetricCases_returnsItem(double doubleValue) {
+        Schema schema = schema(doubleValue);
+        put(schema);
+        Stream<Schema> items = dynoDao.get(new SchemaStagedDynamoBuilder()
+                .usingTable()
+                .withHashKey(HASH_KEY_VALUE));
+        assertThat(items).containsExactly(schema);
     }
 
-    @Test
-    void deserializePrimitiveDouble_numberValue_returnsDoubleValue() {
-        double value = SchemaAttributeValueSerializer.deserializePrimitiveDouble(new AttributeValue().withN("0.125"));
-        assertThat(value).isEqualTo(0.125);
+    static DoubleStream doubleSources() {
+        // double precision can't store the max number value, so remove some of the 9s
+        return Stream.of(0, 1, -1, "1E-130", "9.9999999E+125", "-9.9999999E+125", "-1E-130")
+                .map(String::valueOf)
+                .mapToDouble(Double::new);
+    }
+
+    private void put(Schema item) {
+        amazonDynamoDb.putItem(TABLE, SchemaAttributeValueSerializer.serializeSchemaAsItem(item));
+    }
+
+    private Schema schema(double doubleValue) {
+        Schema schema = new Schema();
+        schema.setHashKey(HASH_KEY_VALUE);
+        schema.setPrimitiveDouble(doubleValue);
+        return schema;
     }
 
 }

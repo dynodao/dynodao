@@ -1,17 +1,25 @@
 package org.dynodao.processor.itest.serialization.map;
 
 import com.amazonaws.services.dynamodbv2.model.AttributeValue;
-import org.dynodao.processor.itest.AbstractSourceCompilingTest;
+import org.dynodao.processor.itest.AbstractIntegrationTest;
+import org.dynodao.processor.test.params.AttributeValueSource;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.params.provider.NullSource;
 
+import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.stream.Stream;
 
-import static java.util.Collections.emptyMap;
-import static java.util.Collections.singletonMap;
+import static java.util.stream.Collectors.toMap;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.entry;
 
-class LinkedHashMapSerializationTest extends AbstractSourceCompilingTest {
+class LinkedHashMapSerializationTest extends AbstractIntegrationTest {
+
+    private static final String TABLE = "things";
+    private static final String HASH_KEY_VALUE = "hashKey";
 
     @Test
     void serializeLinkedHashMapOfString_null_returnsNullAttributeValue() {
@@ -19,149 +27,118 @@ class LinkedHashMapSerializationTest extends AbstractSourceCompilingTest {
         assertThat(value).isEqualTo(new AttributeValue().withNULL(true));
     }
 
-    @Test
-    void serializeLinkedHashMapOfString_emptyMap_returnsAttributeValueWithEmptyMap() {
-        AttributeValue value = SchemaAttributeValueSerializer.serializeLinkedHashMapOfString(mapOf());
-        assertThat(value).isEqualTo(new AttributeValue().withM(emptyMap()));
+    @ParameterizedTest
+    @MethodSource("linkedHashMapsOfStringsSource")
+    void serializeLinkedHashMapOfString_mapCases_returnsMapAttributeValue(LinkedHashMap<String, String> linkedHashMap) {
+        AttributeValue value = SchemaAttributeValueSerializer.serializeLinkedHashMapOfString(linkedHashMap);
+        assertThat(value).isEqualTo(new AttributeValue().withM(linkedHashMap.entrySet().stream()
+                .collect(toMap(e -> e.getKey(), e -> new AttributeValue(e.getValue())))));
     }
 
-    @Test
-    void serializeLinkedHashMapOfString_singletonMapWithValue_returnsAttributeValueWithSingleValueSerializedMap() {
-        AttributeValue value = SchemaAttributeValueSerializer.serializeLinkedHashMapOfString(mapOf("key", "value"));
-        assertThat(value).isEqualTo(new AttributeValue().withM(singletonMap("key", new AttributeValue("value"))));
+    static Stream<HashMap<String, String>> linkedHashMapsOfStringsSource() {
+        return Stream.of(mapOf(), mapOf("key", "value"), mapOf("key1", "value1", "key2", "value2"));
     }
 
-    @Test
-    void serializeLinkedHashMapOfString_singletonMapWithNullValue_returnsAttributeValueWithSingleNullAttributeValue() {
-        AttributeValue value = SchemaAttributeValueSerializer.serializeLinkedHashMapOfString(mapOf("key", null));
-        assertThat(value).isEqualTo(new AttributeValue().withM(singletonMap("key", new AttributeValue().withNULL(true))));
+    @ParameterizedTest
+    @MethodSource("linkedHashMapsWithNullsSource")
+    void serializeLinkedHashMapOfString_mapCasesWithNulls_returnsMapAttributeValueExcludingNulls(LinkedHashMap<String, String> linkedHashMap) {
+        AttributeValue value = SchemaAttributeValueSerializer.serializeLinkedHashMapOfString(linkedHashMap);
+        assertThat(value).isEqualTo(new AttributeValue().withM(linkedHashMap.entrySet().stream()
+                .filter(e -> e.getKey() != null)
+                .filter(e -> e.getValue() != null)
+                .collect(toMap(e -> e.getKey(), e -> new AttributeValue(e.getValue())))));
     }
 
-    @Test
-    void serializeLinkedHashMapOfString_mapWithMultipleValues_returnsAttributeValueWithSerializedMap() {
-        AttributeValue value = SchemaAttributeValueSerializer.serializeLinkedHashMapOfString(mapOf("key1", "value1", "key2", "value2"));
-        assertThat(value).isEqualTo(new AttributeValue().withM(mapOf(
-                "key1", new AttributeValue("value1"),
-                "key2", new AttributeValue("value2"))));
+    static Stream<HashMap<String, String>> linkedHashMapsWithNullsSource() {
+        return Stream.of(mapOf("key", null), mapOf("key1", null, "key2", "value2"), mapOf("key1", "value1", "key2", null),
+                mapOf("key1", null, "key2", null), mapOf(null, "value"), mapOf(null, null));
     }
 
-    @Test
-    void serializeLinkedHashMapOfString_mapWithMultipleValuesSomeNull_returnsAttributeValueWithSerializedMap() {
-        AttributeValue value = SchemaAttributeValueSerializer.serializeLinkedHashMapOfString(mapOf("key1", "value1", "key2", null));
-        assertThat(value).isEqualTo(new AttributeValue().withM(mapOf(
-                "key1", new AttributeValue("value1"),
-                "key2", new AttributeValue().withNULL(true))));
-    }
-
-    @Test
-    void serializeLinkedHashMapOfString_mapWithMultipleValuesAllNull_returnsAttributeValueWithSerializedMap() {
-        AttributeValue value = SchemaAttributeValueSerializer.serializeLinkedHashMapOfString(mapOf("key1", null, "key2", null));
-        assertThat(value).isEqualTo(new AttributeValue().withM(mapOf(
-                "key1", new AttributeValue().withNULL(true),
-                "key2", new AttributeValue().withNULL(true))));
-    }
-
-    @Test
-    void deserializeLinkedHashMapOfString_null_returnsNull() {
-        LinkedHashMap<String, String> value = SchemaAttributeValueSerializer.deserializeLinkedHashMapOfString(null);
+    @ParameterizedTest
+    @NullSource
+    @AttributeValueSource.WithoutMap
+    void deserializeLinkedHashMapOfString_nullCases_returnsNull(AttributeValue attributeValue) {
+        LinkedHashMap<String, String> value = SchemaAttributeValueSerializer.deserializeLinkedHashMapOfString(attributeValue);
         assertThat(value).isNull();
     }
 
-    @Test
-    void deserializeLinkedHashMapOfString_nullAttributeValue_returnsNull() {
-        LinkedHashMap<String, String> value = SchemaAttributeValueSerializer.deserializeLinkedHashMapOfString(new AttributeValue().withNULL(true));
-        assertThat(value).isNull();
+    @ParameterizedTest
+    @MethodSource("linkedHashMapsOfStringsSource")
+    void deserializeLinkedHashMapOfString_correctTypesInMap_returnsHashMap(HashMap<String, String> hashMap) {
+        AttributeValue attributeValue = new AttributeValue().withM(hashMap.entrySet().stream()
+                .collect(toMap(e -> e.getKey(), e -> new AttributeValue(e.getValue()))));
+        LinkedHashMap<String, String> value = SchemaAttributeValueSerializer.deserializeLinkedHashMapOfString(attributeValue);
+        assertThat(value).isEqualTo(hashMap.entrySet().stream()
+                .collect(toMap(e -> e.getKey(), e -> e.getValue())));
     }
 
-    @Test
-    void deserializeLinkedHashMapOfString_mapValueNull_returnsNull() {
-        LinkedHashMap<String, String> value = SchemaAttributeValueSerializer.deserializeLinkedHashMapOfString(new AttributeValue().withS("string"));
-        assertThat(value).isNull();
-    }
-
-    @Test
-    void deserializeLinkedHashMapOfString_emptyMap_returnsEmptyLinkedHashMap() {
-        LinkedHashMap<String, String> value = SchemaAttributeValueSerializer.deserializeLinkedHashMapOfString(new AttributeValue().withM(emptyMap()));
+    @ParameterizedTest
+    @AttributeValueSource.WithoutString
+    void deserializeLinkedHashMapOfString_incorrectTypesInMap_returnsHashMapWithoutItems(AttributeValue attributeValue) {
+        LinkedHashMap<String, String> value = SchemaAttributeValueSerializer.deserializeLinkedHashMapOfString(new AttributeValue().withM(mapOf("key", attributeValue)));
         assertThat(value).isEmpty();
     }
 
-    @Test
-    void deserializeLinkedHashMapOfString_singletonMapWithValue_returnsSingletonLinkedHashMap() {
-        LinkedHashMap<String, String> value = SchemaAttributeValueSerializer.deserializeLinkedHashMapOfString(new AttributeValue().withM(singletonMap("key", new AttributeValue("value"))));
-        assertThat(value).containsExactly(entry("key", "value"));
+    @ParameterizedTest
+    @AttributeValueSource.WithoutString
+    void deserializeLinkedHashMapOfString_incorrectTypesInMapMultipleItems_returnsHashMapOnlyWithCorrectTypes(AttributeValue attributeValue) {
+        LinkedHashMap<String, String> value = SchemaAttributeValueSerializer.deserializeLinkedHashMapOfString(new AttributeValue().withM(
+                mapOf("present", new AttributeValue("value"), "non-present", attributeValue)));
+        assertThat(value).containsExactly(entry("present", "value"));
     }
 
-    @Test
-    void deserializeLinkedHashMapOfString_singletonMapWithNull_returnsSingletonLinkedHashMap() {
-        LinkedHashMap<String, String> value = SchemaAttributeValueSerializer.deserializeLinkedHashMapOfString(new AttributeValue().withM(singletonMap("key", null)));
-        assertThat(value).containsExactly(entry("key", null));
+    @ParameterizedTest
+    @MethodSource("linkedHashMapsOfStringsSource")
+    void putAndGet_symmetricCases_returnsItem(LinkedHashMap<String, String> linkedHashMap) {
+        Schema schema = schema(linkedHashMap);
+        put(schema);
+        Stream<Schema> items = dynoDao.get(new SchemaStagedDynamoBuilder()
+                .usingTable()
+                .withHashKey(HASH_KEY_VALUE));
+
+        LinkedHashMap<String, String> expected = linkedHashMap.entrySet().stream()
+                .collect(toMap(e -> e.getKey(), e -> e.getValue(), (l, r) -> l, LinkedHashMap::new));
+        assertThat(items).containsExactly(schema(expected));
     }
 
-    @Test
-    void deserializeLinkedHashMapOfString_singletonMapWithNullAttributeValue_returnsSingletonLinkedHashMap() {
-        LinkedHashMap<String, String> value = SchemaAttributeValueSerializer.deserializeLinkedHashMapOfString(new AttributeValue().withM(singletonMap("key", new AttributeValue().withNULL(true))));
-        assertThat(value).containsExactly(entry("key", null));
+    @ParameterizedTest
+    @MethodSource("linkedHashMapsWithNullsSource")
+    void putAndGet_asymmetricCases_returnsItemWithoutNulls(LinkedHashMap<String, String> linkedHashMap) {
+        Schema schema = schema(linkedHashMap);
+        put(schema);
+        Stream<Schema> items = dynoDao.get(new SchemaStagedDynamoBuilder()
+                .usingTable()
+                .withHashKey(HASH_KEY_VALUE));
+
+        LinkedHashMap<String, String> expected = linkedHashMap.entrySet().stream()
+                .filter(e -> e.getKey() != null)
+                .filter(e -> e.getValue() != null)
+                .collect(toMap(e -> e.getKey(), e -> e.getValue(), (l, r) -> l, LinkedHashMap::new));
+        assertThat(items).containsExactly(schema(expected));
     }
 
-    @Test
-    void deserializeLinkedHashMapOfString_mapWithMultipleValues_returnsLinkedHashMapWithValues() {
-        LinkedHashMap<String, String> value = SchemaAttributeValueSerializer.deserializeLinkedHashMapOfString(new AttributeValue().withM(mapOf(
-                "key1", new AttributeValue("value1"),
-                "key2", new AttributeValue("value2"))));
-        assertThat(value).containsExactly(entry("key1", "value1"), entry("key2", "value2"));
+    private void put(Schema item) {
+        amazonDynamoDb.putItem(TABLE, SchemaAttributeValueSerializer.serializeSchemaAsItem(item));
     }
 
-    @Test
-    void deserializeLinkedHashMapOfString_mapWithMultipleValuesSomeNull_returnsLinkedHashMapWithValueAndNull() {
-        LinkedHashMap<String, String> value = SchemaAttributeValueSerializer.deserializeLinkedHashMapOfString(new AttributeValue().withM(mapOf(
-                "key1", new AttributeValue("value1"),
-                "key2", null)));
-        assertThat(value).containsExactly(entry("key1", "value1"), entry("key2", null));
+    private Schema schema(LinkedHashMap<String, String> linkedHashMap) {
+        Schema schema = new Schema();
+        schema.setHashKey(HASH_KEY_VALUE);
+        schema.setLinkedHashMap(linkedHashMap);
+        return schema;
     }
 
-    @Test
-    void deserializeLinkedHashMapOfString_mapWithMultipleValuesSomeNullAttributeValue_returnsLinkedHashMapWithValueAndNull() {
-        LinkedHashMap<String, String> value = SchemaAttributeValueSerializer.deserializeLinkedHashMapOfString(new AttributeValue().withM(mapOf(
-                "key1", new AttributeValue("value1"),
-                "key2", new AttributeValue().withNULL(true))));
-        assertThat(value).containsExactly(entry("key1", "value1"), entry("key2", null));
-    }
-
-    @Test
-    void deserializeLinkedHashMapOfString_mapWithMultipleValuesAllNull_returnsLinkedHashMapAllNull() {
-        LinkedHashMap<String, String> value = SchemaAttributeValueSerializer.deserializeLinkedHashMapOfString(new AttributeValue().withM(mapOf(
-                "key1", null,
-                "key2", null)));
-        assertThat(value).containsExactly(entry("key1", null), entry("key2", null));
-    }
-
-    @Test
-    void deserializeLinkedHashMapOfString_mapWithMultipleValuesAllNullAttributeValue_returnsLinkedHashMapAllNull() {
-        LinkedHashMap<String, String> value = SchemaAttributeValueSerializer.deserializeLinkedHashMapOfString(new AttributeValue().withM(mapOf(
-                "key1", new AttributeValue().withNULL(true),
-                "key2", new AttributeValue().withNULL(true))));
-        assertThat(value).containsExactly(entry("key1", null), entry("key2", null));
-    }
-
-    @Test
-    void deserializeLinkedHashMapOfString_mapWithMultipleValuesAllMixedNulls_returnsLinkedHashMapAllNull() {
-        LinkedHashMap<String, String> value = SchemaAttributeValueSerializer.deserializeLinkedHashMapOfString(new AttributeValue().withM(mapOf(
-                "key1", null,
-                "key2", new AttributeValue().withNULL(true))));
-        assertThat(value).containsExactly(entry("key1", null), entry("key2", null));
-    }
-
-    private <K, V> LinkedHashMap<K, V> mapOf() {
+    private static <K, V> LinkedHashMap<K, V> mapOf() {
         return new LinkedHashMap<>();
     }
 
-    private <K, V> LinkedHashMap<K, V> mapOf(K key1, V value1) {
+    private static <K, V> LinkedHashMap<K, V> mapOf(K key1, V value1) {
         LinkedHashMap<K, V> map = new LinkedHashMap<>();
         map.put(key1, value1);
         return map;
     }
 
-    private <K, V> LinkedHashMap<K, V> mapOf(K key1, V value1, K key2, V value2) {
+    private static <K, V> LinkedHashMap<K, V> mapOf(K key1, V value1, K key2, V value2) {
         LinkedHashMap<K, V> map = new LinkedHashMap<>();
         map.put(key1, value1);
         map.put(key2, value2);

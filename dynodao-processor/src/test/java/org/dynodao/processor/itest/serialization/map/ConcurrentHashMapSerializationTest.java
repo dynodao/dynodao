@@ -1,15 +1,24 @@
 package org.dynodao.processor.itest.serialization.map;
 
 import com.amazonaws.services.dynamodbv2.model.AttributeValue;
-import org.dynodao.processor.itest.AbstractSourceCompilingTest;
+import org.dynodao.processor.itest.AbstractIntegrationTest;
+import org.dynodao.processor.test.params.AttributeValueSource;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.params.provider.NullSource;
 
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Stream;
 
+import static java.util.stream.Collectors.toMap;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.entry;
 
-class ConcurrentHashMapSerializationTest extends AbstractSourceCompilingTest {
+class ConcurrentHashMapSerializationTest extends AbstractIntegrationTest {
+
+    private static final String TABLE = "things";
+    private static final String HASH_KEY_VALUE = "hashKey";
 
     @Test
     void serializeConcurrentHashMapOfString_null_returnsNullAttributeValue() {
@@ -17,75 +26,83 @@ class ConcurrentHashMapSerializationTest extends AbstractSourceCompilingTest {
         assertThat(value).isEqualTo(new AttributeValue().withNULL(true));
     }
 
-    @Test
-    void serializeConcurrentHashMapOfString_emptyConcurrentHashMap_returnsAttributeValueWithEmptyConcurrentHashMap() {
-        AttributeValue value = SchemaAttributeValueSerializer.serializeConcurrentHashMapOfString(mapOf());
-        assertThat(value).isEqualTo(new AttributeValue().withM(mapOf()));
+    @ParameterizedTest
+    @MethodSource("concurrentHashMapsOfStringsSource")
+    void serializeConcurrentHashMapOfString_mapCases_returnsMapAttributeValue(ConcurrentHashMap<String, String> concurrentHashMap) {
+        AttributeValue value = SchemaAttributeValueSerializer.serializeConcurrentHashMapOfString(concurrentHashMap);
+        assertThat(value).isEqualTo(new AttributeValue().withM(concurrentHashMap.entrySet().stream()
+                .collect(toMap(e -> e.getKey(), e -> new AttributeValue(e.getValue())))));
     }
 
-    @Test
-    void serializeConcurrentHashMapOfString_singletonConcurrentHashMapWithValue_returnsAttributeValueWithSingleValueSerializedConcurrentHashMap() {
-        AttributeValue value = SchemaAttributeValueSerializer.serializeConcurrentHashMapOfString(mapOf("key", "value"));
-        assertThat(value).isEqualTo(new AttributeValue().withM(mapOf("key", new AttributeValue("value"))));
+    static Stream<ConcurrentHashMap<String, String>> concurrentHashMapsOfStringsSource() {
+        return Stream.of(mapOf(), mapOf("key", "value"), mapOf("key1", "value1", "key2", "value2"));
     }
 
-    @Test
-    void serializeConcurrentHashMapOfString_mapWithMultipleValues_returnsAttributeValueWithSerializedConcurrentHashMap() {
-        AttributeValue value = SchemaAttributeValueSerializer.serializeConcurrentHashMapOfString(mapOf("key1", "value1", "key2", "value2"));
-        assertThat(value).isEqualTo(new AttributeValue().withM(mapOf(
-                "key1", new AttributeValue("value1"),
-                "key2", new AttributeValue("value2"))));
-    }
-
-    @Test
-    void deserializeConcurrentHashMapOfString_null_returnsNull() {
-        ConcurrentHashMap<String, String> value = SchemaAttributeValueSerializer.deserializeConcurrentHashMapOfString(null);
+    @ParameterizedTest
+    @NullSource
+    @AttributeValueSource.WithoutMap
+    void deserializeConcurrentHashMapOfString_nullCases_returnsNull(AttributeValue attributeValue) {
+        ConcurrentHashMap<String, String> value = SchemaAttributeValueSerializer.deserializeConcurrentHashMapOfString(attributeValue);
         assertThat(value).isNull();
     }
 
-    @Test
-    void deserializeConcurrentHashMapOfString_nullAttributeValue_returnsNull() {
-        ConcurrentHashMap<String, String> value = SchemaAttributeValueSerializer.deserializeConcurrentHashMapOfString(new AttributeValue().withNULL(true));
-        assertThat(value).isNull();
+    @ParameterizedTest
+    @MethodSource("concurrentHashMapsOfStringsSource")
+    void deserializeConcurrentHashMapOfString_correctTypesInMap_returnsConcurrentHashMap(ConcurrentHashMap<String, String> concurrentHashMap) {
+        AttributeValue attributeValue = new AttributeValue().withM(concurrentHashMap.entrySet().stream()
+                .collect(toMap(e -> e.getKey(), e -> new AttributeValue(e.getValue()))));
+        ConcurrentHashMap<String, String> value = SchemaAttributeValueSerializer.deserializeConcurrentHashMapOfString(attributeValue);
+        assertThat(value).isEqualTo(concurrentHashMap);
     }
 
-    @Test
-    void deserializeConcurrentHashMapOfString_mapValueNull_returnsNull() {
-        ConcurrentHashMap<String, String> value = SchemaAttributeValueSerializer.deserializeConcurrentHashMapOfString(new AttributeValue().withS("string"));
-        assertThat(value).isNull();
-    }
-
-    @Test
-    void deserializeConcurrentHashMapOfString_emptyConcurrentHashMap_returnsEmptyConcurrentHashMap() {
-        ConcurrentHashMap<String, String> value = SchemaAttributeValueSerializer.deserializeConcurrentHashMapOfString(new AttributeValue().withM(mapOf()));
+    @ParameterizedTest
+    @AttributeValueSource.WithoutString
+    void deserializeConcurrentHashMapOfString_incorrectTypesInMap_returnsConcurrentHashMapWithoutItems(AttributeValue attributeValue) {
+        ConcurrentHashMap<String, String> value = SchemaAttributeValueSerializer.deserializeConcurrentHashMapOfString(new AttributeValue().withM(mapOf("key", attributeValue)));
         assertThat(value).isEmpty();
     }
 
-    @Test
-    void deserializeConcurrentHashMapOfString_singletonConcurrentHashMapWithValue_returnsSingletonConcurrentHashMap() {
-        ConcurrentHashMap<String, String> value = SchemaAttributeValueSerializer.deserializeConcurrentHashMapOfString(new AttributeValue().withM(mapOf("key", new AttributeValue("value"))));
-        assertThat(value).containsOnly(entry("key", "value"));
+    @ParameterizedTest
+    @AttributeValueSource.WithoutString
+    void deserializeConcurrentHashMapOfString_incorrectTypesInMapMultipleItems_returnsConcurrentHashMapOnlyWithCorrectTypes(AttributeValue attributeValue) {
+        ConcurrentHashMap<String, String> value = SchemaAttributeValueSerializer.deserializeConcurrentHashMapOfString(new AttributeValue().withM(
+                mapOf("present", new AttributeValue("value"), "non-present", attributeValue)));
+        assertThat(value).containsExactly(entry("present", "value"));
     }
 
-    @Test
-    void deserializeConcurrentHashMapOfString_mapWithMultipleValues_returnsConcurrentHashMapWithValues() {
-        ConcurrentHashMap<String, String> value = SchemaAttributeValueSerializer.deserializeConcurrentHashMapOfString(new AttributeValue().withM(mapOf(
-                "key1", new AttributeValue("value1"),
-                "key2", new AttributeValue("value2"))));
-        assertThat(value).containsOnly(entry("key1", "value1"), entry("key2", "value2"));
+    @ParameterizedTest
+    @MethodSource("concurrentHashMapsOfStringsSource")
+    void putAndGet_symmetricCases_returnsItem(ConcurrentHashMap<String, String> concurrentHashMap) {
+        Schema schema = schema(concurrentHashMap);
+        put(schema);
+        Stream<Schema> items = dynoDao.get(new SchemaStagedDynamoBuilder()
+                .usingTable()
+                .withHashKey(HASH_KEY_VALUE));
+        assertThat(items).containsExactly(schema);
     }
 
-    private <K, V> ConcurrentHashMap<K, V> mapOf() {
+    private void put(Schema item) {
+        amazonDynamoDb.putItem(TABLE, SchemaAttributeValueSerializer.serializeSchemaAsItem(item));
+    }
+
+    private Schema schema(ConcurrentHashMap<String, String> concurrentHashMap) {
+        Schema schema = new Schema();
+        schema.setHashKey(HASH_KEY_VALUE);
+        schema.setConcurrentHashMap(concurrentHashMap);
+        return schema;
+    }
+
+    private static <K, V> ConcurrentHashMap<K, V> mapOf() {
         return new ConcurrentHashMap<>();
     }
 
-    private <K, V> ConcurrentHashMap<K, V> mapOf(K key, V value) {
+    private static <K, V> ConcurrentHashMap<K, V> mapOf(K key, V value) {
         ConcurrentHashMap<K, V> map = new ConcurrentHashMap<>();
         map.put(key, value);
         return map;
     }
 
-    private <K, V> ConcurrentHashMap<K, V> mapOf(K key1, V value1, K key2, V value2) {
+    private static <K, V> ConcurrentHashMap<K, V> mapOf(K key1, V value1, K key2, V value2) {
         ConcurrentHashMap<K, V> map = new ConcurrentHashMap<>();
         map.put(key1, value1);
         map.put(key2, value2);
