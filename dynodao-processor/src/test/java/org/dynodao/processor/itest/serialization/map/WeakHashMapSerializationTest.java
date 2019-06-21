@@ -1,17 +1,28 @@
 package org.dynodao.processor.itest.serialization.map;
 
 import com.amazonaws.services.dynamodbv2.model.AttributeValue;
+import org.dynodao.processor.itest.AbstractIntegrationTest;
 import org.dynodao.processor.itest.AbstractSourceCompilingTest;
+import org.dynodao.processor.test.params.AttributeValueSource;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.params.provider.NullSource;
 
+import java.util.HashMap;
 import java.util.WeakHashMap;
+import java.util.stream.Stream;
 
 import static java.util.Collections.emptyMap;
 import static java.util.Collections.singletonMap;
+import static java.util.stream.Collectors.toMap;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.entry;
 
-class WeakHashMapSerializationTest extends AbstractSourceCompilingTest {
+class WeakHashMapSerializationTest extends AbstractIntegrationTest {
+
+    private static final String TABLE = "things";
+    private static final String HASH_KEY_VALUE = "hashKey";
 
     @Test
     void serializeWeakHashMapOfString_null_returnsNullAttributeValue() {
@@ -19,149 +30,131 @@ class WeakHashMapSerializationTest extends AbstractSourceCompilingTest {
         assertThat(value).isEqualTo(new AttributeValue().withNULL(true));
     }
 
-    @Test
-    void serializeWeakHashMapOfString_emptyMap_returnsAttributeValueWithEmptyMap() {
-        AttributeValue value = SchemaAttributeValueSerializer.serializeWeakHashMapOfString(mapOf());
-        assertThat(value).isEqualTo(new AttributeValue().withM(emptyMap()));
+    @ParameterizedTest
+    @MethodSource("weakHashMapsOfStringsSource")
+    void serializeWeakHashMapOfString_mapCases_returnsMapAttributeValue(WeakHashMap<String, String> weakHashMap) {
+        AttributeValue value = SchemaAttributeValueSerializer.serializeWeakHashMapOfString(weakHashMap);
+        assertThat(value).isEqualTo(new AttributeValue().withM(weakHashMap.entrySet().stream()
+                .collect(toMap(e -> e.getKey(), e -> new AttributeValue(e.getValue())))));
     }
 
-    @Test
-    void serializeWeakHashMapOfString_singletonMapWithValue_returnsAttributeValueWithSingleValueSerializedMap() {
-        AttributeValue value = SchemaAttributeValueSerializer.serializeWeakHashMapOfString(mapOf("key", "value"));
-        assertThat(value).isEqualTo(new AttributeValue().withM(singletonMap("key", new AttributeValue("value"))));
+    static Stream<WeakHashMap<String, String>> weakHashMapsOfStringsSource() {
+        return Stream.of(mapOf(), mapOf("key", "value"), mapOf("key1", "value1", "key2", "value2"));
     }
 
-    @Test
-    void serializeWeakHashMapOfString_singletonMapWithNullValue_returnsAttributeValueWithSingleNullAttributeValue() {
-        AttributeValue value = SchemaAttributeValueSerializer.serializeWeakHashMapOfString(mapOf("key", null));
-        assertThat(value).isEqualTo(new AttributeValue().withM(singletonMap("key", new AttributeValue().withNULL(true))));
+    @ParameterizedTest
+    @MethodSource("weakHashMapsWithNullsSource")
+    void serializeWeakHashMapOfString_mapCasesWithNulls_returnsMapAttributeValueExcludingNulls(WeakHashMap<String, String> weakHashMap) {
+        AttributeValue value = SchemaAttributeValueSerializer.serializeWeakHashMapOfString(weakHashMap);
+        assertThat(value).isEqualTo(new AttributeValue().withM(weakHashMap.entrySet().stream()
+                .filter(e -> e.getKey() != null)
+                .filter(e -> e.getValue() != null)
+                .collect(toMap(e -> e.getKey(), e -> new AttributeValue(e.getValue())))));
     }
 
-    @Test
-    void serializeWeakHashMapOfString_mapWithMultipleValues_returnsAttributeValueWithSerializedMap() {
-        AttributeValue value = SchemaAttributeValueSerializer.serializeWeakHashMapOfString(mapOf("key1", "value1", "key2", "value2"));
-        assertThat(value).isEqualTo(new AttributeValue().withM(mapOf(
-                "key1", new AttributeValue("value1"),
-                "key2", new AttributeValue("value2"))));
+    static Stream<WeakHashMap<String, String>> weakHashMapsWithNullsSource() {
+        return Stream.of(mapOf("key", null), mapOf("key1", null, "key2", "value2"), mapOf("key1", "value1", "key2", null),
+                mapOf("key1", null, "key2", null), mapOf(null, "value"), mapOf(null, null));
     }
 
-    @Test
-    void serializeWeakHashMapOfString_mapWithMultipleValuesSomeNull_returnsAttributeValueWithSerializedMap() {
-        AttributeValue value = SchemaAttributeValueSerializer.serializeWeakHashMapOfString(mapOf("key1", "value1", "key2", null));
-        assertThat(value).isEqualTo(new AttributeValue().withM(mapOf(
-                "key1", new AttributeValue("value1"),
-                "key2", new AttributeValue().withNULL(true))));
-    }
-
-    @Test
-    void serializeWeakHashMapOfString_mapWithMultipleValuesAllNull_returnsAttributeValueWithSerializedMap() {
-        AttributeValue value = SchemaAttributeValueSerializer.serializeWeakHashMapOfString(mapOf("key1", null, "key2", null));
-        assertThat(value).isEqualTo(new AttributeValue().withM(mapOf(
-                "key1", new AttributeValue().withNULL(true),
-                "key2", new AttributeValue().withNULL(true))));
-    }
-
-    @Test
-    void deserializeWeakHashMapOfString_null_returnsNull() {
-        WeakHashMap<String, String> value = SchemaAttributeValueSerializer.deserializeWeakHashMapOfString(null);
+    @ParameterizedTest
+    @NullSource
+    @AttributeValueSource.WithoutMap
+    void deserializeWeakHashMapOfString_nullCases_returnsNull(AttributeValue attributeValue) {
+        WeakHashMap<String, String> value = SchemaAttributeValueSerializer.deserializeWeakHashMapOfString(attributeValue);
         assertThat(value).isNull();
     }
 
-    @Test
-    void deserializeWeakHashMapOfString_nullAttributeValue_returnsNull() {
-        WeakHashMap<String, String> value = SchemaAttributeValueSerializer.deserializeWeakHashMapOfString(new AttributeValue().withNULL(true));
-        assertThat(value).isNull();
+    @ParameterizedTest
+    @MethodSource("weakHashMapsOfStringsSource")
+    void deserializeWeakHashMapOfString_correctTypesInMap_returnsWeakHashMap(WeakHashMap<String, String> weakHashMap) {
+        AttributeValue attributeValue = new AttributeValue().withM(weakHashMap.entrySet().stream()
+                .collect(toMap(e -> e.getKey(), e -> new AttributeValue(e.getValue()))));
+        WeakHashMap<String, String> value = SchemaAttributeValueSerializer.deserializeWeakHashMapOfString(attributeValue);
+        assertThat(value).isEqualTo(weakHashMap.entrySet().stream()
+                .collect(toMap(e -> e.getKey(), e -> e.getValue())));
     }
 
-    @Test
-    void deserializeWeakHashMapOfString_mapValueNull_returnsNull() {
-        WeakHashMap<String, String> value = SchemaAttributeValueSerializer.deserializeWeakHashMapOfString(new AttributeValue().withS("string"));
-        assertThat(value).isNull();
-    }
-
-    @Test
-    void deserializeWeakHashMapOfString_emptyMap_returnsEmptyWeakHashMap() {
-        WeakHashMap<String, String> value = SchemaAttributeValueSerializer.deserializeWeakHashMapOfString(new AttributeValue().withM(emptyMap()));
+    @ParameterizedTest
+    @AttributeValueSource.WithoutString
+    void deserializeWeakHashMapOfString_incorrectTypesInMap_returnsWeakHashMapWithoutItems(AttributeValue attributeValue) {
+        WeakHashMap<String, String> value = SchemaAttributeValueSerializer.deserializeWeakHashMapOfString(new AttributeValue().withM(mapOf("key", attributeValue)));
         assertThat(value).isEmpty();
     }
 
-    @Test
-    void deserializeWeakHashMapOfString_singletonMapWithValue_returnsSingletonWeakHashMap() {
-        WeakHashMap<String, String> value = SchemaAttributeValueSerializer.deserializeWeakHashMapOfString(new AttributeValue().withM(singletonMap("key", new AttributeValue("value"))));
-        assertThat(value).containsOnly(entry("key", "value"));
+    @ParameterizedTest
+    @MethodSource("weakHashMapsWithNullsSource")
+    void deserializeWeakHashMapOfString_nullsInMap_returnsWeakHashMapWithoutNulls(WeakHashMap<String, String> weakHashMap) {
+        AttributeValue attributeValue = new AttributeValue().withM(weakHashMap.entrySet().stream()
+                .filter(e -> e.getKey() != null) // keys can't be null
+                .collect(toMap(e -> e.getKey(), e -> new AttributeValue(e.getValue()))));
+        WeakHashMap<String, String> value = SchemaAttributeValueSerializer.deserializeWeakHashMapOfString(attributeValue);
+        assertThat(value).isEqualTo(weakHashMap.entrySet().stream()
+                .filter(e -> e.getKey() != null)
+                .filter(e -> e.getValue() != null)
+                .collect(toMap(e -> e.getKey(), e -> e.getValue())));
     }
 
-    @Test
-    void deserializeWeakHashMapOfString_singletonMapWithNull_returnsSingletonWeakHashMap() {
-        WeakHashMap<String, String> value = SchemaAttributeValueSerializer.deserializeWeakHashMapOfString(new AttributeValue().withM(singletonMap("key", null)));
-        assertThat(value).containsOnly(entry("key", null));
+    @ParameterizedTest
+    @AttributeValueSource.WithoutString
+    void deserializeWeakHashMapOfString_incorrectTypesInMapMultipleItems_returnsWeakHashMapOnlyWithCorrectTypes(AttributeValue attributeValue) {
+        WeakHashMap<String, String> value = SchemaAttributeValueSerializer.deserializeWeakHashMapOfString(new AttributeValue().withM(
+                mapOf("present", new AttributeValue("value"), "non-present", attributeValue)));
+        assertThat(value).containsExactly(entry("present", "value"));
     }
 
-    @Test
-    void deserializeWeakHashMapOfString_singletonMapWithNullAttributeValue_returnsSingletonWeakHashMap() {
-        WeakHashMap<String, String> value = SchemaAttributeValueSerializer.deserializeWeakHashMapOfString(new AttributeValue().withM(singletonMap("key", new AttributeValue().withNULL(true))));
-        assertThat(value).containsOnly(entry("key", null));
+    @ParameterizedTest
+    @MethodSource("weakHashMapsOfStringsSource")
+    void putAndGet_symmetricCases_returnsItem(WeakHashMap<String, String> weakHashMap) {
+        Schema schema = schema(weakHashMap);
+        put(schema);
+        Stream<Schema> items = dynoDao.get(new SchemaStagedDynamoBuilder()
+                .usingTable()
+                .withHashKey(HASH_KEY_VALUE));
+
+        WeakHashMap<String, String> expected = weakHashMap.entrySet().stream()
+                .collect(toMap(e -> e.getKey(), e -> e.getValue(), (l, r) -> l, WeakHashMap::new));
+        assertThat(items).containsExactly(schema(expected));
     }
 
-    @Test
-    void deserializeWeakHashMapOfString_mapWithMultipleValues_returnsWeakHashMapWithValues() {
-        WeakHashMap<String, String> value = SchemaAttributeValueSerializer.deserializeWeakHashMapOfString(new AttributeValue().withM(mapOf(
-                "key1", new AttributeValue("value1"),
-                "key2", new AttributeValue("value2"))));
-        assertThat(value).containsOnly(entry("key1", "value1"), entry("key2", "value2"));
+    @ParameterizedTest
+    @MethodSource("weakHashMapsWithNullsSource")
+    void putAndGet_asymmetricCases_returnsItemWithoutNulls(WeakHashMap<String, String> weakHashMap) {
+        Schema schema = schema(weakHashMap);
+        put(schema);
+        Stream<Schema> items = dynoDao.get(new SchemaStagedDynamoBuilder()
+                .usingTable()
+                .withHashKey(HASH_KEY_VALUE));
+
+        WeakHashMap<String, String> expected = weakHashMap.entrySet().stream()
+                .filter(e -> e.getKey() != null)
+                .filter(e -> e.getValue() != null)
+                .collect(toMap(e -> e.getKey(), e -> e.getValue(), (l, r) -> l, WeakHashMap::new));
+        assertThat(items).containsExactly(schema(expected));
     }
 
-    @Test
-    void deserializeWeakHashMapOfString_mapWithMultipleValuesSomeNull_returnsWeakHashMapWithValueAndNull() {
-        WeakHashMap<String, String> value = SchemaAttributeValueSerializer.deserializeWeakHashMapOfString(new AttributeValue().withM(mapOf(
-                "key1", new AttributeValue("value1"),
-                "key2", null)));
-        assertThat(value).containsOnly(entry("key1", "value1"), entry("key2", null));
+    private void put(Schema item) {
+        amazonDynamoDb.putItem(TABLE, SchemaAttributeValueSerializer.serializeSchemaAsItem(item));
     }
 
-    @Test
-    void deserializeWeakHashMapOfString_mapWithMultipleValuesSomeNullAttributeValue_returnsWeakHashMapWithValueAndNull() {
-        WeakHashMap<String, String> value = SchemaAttributeValueSerializer.deserializeWeakHashMapOfString(new AttributeValue().withM(mapOf(
-                "key1", new AttributeValue("value1"),
-                "key2", new AttributeValue().withNULL(true))));
-        assertThat(value).containsOnly(entry("key1", "value1"), entry("key2", null));
+    private Schema schema(WeakHashMap<String, String> weakHashMap) {
+        Schema schema = new Schema();
+        schema.setHashKey(HASH_KEY_VALUE);
+        schema.setWeakHashMap(weakHashMap);
+        return schema;
     }
 
-    @Test
-    void deserializeWeakHashMapOfString_mapWithMultipleValuesAllNull_returnsWeakHashMapAllNull() {
-        WeakHashMap<String, String> value = SchemaAttributeValueSerializer.deserializeWeakHashMapOfString(new AttributeValue().withM(mapOf(
-                "key1", null,
-                "key2", null)));
-        assertThat(value).containsOnly(entry("key1", null), entry("key2", null));
-    }
-
-    @Test
-    void deserializeWeakHashMapOfString_mapWithMultipleValuesAllNullAttributeValue_returnsWeakHashMapAllNull() {
-        WeakHashMap<String, String> value = SchemaAttributeValueSerializer.deserializeWeakHashMapOfString(new AttributeValue().withM(mapOf(
-                "key1", new AttributeValue().withNULL(true),
-                "key2", new AttributeValue().withNULL(true))));
-        assertThat(value).containsOnly(entry("key1", null), entry("key2", null));
-    }
-
-    @Test
-    void deserializeWeakHashMapOfString_mapWithMultipleValuesAllMixedNulls_returnsWeakHashMapAllNull() {
-        WeakHashMap<String, String> value = SchemaAttributeValueSerializer.deserializeWeakHashMapOfString(new AttributeValue().withM(mapOf(
-                "key1", null,
-                "key2", new AttributeValue().withNULL(true))));
-        assertThat(value).containsOnly(entry("key1", null), entry("key2", null));
-    }
-
-    private <K, V> WeakHashMap<K, V> mapOf() {
+    private static <K, V> WeakHashMap<K, V> mapOf() {
         return new WeakHashMap<>();
     }
 
-    private <K, V> WeakHashMap<K, V> mapOf(K key1, V value1) {
+    private static <K, V> WeakHashMap<K, V> mapOf(K key1, V value1) {
         WeakHashMap<K, V> map = new WeakHashMap<>();
         map.put(key1, value1);
         return map;
     }
 
-    private <K, V> WeakHashMap<K, V> mapOf(K key1, V value1, K key2, V value2) {
+    private static <K, V> WeakHashMap<K, V> mapOf(K key1, V value1, K key2, V value2) {
         WeakHashMap<K, V> map = new WeakHashMap<>();
         map.put(key1, value1);
         map.put(key2, value2);
