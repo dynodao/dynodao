@@ -99,7 +99,6 @@ class IdentityHashMapSerializationTest extends AbstractIntegrationTest {
                 .collect(toMap(e -> e.getKey(), e -> e.getValue())));
     }
 
-
     @ParameterizedTest
     @AttributeValueSource.WithoutString
     void deserializeIdentityHashMapOfString_incorrectTypesInMapMultipleItems_returnsIdentityHashMapOnlyWithCorrectTypes(AttributeValue attributeValue) {

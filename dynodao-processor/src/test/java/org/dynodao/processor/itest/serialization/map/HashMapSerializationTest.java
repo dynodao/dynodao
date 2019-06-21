@@ -91,7 +91,6 @@ class HashMapSerializationTest extends AbstractIntegrationTest {
                 .collect(toMap(e -> e.getKey(), e -> e.getValue())));
     }
 
-
     @ParameterizedTest
     @AttributeValueSource.WithoutString
     void deserializeHashMapOfString_incorrectTypesInMapMultipleItems_returnsHashMapOnlyWithCorrectTypes(AttributeValue attributeValue) {
