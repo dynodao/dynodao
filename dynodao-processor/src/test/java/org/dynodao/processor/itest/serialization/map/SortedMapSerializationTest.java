@@ -140,6 +140,7 @@ class SortedMapSerializationTest extends AbstractIntegrationTest {
                 .withHashKey(HASH_KEY_VALUE));
 
         SortedMap<String, String> expected = sortedMap.entrySet().stream()
+                .filter(e -> e.getKey() != null)
                 .filter(e -> e.getValue() != null)
                 .collect(toMap(e -> e.getKey(), e -> e.getValue(), (l, r) -> l, TreeMap::new));
         assertThat(items).containsExactly(schema(expected));
