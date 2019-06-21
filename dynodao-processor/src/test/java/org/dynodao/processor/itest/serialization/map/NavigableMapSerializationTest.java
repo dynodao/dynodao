@@ -8,6 +8,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 import org.junit.jupiter.params.provider.NullSource;
 
+import java.util.Comparator;
 import java.util.NavigableMap;
 import java.util.TreeMap;
 import java.util.stream.Stream;
@@ -20,6 +21,8 @@ class NavigableMapSerializationTest extends AbstractIntegrationTest {
 
     private static final String TABLE = "things";
     private static final String HASH_KEY_VALUE = "hashKey";
+
+    private static final Comparator<String> COMPARATOR = Comparator.nullsFirst(Comparator.naturalOrder());
 
     @Test
     void serializeTreeMapOfString_null_returnsNullAttributeValue() {
@@ -50,8 +53,13 @@ class NavigableMapSerializationTest extends AbstractIntegrationTest {
     }
 
     static Stream<NavigableMap<String, String>> navigableMapsWithNullsSource() {
-        return Stream.of(mapOf("key", null), mapOf("key1", null, "key2", "value2"), mapOf("key1", "value1", "key2", null),
-                mapOf("key1", null, "key2", null));
+        return Stream.of(mapOf("key", null),
+                mapOf("key1", null, "key2", "value2"), mapOf("key1", "value1", "key2", null), mapOf("key1", null, "key2", null),
+                mapOf(COMPARATOR, "key", null),
+                mapOf(COMPARATOR, "key1", null, "key2", "value2"), mapOf(COMPARATOR, "key1", "value1", "key2", null), mapOf(COMPARATOR, "key1", null, "key2", null),
+                mapOf(COMPARATOR, null, "value"), mapOf(COMPARATOR, null, null),
+                mapOf(COMPARATOR, "key1", "value1", null, "value2"), mapOf(COMPARATOR, "key1", "value1", null, null),
+                mapOf(COMPARATOR, null, "value1", "key2", "value2"), mapOf(COMPARATOR, null, null, "key2", "value2"));
     }
 
     @ParameterizedTest
@@ -93,8 +101,9 @@ class NavigableMapSerializationTest extends AbstractIntegrationTest {
         assertThat(value)
                 .isInstanceOf(TreeMap.class)
                 .isEqualTo(navigableMap.entrySet().stream()
-                    .filter(e -> e.getValue() != null)
-                    .collect(toMap(e -> e.getKey(), e -> e.getValue())));
+                        .filter(e -> e.getKey() != null)
+                        .filter(e -> e.getValue() != null)
+                        .collect(toMap(e -> e.getKey(), e -> e.getValue())));
     }
 
     @ParameterizedTest
@@ -131,6 +140,7 @@ class NavigableMapSerializationTest extends AbstractIntegrationTest {
                 .withHashKey(HASH_KEY_VALUE));
 
         NavigableMap<String, String> expected = navigableMap.entrySet().stream()
+                .filter(e -> e.getKey() != null)
                 .filter(e -> e.getValue() != null)
                 .collect(toMap(e -> e.getKey(), e -> e.getValue(), (l, r) -> l, TreeMap::new));
         assertThat(items).containsExactly(schema(expected));
@@ -151,14 +161,31 @@ class NavigableMapSerializationTest extends AbstractIntegrationTest {
         return new TreeMap<>();
     }
 
+    private static <K, V> NavigableMap<K, V> mapOf(Comparator<K> comparator) {
+        return new TreeMap<>(comparator);
+    }
+
     private static <K extends Comparable<K>, V> NavigableMap<K, V> mapOf(K key, V value) {
         NavigableMap<K, V> map = new TreeMap<>();
         map.put(key, value);
         return map;
     }
 
+    private static <K, V> NavigableMap<K, V> mapOf(Comparator<K> comparator, K key, V value) {
+        NavigableMap<K, V> map = new TreeMap<>(comparator);
+        map.put(key, value);
+        return map;
+    }
+
     private static <K extends Comparable<K>, V> NavigableMap<K, V> mapOf(K key1, V value1, K key2, V value2) {
         NavigableMap<K, V> map = new TreeMap<>();
+        map.put(key1, value1);
+        map.put(key2, value2);
+        return map;
+    }
+
+    private static <K, V> NavigableMap<K, V> mapOf(Comparator<K> comparator, K key1, V value1, K key2, V value2) {
+        NavigableMap<K, V> map = new TreeMap<>(comparator);
         map.put(key1, value1);
         map.put(key2, value2);
         return map;
