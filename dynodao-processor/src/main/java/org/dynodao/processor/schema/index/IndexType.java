@@ -18,7 +18,7 @@ public enum IndexType {
     /**
      * The index is a global secondary index (GSI).
      */
-    GLOBAL_SECONDARY_INDEX;
+    GLOBAL_SECONDARY_INDEX
 
 }
 

@@ -19,6 +19,7 @@ import javax.lang.model.type.DeclaredType;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.SimpleTypeVisitor8;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -65,7 +66,7 @@ class MapTypeSchemaParser implements SchemaParser {
         TypeMirror wildcard = processors.getWildcardType(null, null);
         TypeMirror mapOfStringToAnything = processors.getDeclaredType(map, string, wildcard);
         return processors.isAssignable(typeMirror, mapOfStringToAnything)
-                && schemaContext.isApplicableTo(element, getValueType(typeMirror), schemaContext);
+                && schemaContext.isApplicableTo(element, getValueType(typeMirror));
     }
 
     private TypeMirror getValueType(TypeMirror typeMirror) {
@@ -78,7 +79,7 @@ class MapTypeSchemaParser implements SchemaParser {
 
     @Override
     public MapDynamoAttribute parseAttribute(Element element, TypeMirror typeMirror, String path, SchemaContext schemaContext) {
-        DynamoAttribute mapElement = schemaContext.parseAttribute(element, getValueType(typeMirror), ".", schemaContext);
+        DynamoAttribute mapElement = schemaContext.parseAttribute(element, getValueType(typeMirror), ".");
         return MapDynamoAttribute.builder()
                 .element(element)
                 .typeMirror(typeMirror)
@@ -98,7 +99,9 @@ class MapTypeSchemaParser implements SchemaParser {
                 .addStatement("$T it = $N.entrySet().iterator()", getIteratorOf(typeMirror), map)
                 .beginControlFlow("while (it.hasNext())")
                 .addStatement("$T entry = it.next()", getMapEntryOf(typeMirror))
+                .beginControlFlow("if (entry.getKey() != null && entry.getValue() != null)")
                 .addStatement("attrValueMap.put(entry.getKey(), $L(entry.getValue()))", valueSerializationMethod)
+                .endControlFlow()
                 .endControlFlow()
                 .addStatement("return new $T().withM(attrValueMap)", attributeValue());
 
@@ -146,7 +149,10 @@ class MapTypeSchemaParser implements SchemaParser {
                 .addStatement("$T it = $N.getM().entrySet().iterator()", ITEM_MAP_ENTRY_ITERATOR, parameter())
                 .beginControlFlow("while (it.hasNext())")
                 .addStatement("$T entry = it.next()", ITEM_MAP_ENTRY)
-                .addStatement("map.put(entry.getKey(), $L(entry.getValue()))", valueDeserializationMethod)
+                .addStatement("$T value = $L(entry.getValue())", getValueType(typeMirror), valueDeserializationMethod)
+                .beginControlFlow("if (value != null)")
+                .addStatement("map.put(entry.getKey(), value)")
+                .endControlFlow()
                 .endControlFlow()
                 .addStatement("return map");
 

@@ -139,6 +139,4 @@ public class DynoDaoProcessor extends AbstractProcessor {
         return stageTypeSpecFactory.build(pojo);
     }
 
-
-
 }

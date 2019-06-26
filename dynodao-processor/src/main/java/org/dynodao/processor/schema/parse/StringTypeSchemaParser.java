@@ -46,6 +46,9 @@ class StringTypeSchemaParser implements SchemaParser {
     private SerializationMappingMethod buildSerializationMethod() {
         ParameterSpec parameter = ParameterSpec.builder(String.class, "string").build();
         CodeBlock.Builder body = CodeBlock.builder()
+                .beginControlFlow("if ($N.isEmpty())", parameter)
+                .addStatement("return new $T().withNULL(true)", attributeValue())
+                .endControlFlow()
                 .addStatement("return new $T().withS($N)", attributeValue(), parameter);
         return SerializationMappingMethod.builder()
                 .methodName("serializeString")

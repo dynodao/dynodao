@@ -48,7 +48,7 @@ class DocumentSchemaParser implements SchemaParser {
     public boolean isApplicableTo(Element element, TypeMirror typeMirror, SchemaContext schemaContext) {
         Element typeElement = processors.asElement(typeMirror);
         return isDocument(typeElement) && getFieldsOf(typeElement).stream()
-                .allMatch(field -> schemaContext.isApplicableTo(field, field.asType(), schemaContext));
+                .allMatch(field -> schemaContext.isApplicableTo(field, field.asType()));
     }
 
     private boolean isDocument(Element element) {
@@ -84,7 +84,7 @@ class DocumentSchemaParser implements SchemaParser {
 
     private List<DynamoAttribute> getNestedAttributes(Element typeElement, SchemaContext schemaContext) {
         return getFieldsOf(typeElement).stream()
-                .map(field -> schemaContext.parseAttribute(field, field.asType(), getPath(field), schemaContext))
+                .map(field -> schemaContext.parseAttribute(field, field.asType(), getPath(field)))
                 .collect(toList());
     }
 

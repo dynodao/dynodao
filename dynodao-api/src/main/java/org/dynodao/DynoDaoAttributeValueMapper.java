@@ -8,8 +8,8 @@ import org.dynodao.annotation.DynoDaoValueMapped;
  * {@link DynoDaoValueMapped} to serialize and deserialize
  * types which are not supported by DynoDao, or require different serialization than what is built-in.
  * <p>
- * Implementations require a <tt>public</tt> default constructor. Instances of this class are staticly initialized
- * in the generated serializer.
+ * Implementations require a <tt>public</tt> default constructor. Instances of this class are initialized
+ * in a static block in the generated serializer.
  * @param <T> the type to convert to and from {@link AttributeValue}
  */
 public interface DynoDaoAttributeValueMapper<T> {

@@ -59,7 +59,7 @@ public abstract class AbstractCompilingTest extends AbstractUnitTest {
                 .compile(javaFileObject);
     }
 
-    @SneakyThrows({ ClassNotFoundException.class, InstantiationException.class, IllegalAccessException.class })
+    @SneakyThrows(ReflectiveOperationException.class)
     private Processor lombok() {
         return (Processor) Class.forName("lombok.launch.AnnotationProcessorHider$AnnotationProcessor").newInstance();
     }

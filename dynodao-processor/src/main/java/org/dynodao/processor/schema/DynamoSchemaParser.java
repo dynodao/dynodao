@@ -1,7 +1,6 @@
 package org.dynodao.processor.schema;
 
 import org.dynodao.annotation.DynoDaoSchema;
-import org.dynodao.processor.context.Processors;
 import org.dynodao.processor.schema.attribute.DocumentDynamoAttribute;
 import org.dynodao.processor.schema.attribute.DynamoAttribute;
 import org.dynodao.processor.schema.attribute.NullDynamoAttribute;
@@ -19,12 +18,10 @@ import java.util.Set;
  */
 public class DynamoSchemaParser {
 
-    private final Processors processors;
     private final SchemaParsers schemaParsers;
     private final DynamoIndexParsers indexParsers;
 
-    @Inject DynamoSchemaParser(Processors processors, SchemaParsers schemaParsers, DynamoIndexParsers indexParsers) {
-        this.processors = processors;
+    @Inject DynamoSchemaParser(SchemaParsers schemaParsers, DynamoIndexParsers indexParsers) {
         this.schemaParsers = schemaParsers;
         this.indexParsers = indexParsers;
     }
@@ -51,8 +48,8 @@ public class DynamoSchemaParser {
     }
 
     private DocumentDynamoAttribute parseDocument(TypeElement documentElement) {
-        SchemaContext context = new SchemaContext(processors, schemaParsers);
-        DynamoAttribute document = context.parseAttribute(documentElement, documentElement.asType(), "", context);
+        SchemaContext context = new SchemaContext(schemaParsers);
+        DynamoAttribute document = context.parseAttribute(documentElement, documentElement.asType(), "");
         // the element should always be a document, just cast it
         return (DocumentDynamoAttribute) document;
     }

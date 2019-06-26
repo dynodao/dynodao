@@ -50,7 +50,7 @@ public interface DynamoAttribute {
     MappingMethod getSerializationMethod();
 
     /**
-     * A method that converts an {@link com.amazonaws.services.dynamodbv2.model.AttributeValue} into the javaland version
+     * A method that converts an {@link com.amazonaws.services.dynamodbv2.model.AttributeValue} into the java-land version
      * of this attribute.
      * @return a method specification that converts an {@link com.amazonaws.services.dynamodbv2.model.AttributeValue} to this attribute
      */
@@ -98,7 +98,7 @@ public interface DynamoAttribute {
      */
     default List<DynamoAttribute> getNestedAttributesRecursively() {
         List<DynamoAttribute> attributes = new ArrayList<>();
-        DynamoAttributeVisitor<?, ?> visitor = new SimpleDynamoAttributeVisitor<Void, Void>(null) {
+        DynamoAttributeVisitor<?, ?> visitor = new SimpleDynamoAttributeVisitor<Void, Void>() {
 
             @Override
             protected Void defaultAction(DynamoAttribute attribute, Void arg) {

@@ -1,17 +1,24 @@
 package org.dynodao.processor.itest.serialization.map;
 
 import com.amazonaws.services.dynamodbv2.model.AttributeValue;
-import org.dynodao.processor.itest.AbstractSourceCompilingTest;
+import org.dynodao.processor.itest.AbstractIntegrationTest;
+import org.dynodao.processor.test.params.AttributeValueSource;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.params.provider.NullSource;
 
 import java.util.HashMap;
+import java.util.stream.Stream;
 
-import static java.util.Collections.emptyMap;
-import static java.util.Collections.singletonMap;
+import static java.util.stream.Collectors.toMap;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.entry;
 
-class HashMapSerializationTest extends AbstractSourceCompilingTest {
+class HashMapSerializationTest extends AbstractIntegrationTest {
+
+    private static final String TABLE = "things";
+    private static final String HASH_KEY_VALUE = "hashKey";
 
     @Test
     void serializeHashMapOfString_null_returnsNullAttributeValue() {
@@ -19,149 +26,131 @@ class HashMapSerializationTest extends AbstractSourceCompilingTest {
         assertThat(value).isEqualTo(new AttributeValue().withNULL(true));
     }
 
-    @Test
-    void serializeHashMapOfString_emptyMap_returnsAttributeValueWithEmptyMap() {
-        AttributeValue value = SchemaAttributeValueSerializer.serializeHashMapOfString(mapOf());
-        assertThat(value).isEqualTo(new AttributeValue().withM(emptyMap()));
+    @ParameterizedTest
+    @MethodSource("hashMapsOfStringsSource")
+    void serializeHashMapOfString_mapCases_returnsMapAttributeValue(HashMap<String, String> hashMap) {
+        AttributeValue value = SchemaAttributeValueSerializer.serializeHashMapOfString(hashMap);
+        assertThat(value).isEqualTo(new AttributeValue().withM(hashMap.entrySet().stream()
+                .collect(toMap(e -> e.getKey(), e -> new AttributeValue(e.getValue())))));
     }
 
-    @Test
-    void serializeHashMapOfString_singletonMapWithValue_returnsAttributeValueWithSingleValueSerializedMap() {
-        AttributeValue value = SchemaAttributeValueSerializer.serializeHashMapOfString(mapOf("key", "value"));
-        assertThat(value).isEqualTo(new AttributeValue().withM(singletonMap("key", new AttributeValue("value"))));
+    static Stream<HashMap<String, String>> hashMapsOfStringsSource() {
+        return Stream.of(mapOf(), mapOf("key", "value"), mapOf("key1", "value1", "key2", "value2"));
     }
 
-    @Test
-    void serializeHashMapOfString_singletonMapWithNullValue_returnsAttributeValueWithSingleNullAttributeValue() {
-        AttributeValue value = SchemaAttributeValueSerializer.serializeHashMapOfString(mapOf("key", null));
-        assertThat(value).isEqualTo(new AttributeValue().withM(singletonMap("key", new AttributeValue().withNULL(true))));
+    @ParameterizedTest
+    @MethodSource("hashMapsWithNullsSource")
+    void serializeHashMapOfString_mapCasesWithNulls_returnsMapAttributeValueExcludingNulls(HashMap<String, String> hashMap) {
+        AttributeValue value = SchemaAttributeValueSerializer.serializeHashMapOfString(hashMap);
+        assertThat(value).isEqualTo(new AttributeValue().withM(hashMap.entrySet().stream()
+                .filter(e -> e.getKey() != null)
+                .filter(e -> e.getValue() != null)
+                .collect(toMap(e -> e.getKey(), e -> new AttributeValue(e.getValue())))));
     }
 
-    @Test
-    void serializeHashMapOfString_mapWithMultipleValues_returnsAttributeValueWithSerializedMap() {
-        AttributeValue value = SchemaAttributeValueSerializer.serializeHashMapOfString(mapOf("key1", "value1", "key2", "value2"));
-        assertThat(value).isEqualTo(new AttributeValue().withM(mapOf(
-                "key1", new AttributeValue("value1"),
-                "key2", new AttributeValue("value2"))));
+    static Stream<HashMap<String, String>> hashMapsWithNullsSource() {
+        return Stream.of(mapOf("key", null), mapOf("key1", null, "key2", "value2"), mapOf("key1", "value1", "key2", null),
+                mapOf("key1", null, "key2", null), mapOf(null, "value"), mapOf(null, null));
     }
 
-    @Test
-    void serializeHashMapOfString_mapWithMultipleValuesSomeNull_returnsAttributeValueWithSerializedMap() {
-        AttributeValue value = SchemaAttributeValueSerializer.serializeHashMapOfString(mapOf("key1", "value1", "key2", null));
-        assertThat(value).isEqualTo(new AttributeValue().withM(mapOf(
-                "key1", new AttributeValue("value1"),
-                "key2", new AttributeValue().withNULL(true))));
-    }
-
-    @Test
-    void serializeHashMapOfString_mapWithMultipleValuesAllNull_returnsAttributeValueWithSerializedMap() {
-        AttributeValue value = SchemaAttributeValueSerializer.serializeHashMapOfString(mapOf("key1", null, "key2", null));
-        assertThat(value).isEqualTo(new AttributeValue().withM(mapOf(
-                "key1", new AttributeValue().withNULL(true),
-                "key2", new AttributeValue().withNULL(true))));
-    }
-
-    @Test
-    void deserializeHashMapOfString_null_returnsNull() {
-        HashMap<String, String> value = SchemaAttributeValueSerializer.deserializeHashMapOfString(null);
+    @ParameterizedTest
+    @NullSource
+    @AttributeValueSource.WithoutMap
+    void deserializeHashMapOfString_nullCases_returnsNull(AttributeValue attributeValue) {
+        HashMap<String, String> value = SchemaAttributeValueSerializer.deserializeHashMapOfString(attributeValue);
         assertThat(value).isNull();
     }
 
-    @Test
-    void deserializeHashMapOfString_nullAttributeValue_returnsNull() {
-        HashMap<String, String> value = SchemaAttributeValueSerializer.deserializeHashMapOfString(new AttributeValue().withNULL(true));
-        assertThat(value).isNull();
+    @ParameterizedTest
+    @MethodSource("hashMapsOfStringsSource")
+    void deserializeHashMapOfString_correctTypesInMap_returnsHashMap(HashMap<String, String> hashMap) {
+        AttributeValue attributeValue = new AttributeValue().withM(hashMap.entrySet().stream()
+                .collect(toMap(e -> e.getKey(), e -> new AttributeValue(e.getValue()))));
+        HashMap<String, String> value = SchemaAttributeValueSerializer.deserializeHashMapOfString(attributeValue);
+        assertThat(value).isEqualTo(hashMap.entrySet().stream()
+                .collect(toMap(e -> e.getKey(), e -> e.getValue())));
     }
 
-    @Test
-    void deserializeHashMapOfString_mapValueNull_returnsNull() {
-        HashMap<String, String> value = SchemaAttributeValueSerializer.deserializeHashMapOfString(new AttributeValue().withS("string"));
-        assertThat(value).isNull();
-    }
-
-    @Test
-    void deserializeHashMapOfString_emptyMap_returnsEmptyHashMap() {
-        HashMap<String, String> value = SchemaAttributeValueSerializer.deserializeHashMapOfString(new AttributeValue().withM(emptyMap()));
+    @ParameterizedTest
+    @AttributeValueSource.WithoutString
+    void deserializeHashMapOfString_incorrectTypesInMap_returnsHashMapWithoutItems(AttributeValue attributeValue) {
+        HashMap<String, String> value = SchemaAttributeValueSerializer.deserializeHashMapOfString(new AttributeValue().withM(mapOf("key", attributeValue)));
         assertThat(value).isEmpty();
     }
 
-    @Test
-    void deserializeHashMapOfString_singletonMapWithValue_returnsSingletonHashMap() {
-        HashMap<String, String> value = SchemaAttributeValueSerializer.deserializeHashMapOfString(new AttributeValue().withM(singletonMap("key", new AttributeValue("value"))));
-        assertThat(value).containsOnly(entry("key", "value"));
+    @ParameterizedTest
+    @MethodSource("hashMapsWithNullsSource")
+    void deserializeHashMapOfString_nullsInMap_returnsHashMapWithoutNulls(HashMap<String, String> hashMap) {
+        AttributeValue attributeValue = new AttributeValue().withM(hashMap.entrySet().stream()
+                .filter(e -> e.getKey() != null) // keys can't be null
+                .collect(toMap(e -> e.getKey(), e -> new AttributeValue(e.getValue()))));
+        HashMap<String, String> value = SchemaAttributeValueSerializer.deserializeHashMapOfString(attributeValue);
+        assertThat(value).isEqualTo(hashMap.entrySet().stream()
+                .filter(e -> e.getKey() != null)
+                .filter(e -> e.getValue() != null)
+                .collect(toMap(e -> e.getKey(), e -> e.getValue())));
     }
 
-    @Test
-    void deserializeHashMapOfString_singletonMapWithNull_returnsSingletonHashMap() {
-        HashMap<String, String> value = SchemaAttributeValueSerializer.deserializeHashMapOfString(new AttributeValue().withM(singletonMap("key", null)));
-        assertThat(value).containsOnly(entry("key", null));
+    @ParameterizedTest
+    @AttributeValueSource.WithoutString
+    void deserializeHashMapOfString_incorrectTypesInMapMultipleItems_returnsHashMapOnlyWithCorrectTypes(AttributeValue attributeValue) {
+        HashMap<String, String> value = SchemaAttributeValueSerializer.deserializeHashMapOfString(new AttributeValue().withM(
+                mapOf("present", new AttributeValue("value"), "non-present", attributeValue)));
+        assertThat(value).containsExactly(entry("present", "value"));
     }
 
-    @Test
-    void deserializeHashMapOfString_singletonMapWithNullAttributeValue_returnsSingletonHashMap() {
-        HashMap<String, String> value = SchemaAttributeValueSerializer.deserializeHashMapOfString(new AttributeValue().withM(singletonMap("key", new AttributeValue().withNULL(true))));
-        assertThat(value).containsOnly(entry("key", null));
+    @ParameterizedTest
+    @MethodSource("hashMapsOfStringsSource")
+    void putAndGet_symmetricCases_returnsItem(HashMap<String, String> hashMap) {
+        Schema schema = schema(hashMap);
+        put(schema);
+        Stream<Schema> items = dynoDao.get(new SchemaStagedDynamoBuilder()
+                .usingTable()
+                .withHashKey(HASH_KEY_VALUE));
+
+        HashMap<String, String> expected = hashMap.entrySet().stream()
+                .collect(toMap(e -> e.getKey(), e -> e.getValue(), (l, r) -> l, HashMap::new));
+        assertThat(items).containsExactly(schema(expected));
     }
 
-    @Test
-    void deserializeHashMapOfString_mapWithMultipleValues_returnsHashMapWithValues() {
-        HashMap<String, String> value = SchemaAttributeValueSerializer.deserializeHashMapOfString(new AttributeValue().withM(mapOf(
-                "key1", new AttributeValue("value1"),
-                "key2", new AttributeValue("value2"))));
-        assertThat(value).containsOnly(entry("key1", "value1"), entry("key2", "value2"));
+    @ParameterizedTest
+    @MethodSource("hashMapsWithNullsSource")
+    void putAndGet_asymmetricCases_returnsItemWithoutNulls(HashMap<String, String> hashMap) {
+        Schema schema = schema(hashMap);
+        put(schema);
+        Stream<Schema> items = dynoDao.get(new SchemaStagedDynamoBuilder()
+                .usingTable()
+                .withHashKey(HASH_KEY_VALUE));
+
+        HashMap<String, String> expected = hashMap.entrySet().stream()
+                .filter(e -> e.getKey() != null)
+                .filter(e -> e.getValue() != null)
+                .collect(toMap(e -> e.getKey(), e -> e.getValue(), (l, r) -> l, HashMap::new));
+        assertThat(items).containsExactly(schema(expected));
     }
 
-    @Test
-    void deserializeHashMapOfString_mapWithMultipleValuesSomeNull_returnsHashMapWithValueAndNull() {
-        HashMap<String, String> value = SchemaAttributeValueSerializer.deserializeHashMapOfString(new AttributeValue().withM(mapOf(
-                "key1", new AttributeValue("value1"),
-                "key2", null)));
-        assertThat(value).containsOnly(entry("key1", "value1"), entry("key2", null));
+    private void put(Schema item) {
+        amazonDynamoDb.putItem(TABLE, SchemaAttributeValueSerializer.serializeSchemaAsItem(item));
     }
 
-    @Test
-    void deserializeHashMapOfString_mapWithMultipleValuesSomeNullAttributeValue_returnsHashMapWithValueAndNull() {
-        HashMap<String, String> value = SchemaAttributeValueSerializer.deserializeHashMapOfString(new AttributeValue().withM(mapOf(
-                "key1", new AttributeValue("value1"),
-                "key2", new AttributeValue().withNULL(true))));
-        assertThat(value).containsOnly(entry("key1", "value1"), entry("key2", null));
+    private Schema schema(HashMap<String, String> hashMap) {
+        Schema schema = new Schema();
+        schema.setHashKey(HASH_KEY_VALUE);
+        schema.setHashMap(hashMap);
+        return schema;
     }
 
-    @Test
-    void deserializeHashMapOfString_mapWithMultipleValuesAllNull_returnsHashMapAllNull() {
-        HashMap<String, String> value = SchemaAttributeValueSerializer.deserializeHashMapOfString(new AttributeValue().withM(mapOf(
-                "key1", null,
-                "key2", null)));
-        assertThat(value).containsOnly(entry("key1", null), entry("key2", null));
-    }
-
-    @Test
-    void deserializeHashMapOfString_mapWithMultipleValuesAllNullAttributeValue_returnsHashMapAllNull() {
-        HashMap<String, String> value = SchemaAttributeValueSerializer.deserializeHashMapOfString(new AttributeValue().withM(mapOf(
-                "key1", new AttributeValue().withNULL(true),
-                "key2", new AttributeValue().withNULL(true))));
-        assertThat(value).containsOnly(entry("key1", null), entry("key2", null));
-    }
-
-    @Test
-    void deserializeHashMapOfString_mapWithMultipleValuesAllMixedNulls_returnsHashMapAllNull() {
-        HashMap<String, String> value = SchemaAttributeValueSerializer.deserializeHashMapOfString(new AttributeValue().withM(mapOf(
-                "key1", null,
-                "key2", new AttributeValue().withNULL(true))));
-        assertThat(value).containsOnly(entry("key1", null), entry("key2", null));
-    }
-
-    private <K, V> HashMap<K, V> mapOf() {
+    private static <K, V> HashMap<K, V> mapOf() {
         return new HashMap<>();
     }
 
-    private <K, V> HashMap<K, V> mapOf(K key1, V value1) {
+    private static <K, V> HashMap<K, V> mapOf(K key1, V value1) {
         HashMap<K, V> map = new HashMap<>();
         map.put(key1, value1);
         return map;
     }
 
-    private <K, V> HashMap<K, V> mapOf(K key1, V value1, K key2, V value2) {
+    private static <K, V> HashMap<K, V> mapOf(K key1, V value1, K key2, V value2) {
         HashMap<K, V> map = new HashMap<>();
         map.put(key1, value1);
         map.put(key2, value2);

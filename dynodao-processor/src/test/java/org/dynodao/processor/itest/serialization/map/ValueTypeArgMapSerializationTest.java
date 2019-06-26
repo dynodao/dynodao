@@ -1,15 +1,23 @@
 package org.dynodao.processor.itest.serialization.map;
 
 import com.amazonaws.services.dynamodbv2.model.AttributeValue;
-import org.dynodao.processor.itest.AbstractSourceCompilingTest;
+import org.dynodao.processor.itest.AbstractIntegrationTest;
+import org.dynodao.processor.test.params.AttributeValueSource;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.params.provider.NullSource;
 
-import static java.util.Collections.emptyMap;
-import static java.util.Collections.singletonMap;
+import java.util.stream.Stream;
+
+import static java.util.stream.Collectors.toMap;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.entry;
 
-class ValueTypeArgMapSerializationTest extends AbstractSourceCompilingTest {
+class ValueTypeArgMapSerializationTest extends AbstractIntegrationTest {
+
+    private static final String TABLE = "things";
+    private static final String HASH_KEY_VALUE = "hashKey";
 
     @Test
     void serializeValueTypeArgMapOfString_null_returnsNullAttributeValue() {
@@ -17,149 +25,131 @@ class ValueTypeArgMapSerializationTest extends AbstractSourceCompilingTest {
         assertThat(value).isEqualTo(new AttributeValue().withNULL(true));
     }
 
-    @Test
-    void serializeValueTypeArgMapOfString_emptyMap_returnsAttributeValueWithEmptyMap() {
-        AttributeValue value = SchemaAttributeValueSerializer.serializeValueTypeArgMapOfString(mapOf());
-        assertThat(value).isEqualTo(new AttributeValue().withM(emptyMap()));
+    @ParameterizedTest
+    @MethodSource("valueTypeArgMapsOfStringsSource")
+    void serializeValueTypeArgMapOfString_mapCases_returnsMapAttributeValue(ValueTypeArgMap<String> valueTypeArgMap) {
+        AttributeValue value = SchemaAttributeValueSerializer.serializeValueTypeArgMapOfString(valueTypeArgMap);
+        assertThat(value).isEqualTo(new AttributeValue().withM(valueTypeArgMap.entrySet().stream()
+                .collect(toMap(e -> e.getKey(), e -> new AttributeValue(e.getValue())))));
     }
 
-    @Test
-    void serializeValueTypeArgMapOfString_singletonMapWithValue_returnsAttributeValueWithSingleValueSerializedMap() {
-        AttributeValue value = SchemaAttributeValueSerializer.serializeValueTypeArgMapOfString(mapOf("key", "value"));
-        assertThat(value).isEqualTo(new AttributeValue().withM(singletonMap("key", new AttributeValue("value"))));
+    static Stream<ValueTypeArgMap<String>> valueTypeArgMapsOfStringsSource() {
+        return Stream.of(mapOf(), mapOf("key", "value"), mapOf("key1", "value1", "key2", "value2"));
     }
 
-    @Test
-    void serializeValueTypeArgMapOfString_singletonMapWithNullValue_returnsAttributeValueWithSingleNullAttributeValue() {
-        AttributeValue value = SchemaAttributeValueSerializer.serializeValueTypeArgMapOfString(mapOf("key", null));
-        assertThat(value).isEqualTo(new AttributeValue().withM(singletonMap("key", new AttributeValue().withNULL(true))));
+    @ParameterizedTest
+    @MethodSource("valueTypeArgMapsWithNullsSource")
+    void serializeValueTypeArgMapOfString_mapCasesWithNulls_returnsMapAttributeValueExcludingNulls(ValueTypeArgMap<String> valueTypeArgMap) {
+        AttributeValue value = SchemaAttributeValueSerializer.serializeValueTypeArgMapOfString(valueTypeArgMap);
+        assertThat(value).isEqualTo(new AttributeValue().withM(valueTypeArgMap.entrySet().stream()
+                .filter(e -> e.getKey() != null)
+                .filter(e -> e.getValue() != null)
+                .collect(toMap(e -> e.getKey(), e -> new AttributeValue(e.getValue())))));
     }
 
-    @Test
-    void serializeValueTypeArgMapOfString_mapWithMultipleValues_returnsAttributeValueWithSerializedMap() {
-        AttributeValue value = SchemaAttributeValueSerializer.serializeValueTypeArgMapOfString(mapOf("key1", "value1", "key2", "value2"));
-        assertThat(value).isEqualTo(new AttributeValue().withM(mapOf(
-                "key1", new AttributeValue("value1"),
-                "key2", new AttributeValue("value2"))));
+    static Stream<ValueTypeArgMap<String>> valueTypeArgMapsWithNullsSource() {
+        return Stream.of(mapOf("key", null), mapOf("key1", null, "key2", "value2"), mapOf("key1", "value1", "key2", null),
+                mapOf("key1", null, "key2", null), mapOf(null, "value"), mapOf(null, null));
     }
 
-    @Test
-    void serializeValueTypeArgMapOfString_mapWithMultipleValuesSomeNull_returnsAttributeValueWithSerializedMap() {
-        AttributeValue value = SchemaAttributeValueSerializer.serializeValueTypeArgMapOfString(mapOf("key1", "value1", "key2", null));
-        assertThat(value).isEqualTo(new AttributeValue().withM(mapOf(
-                "key1", new AttributeValue("value1"),
-                "key2", new AttributeValue().withNULL(true))));
-    }
-
-    @Test
-    void serializeValueTypeArgMapOfString_mapWithMultipleValuesAllNull_returnsAttributeValueWithSerializedMap() {
-        AttributeValue value = SchemaAttributeValueSerializer.serializeValueTypeArgMapOfString(mapOf("key1", null, "key2", null));
-        assertThat(value).isEqualTo(new AttributeValue().withM(mapOf(
-                "key1", new AttributeValue().withNULL(true),
-                "key2", new AttributeValue().withNULL(true))));
-    }
-
-    @Test
-    void deserializeValueTypeArgMapOfString_null_returnsNull() {
-        ValueTypeArgMap<String> value = SchemaAttributeValueSerializer.deserializeValueTypeArgMapOfString(null);
+    @ParameterizedTest
+    @NullSource
+    @AttributeValueSource.WithoutMap
+    void deserializeValueTypeArgMapOfString_nullCases_returnsNull(AttributeValue attributeValue) {
+        ValueTypeArgMap<String> value = SchemaAttributeValueSerializer.deserializeValueTypeArgMapOfString(attributeValue);
         assertThat(value).isNull();
     }
 
-    @Test
-    void deserializeValueTypeArgMapOfString_nullAttributeValue_returnsNull() {
-        ValueTypeArgMap<String> value = SchemaAttributeValueSerializer.deserializeValueTypeArgMapOfString(new AttributeValue().withNULL(true));
-        assertThat(value).isNull();
+    @ParameterizedTest
+    @MethodSource("valueTypeArgMapsOfStringsSource")
+    void deserializeValueTypeArgMapOfString_correctTypesInMap_returnsValueTypeArgMap(ValueTypeArgMap<String> valueTypeArgMap) {
+        AttributeValue attributeValue = new AttributeValue().withM(valueTypeArgMap.entrySet().stream()
+                .collect(toMap(e -> e.getKey(), e -> new AttributeValue(e.getValue()))));
+        ValueTypeArgMap<String> value = SchemaAttributeValueSerializer.deserializeValueTypeArgMapOfString(attributeValue);
+        assertThat(value).isEqualTo(valueTypeArgMap.entrySet().stream()
+                .collect(toMap(e -> e.getKey(), e -> e.getValue())));
     }
 
-    @Test
-    void deserializeValueTypeArgMapOfString_mapValueNull_returnsNull() {
-        ValueTypeArgMap<String> value = SchemaAttributeValueSerializer.deserializeValueTypeArgMapOfString(new AttributeValue().withS("string"));
-        assertThat(value).isNull();
-    }
-
-    @Test
-    void deserializeValueTypeArgMapOfString_emptyMap_returnsEmptyValueTypeArgMap() {
-        ValueTypeArgMap<String> value = SchemaAttributeValueSerializer.deserializeValueTypeArgMapOfString(new AttributeValue().withM(emptyMap()));
+    @ParameterizedTest
+    @AttributeValueSource.WithoutString
+    void deserializeValueTypeArgMapOfString_incorrectTypesInMap_returnsValueTypeArgMapWithoutItems(AttributeValue attributeValue) {
+        ValueTypeArgMap<String> value = SchemaAttributeValueSerializer.deserializeValueTypeArgMapOfString(new AttributeValue().withM(mapOf("key", attributeValue)));
         assertThat(value).isEmpty();
     }
 
-    @Test
-    void deserializeValueTypeArgMapOfString_singletonMapWithValue_returnsSingletonValueTypeArgMap() {
-        ValueTypeArgMap<String> value = SchemaAttributeValueSerializer.deserializeValueTypeArgMapOfString(new AttributeValue().withM(singletonMap("key", new AttributeValue("value"))));
-        assertThat(value).containsOnly(entry("key", "value"));
+    @ParameterizedTest
+    @MethodSource("valueTypeArgMapsWithNullsSource")
+    void deserializeValueTypeArgMapOfString_nullsInMap_returnsValueTypeArgMapWithoutNulls(ValueTypeArgMap<String> valueTypeArgMap) {
+        AttributeValue attributeValue = new AttributeValue().withM(valueTypeArgMap.entrySet().stream()
+                .filter(e -> e.getKey() != null) // keys can't be null
+                .collect(toMap(e -> e.getKey(), e -> new AttributeValue(e.getValue()))));
+        ValueTypeArgMap<String> value = SchemaAttributeValueSerializer.deserializeValueTypeArgMapOfString(attributeValue);
+        assertThat(value).isEqualTo(valueTypeArgMap.entrySet().stream()
+                .filter(e -> e.getKey() != null)
+                .filter(e -> e.getValue() != null)
+                .collect(toMap(e -> e.getKey(), e -> e.getValue())));
     }
 
-    @Test
-    void deserializeValueTypeArgMapOfString_singletonMapWithNull_returnsSingletonValueTypeArgMap() {
-        ValueTypeArgMap<String> value = SchemaAttributeValueSerializer.deserializeValueTypeArgMapOfString(new AttributeValue().withM(singletonMap("key", null)));
-        assertThat(value).containsOnly(entry("key", null));
+    @ParameterizedTest
+    @AttributeValueSource.WithoutString
+    void deserializeValueTypeArgMapOfString_incorrectTypesInMapMultipleItems_returnsValueTypeArgMapOnlyWithCorrectTypes(AttributeValue attributeValue) {
+        ValueTypeArgMap<String> value = SchemaAttributeValueSerializer.deserializeValueTypeArgMapOfString(new AttributeValue().withM(
+                mapOf("present", new AttributeValue("value"), "non-present", attributeValue)));
+        assertThat(value).containsExactly(entry("present", "value"));
     }
 
-    @Test
-    void deserializeValueTypeArgMapOfString_singletonMapWithNullAttributeValue_returnsSingletonValueTypeArgMap() {
-        ValueTypeArgMap<String> value = SchemaAttributeValueSerializer.deserializeValueTypeArgMapOfString(new AttributeValue().withM(singletonMap("key", new AttributeValue().withNULL(true))));
-        assertThat(value).containsOnly(entry("key", null));
+    @ParameterizedTest
+    @MethodSource("valueTypeArgMapsOfStringsSource")
+    void putAndGet_symmetricCases_returnsItem(ValueTypeArgMap<String> valueTypeArgMap) {
+        Schema schema = schema(valueTypeArgMap);
+        put(schema);
+        Stream<Schema> items = dynoDao.get(new SchemaStagedDynamoBuilder()
+                .usingTable()
+                .withHashKey(HASH_KEY_VALUE));
+
+        ValueTypeArgMap<String> expected = valueTypeArgMap.entrySet().stream()
+                .collect(toMap(e -> e.getKey(), e -> e.getValue(), (l, r) -> l, ValueTypeArgMap::new));
+        assertThat(items).containsExactly(schema(expected));
     }
 
-    @Test
-    void deserializeValueTypeArgMapOfString_mapWithMultipleValues_returnsValueTypeArgMapWithValues() {
-        ValueTypeArgMap<String> value = SchemaAttributeValueSerializer.deserializeValueTypeArgMapOfString(new AttributeValue().withM(mapOf(
-                "key1", new AttributeValue("value1"),
-                "key2", new AttributeValue("value2"))));
-        assertThat(value).containsOnly(entry("key1", "value1"), entry("key2", "value2"));
+    @ParameterizedTest
+    @MethodSource("valueTypeArgMapsWithNullsSource")
+    void putAndGet_asymmetricCases_returnsItemWithoutNulls(ValueTypeArgMap<String> valueTypeArgMap) {
+        Schema schema = schema(valueTypeArgMap);
+        put(schema);
+        Stream<Schema> items = dynoDao.get(new SchemaStagedDynamoBuilder()
+                .usingTable()
+                .withHashKey(HASH_KEY_VALUE));
+
+        ValueTypeArgMap<String> expected = valueTypeArgMap.entrySet().stream()
+                .filter(e -> e.getKey() != null)
+                .filter(e -> e.getValue() != null)
+                .collect(toMap(e -> e.getKey(), e -> e.getValue(), (l, r) -> l, ValueTypeArgMap::new));
+        assertThat(items).containsExactly(schema(expected));
     }
 
-    @Test
-    void deserializeValueTypeArgMapOfString_mapWithMultipleValuesSomeNull_returnsValueTypeArgMapWithValueAndNull() {
-        ValueTypeArgMap<String> value = SchemaAttributeValueSerializer.deserializeValueTypeArgMapOfString(new AttributeValue().withM(mapOf(
-                "key1", new AttributeValue("value1"),
-                "key2", null)));
-        assertThat(value).containsOnly(entry("key1", "value1"), entry("key2", null));
+    private void put(Schema item) {
+        amazonDynamoDb.putItem(TABLE, SchemaAttributeValueSerializer.serializeSchemaAsItem(item));
     }
 
-    @Test
-    void deserializeValueTypeArgMapOfString_mapWithMultipleValuesSomeNullAttributeValue_returnsValueTypeArgMapWithValueAndNull() {
-        ValueTypeArgMap<String> value = SchemaAttributeValueSerializer.deserializeValueTypeArgMapOfString(new AttributeValue().withM(mapOf(
-                "key1", new AttributeValue("value1"),
-                "key2", new AttributeValue().withNULL(true))));
-        assertThat(value).containsOnly(entry("key1", "value1"), entry("key2", null));
+    private Schema schema(ValueTypeArgMap<String> valueTypeArgMap) {
+        Schema schema = new Schema();
+        schema.setHashKey(HASH_KEY_VALUE);
+        schema.setValueTypeArgMap(valueTypeArgMap);
+        return schema;
     }
 
-    @Test
-    void deserializeValueTypeArgMapOfString_mapWithMultipleValuesAllNull_returnsValueTypeArgMapAllNull() {
-        ValueTypeArgMap<String> value = SchemaAttributeValueSerializer.deserializeValueTypeArgMapOfString(new AttributeValue().withM(mapOf(
-                "key1", null,
-                "key2", null)));
-        assertThat(value).containsOnly(entry("key1", null), entry("key2", null));
-    }
-
-    @Test
-    void deserializeValueTypeArgMapOfString_mapWithMultipleValuesAllNullAttributeValue_returnsValueTypeArgMapAllNull() {
-        ValueTypeArgMap<String> value = SchemaAttributeValueSerializer.deserializeValueTypeArgMapOfString(new AttributeValue().withM(mapOf(
-                "key1", new AttributeValue().withNULL(true),
-                "key2", new AttributeValue().withNULL(true))));
-        assertThat(value).containsOnly(entry("key1", null), entry("key2", null));
-    }
-
-    @Test
-    void deserializeValueTypeArgMapOfString_mapWithMultipleValuesAllMixedNulls_returnsValueTypeArgMapAllNull() {
-        ValueTypeArgMap<String> value = SchemaAttributeValueSerializer.deserializeValueTypeArgMapOfString(new AttributeValue().withM(mapOf(
-                "key1", null,
-                "key2", new AttributeValue().withNULL(true))));
-        assertThat(value).containsOnly(entry("key1", null), entry("key2", null));
-    }
-
-    private <V> ValueTypeArgMap<V> mapOf() {
+    private static <V> ValueTypeArgMap<V> mapOf() {
         return new ValueTypeArgMap<>();
     }
 
-    private <V> ValueTypeArgMap<V> mapOf(String key1, V value1) {
+    private static <V> ValueTypeArgMap<V> mapOf(String key1, V value1) {
         ValueTypeArgMap<V> map = new ValueTypeArgMap<>();
         map.put(key1, value1);
         return map;
     }
 
-    private <V> ValueTypeArgMap<V> mapOf(String key1, V value1, String key2, V value2) {
+    private static <V> ValueTypeArgMap<V> mapOf(String key1, V value1, String key2, V value2) {
         ValueTypeArgMap<V> map = new ValueTypeArgMap<>();
         map.put(key1, value1);
         map.put(key2, value2);
