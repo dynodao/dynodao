@@ -11,8 +11,40 @@
 
     <name>DynoDao Parent</name>
     <description>An annotation processor for generating fluent, type-safe DynamoDB operations based on a structured schema.</description>
-    <url>https://github.com/twentylemon/dynodao</url>
+    <url>https://github.com/dynodao/dynodao</url>
     <inceptionYear>2019</inceptionYear>
+
+    <licenses>
+        <license>
+            <name>The Apache Software License, Version 2.0</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
+
+    <issueManagement>
+        <system>GitHub Issues</system>
+        <url>https://github.com/dynodao/dynodao/issues</url>
+    </issueManagement>
+
+    <ciManagement>
+        <system>Travis CI</system>
+        <url>https://travis-ci.org/dynodao/dynodao</url>
+    </ciManagement>
+
+    <developers>
+        <developer>
+            <id>twentylemon</id>
+            <name>Taras Mychaskiw</name>
+            <email>taras.mychaskiw@gmail.com</email>
+        </developer>
+    </developers>
+
+    <scm>
+        <connection>scm:git:git://github.com/dynodao/dynodao.git</connection>
+        <developerConnection>scm:git:git@github.com:dynodao/dynodao.git</developerConnection>
+        <url>https://github.com/dynodao/dynodao</url>
+    </scm>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -33,24 +65,6 @@
         <tostring.verifier.version>1.4.5</tostring.verifier.version>
         <jmh.version>1.0</jmh.version>
     </properties>
-
-    <licenses>
-        <license>
-            <name>The Apache Software License, Version 2.0</name>
-            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
-            <distribution>repo</distribution>
-        </license>
-    </licenses>
-
-    <issueManagement>
-        <system>GitHub Issues</system>
-        <url>https://github.com/dynodao/dynodao/issues</url>
-    </issueManagement>
-
-    <ciManagement>
-        <system>Travis CI</system>
-        <url>https://travis-ci.org/dynodao/dynodao</url>
-    </ciManagement>
 
     <dependencyManagement>
         <dependencies>
