@@ -1,13 +1,13 @@
 package com.github.dynodao.processor.schema.parse;
 
 import com.github.dynodao.processor.context.Processors;
+import com.github.dynodao.processor.schema.SchemaContext;
 import com.github.dynodao.processor.schema.attribute.NumberDynamoAttribute;
 import com.github.dynodao.processor.schema.serialize.DeserializationMappingMethod;
 import com.github.dynodao.processor.schema.serialize.SerializationMappingMethod;
 import com.squareup.javapoet.CodeBlock;
 import com.squareup.javapoet.ParameterSpec;
 import com.squareup.javapoet.TypeName;
-import com.github.dynodao.processor.schema.SchemaContext;
 
 import javax.inject.Inject;
 import javax.lang.model.element.Element;

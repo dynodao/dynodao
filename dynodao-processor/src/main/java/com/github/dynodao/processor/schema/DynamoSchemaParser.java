@@ -1,12 +1,12 @@
 package com.github.dynodao.processor.schema;
 
+import com.github.dynodao.annotation.DynoDaoSchema;
 import com.github.dynodao.processor.schema.attribute.DocumentDynamoAttribute;
 import com.github.dynodao.processor.schema.attribute.DynamoAttribute;
 import com.github.dynodao.processor.schema.attribute.NullDynamoAttribute;
 import com.github.dynodao.processor.schema.index.DynamoIndex;
 import com.github.dynodao.processor.schema.index.DynamoIndexParsers;
 import com.github.dynodao.processor.schema.parse.SchemaParsers;
-import com.github.dynodao.annotation.DynoDaoSchema;
 
 import javax.inject.Inject;
 import javax.lang.model.element.TypeElement;

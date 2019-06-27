@@ -1,7 +1,7 @@
 package com.github.dynodao.processor.schema.parse;
 
-import com.github.dynodao.processor.schema.attribute.DynamoAttribute;
 import com.github.dynodao.processor.schema.SchemaContext;
+import com.github.dynodao.processor.schema.attribute.DynamoAttribute;
 
 import javax.lang.model.element.Element;
 import javax.lang.model.type.TypeMirror;

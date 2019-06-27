@@ -1,7 +1,7 @@
 package com.github.dynodao.processor.stage.generate;
 
-import com.squareup.javapoet.TypeSpec;
 import com.github.dynodao.processor.stage.Stage;
+import com.squareup.javapoet.TypeSpec;
 
 import javax.inject.Inject;
 import javax.lang.model.element.Modifier;

@@ -1,9 +1,9 @@
 package com.github.dynodao.processor.schema.index;
 
 import com.github.dynodao.processor.schema.attribute.DynamoAttribute;
+import com.github.dynodao.processor.stage.KeyLengthType;
 import lombok.Builder;
 import lombok.Value;
-import com.github.dynodao.processor.stage.KeyLengthType;
 
 import java.util.List;
 import java.util.Optional;

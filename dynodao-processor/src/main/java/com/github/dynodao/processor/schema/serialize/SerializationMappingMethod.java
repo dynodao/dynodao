@@ -9,8 +9,8 @@ import lombok.Value;
 
 import java.util.Set;
 
-import static java.util.Collections.emptySet;
 import static com.github.dynodao.processor.util.DynamoDbUtil.attributeValue;
+import static java.util.Collections.emptySet;
 
 /**
  * A utility class for mapping an attribute to {@link com.amazonaws.services.dynamodbv2.model.AttributeValue}.

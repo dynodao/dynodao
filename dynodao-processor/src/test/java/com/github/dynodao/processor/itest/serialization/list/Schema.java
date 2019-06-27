@@ -1,9 +1,9 @@
 package com.github.dynodao.processor.itest.serialization.list;
 
-import lombok.Data;
 import com.github.dynodao.annotation.DynoDaoHashKey;
 import com.github.dynodao.annotation.DynoDaoSchema;
 import com.github.dynodao.processor.test.PackageScanner;
+import lombok.Data;
 
 import java.util.ArrayList;
 import java.util.LinkedList;

@@ -1,8 +1,8 @@
 package com.github.dynodao.processor.itest.noop;
 
+import com.github.dynodao.processor.itest.AbstractCompilingTest;
 import com.google.testing.compile.Compilation;
 import org.assertj.core.api.Assertions;
-import com.github.dynodao.processor.itest.AbstractCompilingTest;
 import org.junit.jupiter.api.Test;
 
 import javax.tools.JavaFileObject;

@@ -1,18 +1,18 @@
 package com.github.dynodao.processor.stage.generate;
 
+import com.github.dynodao.DynoDaoScan;
+import com.github.dynodao.internal.ParallelScanReadResult;
+import com.github.dynodao.internal.ScanReadResult;
 import com.github.dynodao.processor.context.Processors;
 import com.github.dynodao.processor.schema.index.IndexType;
+import com.github.dynodao.processor.stage.InterfaceType;
+import com.github.dynodao.processor.stage.Stage;
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.MethodSpec;
 import com.squareup.javapoet.ParameterSpec;
 import com.squareup.javapoet.ParameterizedTypeName;
 import com.squareup.javapoet.TypeName;
 import com.squareup.javapoet.TypeSpec;
-import com.github.dynodao.DynoDaoScan;
-import com.github.dynodao.internal.ParallelScanReadResult;
-import com.github.dynodao.internal.ScanReadResult;
-import com.github.dynodao.processor.stage.InterfaceType;
-import com.github.dynodao.processor.stage.Stage;
 
 import javax.inject.Inject;
 import javax.lang.model.element.ExecutableElement;

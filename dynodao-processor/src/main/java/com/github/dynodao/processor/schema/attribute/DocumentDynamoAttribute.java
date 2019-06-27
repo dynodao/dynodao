@@ -1,10 +1,10 @@
 package com.github.dynodao.processor.schema.attribute;
 
+import com.github.dynodao.annotation.DynoDaoDocument;
+import com.github.dynodao.annotation.DynoDaoSchema;
 import com.github.dynodao.processor.schema.serialize.MappingMethod;
 import lombok.Builder;
 import lombok.Value;
-import com.github.dynodao.annotation.DynoDaoDocument;
-import com.github.dynodao.annotation.DynoDaoSchema;
 
 import javax.lang.model.element.Element;
 import javax.lang.model.type.TypeMirror;

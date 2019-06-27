@@ -1,14 +1,14 @@
 package com.github.dynodao.processor.stage.generate;
 
-import com.squareup.javapoet.ClassName;
-import com.squareup.javapoet.ParameterizedTypeName;
-import com.squareup.javapoet.TypeName;
-import com.squareup.javapoet.TypeSpec;
 import com.github.dynodao.DynoDaoCreateTable;
 import com.github.dynodao.DynoDaoLoad;
 import com.github.dynodao.DynoDaoQuery;
 import com.github.dynodao.processor.stage.InterfaceType;
 import com.github.dynodao.processor.stage.Stage;
+import com.squareup.javapoet.ClassName;
+import com.squareup.javapoet.ParameterizedTypeName;
+import com.squareup.javapoet.TypeName;
+import com.squareup.javapoet.TypeSpec;
 
 import javax.inject.Inject;
 

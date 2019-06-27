@@ -1,14 +1,14 @@
 package com.github.dynodao.processor.stage;
 
+import com.github.dynodao.DynoDaoCreateTable;
+import com.github.dynodao.DynoDaoLoad;
+import com.github.dynodao.DynoDaoQuery;
+import com.github.dynodao.DynoDaoScan;
 import com.github.dynodao.processor.schema.index.DynamoIndex;
 import com.github.dynodao.processor.schema.index.IndexType;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import com.github.dynodao.DynoDaoCreateTable;
-import com.github.dynodao.DynoDaoLoad;
-import com.github.dynodao.DynoDaoQuery;
-import com.github.dynodao.DynoDaoScan;
 
 /**
  * Indicates which of the simplified interfaces like {@link DynoDaoLoad} or {@link DynoDaoQuery} a type implements.

@@ -1,22 +1,22 @@
 package com.github.dynodao.processor.stage.generate;
 
 import com.github.dynodao.processor.schema.attribute.DynamoAttribute;
+import com.github.dynodao.processor.stage.Stage;
+import com.github.dynodao.processor.stage.StageTypeSpec;
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.MethodSpec;
 import com.squareup.javapoet.ParameterSpec;
 import com.squareup.javapoet.TypeSpec;
-import com.github.dynodao.processor.stage.Stage;
-import com.github.dynodao.processor.stage.StageTypeSpec;
 
 import javax.inject.Inject;
 import javax.lang.model.element.Modifier;
 import java.util.ArrayList;
 import java.util.List;
 
-import static java.util.stream.Collectors.toList;
 import static com.github.dynodao.processor.util.StreamUtil.concat;
 import static com.github.dynodao.processor.util.StringUtil.repeat;
 import static com.github.dynodao.processor.util.StringUtil.toClassCase;
+import static java.util.stream.Collectors.toList;
 
 /**
  * Adds an user to type being built. The user (<tt>using*</tt>) is a factory which forwards the parameters to the

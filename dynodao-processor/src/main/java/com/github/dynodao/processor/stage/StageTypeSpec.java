@@ -1,10 +1,10 @@
 package com.github.dynodao.processor.stage;
 
-import com.squareup.javapoet.TypeSpec;
-import lombok.Value;
 import com.github.dynodao.DynoDaoLoad;
 import com.github.dynodao.DynoDaoQuery;
 import com.github.dynodao.processor.BuiltTypeSpec;
+import com.squareup.javapoet.TypeSpec;
+import lombok.Value;
 
 import javax.lang.model.element.TypeElement;
 

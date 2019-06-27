@@ -1,9 +1,9 @@
 package com.github.dynodao.processor.util;
 
+import com.github.dynodao.processor.test.AbstractUnitTest;
 import com.squareup.javapoet.AnnotationSpec;
 import com.squareup.javapoet.CodeBlock;
 import com.squareup.javapoet.TypeName;
-import com.github.dynodao.processor.test.AbstractUnitTest;
 import org.junit.jupiter.api.Test;
 
 import javax.annotation.Generated;

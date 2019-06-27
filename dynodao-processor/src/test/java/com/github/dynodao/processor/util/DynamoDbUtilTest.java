@@ -16,10 +16,10 @@ import com.amazonaws.services.dynamodbv2.model.ProvisionedThroughput;
 import com.amazonaws.services.dynamodbv2.model.QueryRequest;
 import com.amazonaws.services.dynamodbv2.model.QueryResult;
 import com.amazonaws.services.dynamodbv2.model.ScalarAttributeType;
+import com.github.dynodao.processor.test.AbstractUnitTest;
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.ParameterizedTypeName;
 import com.squareup.javapoet.TypeName;
-import com.github.dynodao.processor.test.AbstractUnitTest;
 import org.junit.jupiter.api.Test;
 
 import java.util.Map;

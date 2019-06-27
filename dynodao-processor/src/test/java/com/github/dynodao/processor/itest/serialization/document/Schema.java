@@ -1,12 +1,12 @@
 package com.github.dynodao.processor.itest.serialization.document;
 
-import lombok.Data;
 import com.github.dynodao.annotation.DynoDaoAttribute;
 import com.github.dynodao.annotation.DynoDaoDocument;
 import com.github.dynodao.annotation.DynoDaoHashKey;
 import com.github.dynodao.annotation.DynoDaoIgnore;
 import com.github.dynodao.annotation.DynoDaoSchema;
 import com.github.dynodao.processor.test.PackageScanner;
+import lombok.Data;
 
 @Data
 @DynoDaoSchema(tableName = "things")

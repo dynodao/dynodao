@@ -1,16 +1,16 @@
 package com.github.dynodao.processor.stage.generate;
 
+import com.github.dynodao.DynoDaoCreateTable;
 import com.github.dynodao.processor.context.Processors;
 import com.github.dynodao.processor.schema.index.DynamoIndex;
+import com.github.dynodao.processor.stage.InterfaceType;
+import com.github.dynodao.processor.stage.Stage;
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.CodeBlock;
 import com.squareup.javapoet.MethodSpec;
 import com.squareup.javapoet.ParameterSpec;
 import com.squareup.javapoet.ParameterizedTypeName;
 import com.squareup.javapoet.TypeSpec.Builder;
-import com.github.dynodao.DynoDaoCreateTable;
-import com.github.dynodao.processor.stage.InterfaceType;
-import com.github.dynodao.processor.stage.Stage;
 
 import javax.inject.Inject;
 import javax.lang.model.element.ExecutableElement;
@@ -22,7 +22,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 
-import static java.util.stream.Collectors.toMap;
 import static com.github.dynodao.processor.util.DynamoDbUtil.amazonDynamoDb;
 import static com.github.dynodao.processor.util.DynamoDbUtil.attributeDefinition;
 import static com.github.dynodao.processor.util.DynamoDbUtil.createTableRequest;
@@ -38,6 +37,7 @@ import static com.github.dynodao.processor.util.StreamUtil.concat;
 import static com.github.dynodao.processor.util.StringUtil.repeat;
 import static com.github.dynodao.processor.util.StringUtil.toClassCase;
 import static com.github.dynodao.processor.util.StringUtil.uncapitalize;
+import static java.util.stream.Collectors.toMap;
 
 /**
  * Implements all methods defined in the {@link DynoDaoCreateTable} interface.

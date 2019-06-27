@@ -1,7 +1,7 @@
 package com.github.dynodao.processor.itest.validation.unable_to_serialize;
 
-import com.google.testing.compile.Compilation;
 import com.github.dynodao.processor.itest.AbstractResourceCompilingTest;
+import com.google.testing.compile.Compilation;
 import org.junit.jupiter.api.Test;
 
 import javax.tools.JavaFileObject;

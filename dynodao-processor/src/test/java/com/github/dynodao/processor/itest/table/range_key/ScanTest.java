@@ -1,8 +1,8 @@
 package com.github.dynodao.processor.itest.table.range_key;
 
 import com.amazonaws.services.dynamodbv2.model.AttributeValue;
-import org.assertj.core.api.Assertions;
 import com.github.dynodao.processor.itest.AbstractIntegrationTest;
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
@@ -10,8 +10,6 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
-
-import static org.assertj.core.api.Assertions.assertThat;
 
 class ScanTest extends AbstractIntegrationTest {
 

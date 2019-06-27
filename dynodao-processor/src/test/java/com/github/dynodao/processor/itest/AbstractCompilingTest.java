@@ -1,12 +1,12 @@
 package com.github.dynodao.processor.itest;
 
+import com.github.dynodao.processor.DynoDaoProcessor;
+import com.github.dynodao.processor.test.AbstractUnitTest;
 import com.google.testing.compile.Compilation;
 import com.google.testing.compile.Compiler;
 import com.squareup.javapoet.JavaFile;
 import com.squareup.javapoet.TypeSpec;
 import lombok.SneakyThrows;
-import com.github.dynodao.processor.DynoDaoProcessor;
-import com.github.dynodao.processor.test.AbstractUnitTest;
 import org.junit.jupiter.api.Disabled;
 
 import javax.annotation.processing.Processor;

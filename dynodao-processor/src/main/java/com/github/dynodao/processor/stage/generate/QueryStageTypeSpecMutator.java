@@ -1,8 +1,12 @@
 package com.github.dynodao.processor.stage.generate;
 
+import com.github.dynodao.DynoDaoQuery;
+import com.github.dynodao.internal.QueryReadResult;
 import com.github.dynodao.processor.context.Processors;
 import com.github.dynodao.processor.schema.attribute.DynamoAttribute;
 import com.github.dynodao.processor.schema.index.IndexType;
+import com.github.dynodao.processor.stage.InterfaceType;
+import com.github.dynodao.processor.stage.Stage;
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.FieldSpec;
 import com.squareup.javapoet.MethodSpec;
@@ -10,10 +14,6 @@ import com.squareup.javapoet.ParameterSpec;
 import com.squareup.javapoet.ParameterizedTypeName;
 import com.squareup.javapoet.TypeName;
 import com.squareup.javapoet.TypeSpec;
-import com.github.dynodao.DynoDaoQuery;
-import com.github.dynodao.internal.QueryReadResult;
-import com.github.dynodao.processor.stage.InterfaceType;
-import com.github.dynodao.processor.stage.Stage;
 
 import javax.inject.Inject;
 import javax.lang.model.element.ExecutableElement;
@@ -21,11 +21,11 @@ import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
 import java.util.stream.Stream;
 
-import static java.util.stream.Collectors.joining;
 import static com.github.dynodao.processor.util.DynamoDbUtil.amazonDynamoDb;
 import static com.github.dynodao.processor.util.DynamoDbUtil.item;
 import static com.github.dynodao.processor.util.DynamoDbUtil.queryRequest;
 import static com.github.dynodao.processor.util.DynamoDbUtil.queryResult;
+import static java.util.stream.Collectors.joining;
 
 /**
  * Implements all methods defined in the {@link DynoDaoQuery} interface.

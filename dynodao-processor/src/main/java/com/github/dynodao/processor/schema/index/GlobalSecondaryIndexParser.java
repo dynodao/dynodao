@@ -1,10 +1,10 @@
 package com.github.dynodao.processor.schema.index;
 
+import com.github.dynodao.annotation.DynoDaoIndexHashKey;
+import com.github.dynodao.annotation.DynoDaoIndexRangeKey;
 import com.github.dynodao.processor.context.ProcessorMessager;
 import com.github.dynodao.processor.schema.attribute.DocumentDynamoAttribute;
 import com.github.dynodao.processor.schema.attribute.DynamoAttribute;
-import com.github.dynodao.annotation.DynoDaoIndexHashKey;
-import com.github.dynodao.annotation.DynoDaoIndexRangeKey;
 
 import javax.inject.Inject;
 import java.util.Arrays;

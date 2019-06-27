@@ -1,8 +1,8 @@
 package com.github.dynodao.processor.serialize.generate;
 
+import com.github.dynodao.processor.schema.DynamoSchema;
 import com.squareup.javapoet.MethodSpec;
 import com.squareup.javapoet.TypeSpec;
-import com.github.dynodao.processor.schema.DynamoSchema;
 
 import javax.inject.Inject;
 import javax.lang.model.element.Modifier;

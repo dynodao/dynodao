@@ -1,12 +1,12 @@
 package com.github.dynodao.processor.itest;
 
+import com.github.dynodao.processor.test.PackageScanner;
 import com.google.testing.compile.Compilation;
 import com.jparams.verifier.tostring.ToStringVerifier;
 import lombok.SneakyThrows;
 import nl.jqno.equalsverifier.EqualsVerifier;
 import nl.jqno.equalsverifier.EqualsVerifierApi;
 import nl.jqno.equalsverifier.Warning;
-import com.github.dynodao.processor.test.PackageScanner;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.DynamicTest;
 import org.junit.jupiter.api.TestFactory;

@@ -1,7 +1,7 @@
 package com.github.dynodao.processor.itest.validation.no_hash_key;
 
-import com.google.testing.compile.Compilation;
 import com.github.dynodao.processor.itest.AbstractResourceCompilingTest;
+import com.google.testing.compile.Compilation;
 import org.junit.jupiter.api.Test;
 
 import javax.tools.JavaFileObject;

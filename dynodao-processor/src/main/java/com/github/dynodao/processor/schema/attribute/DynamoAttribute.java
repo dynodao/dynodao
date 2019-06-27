@@ -1,10 +1,10 @@
 package com.github.dynodao.processor.schema.attribute;
 
 import com.github.dynodao.processor.schema.serialize.MappingMethod;
+import com.github.dynodao.processor.util.SimpleDynamoAttributeVisitor;
 import com.squareup.javapoet.FieldSpec;
 import com.squareup.javapoet.ParameterSpec;
 import com.squareup.javapoet.TypeName;
-import com.github.dynodao.processor.util.SimpleDynamoAttributeVisitor;
 
 import javax.lang.model.element.Element;
 import javax.lang.model.element.Modifier;

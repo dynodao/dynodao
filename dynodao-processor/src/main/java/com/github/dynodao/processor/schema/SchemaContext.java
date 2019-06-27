@@ -1,8 +1,8 @@
 package com.github.dynodao.processor.schema;
 
+import com.github.dynodao.annotation.DynoDaoSchema;
 import com.github.dynodao.processor.schema.attribute.DynamoAttribute;
 import com.github.dynodao.processor.schema.parse.SchemaParsers;
-import com.github.dynodao.annotation.DynoDaoSchema;
 
 import javax.lang.model.element.Element;
 import javax.lang.model.type.TypeMirror;

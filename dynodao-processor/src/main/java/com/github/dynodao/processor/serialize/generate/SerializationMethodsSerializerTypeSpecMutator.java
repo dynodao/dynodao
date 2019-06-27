@@ -1,20 +1,20 @@
 package com.github.dynodao.processor.serialize.generate;
 
-import com.squareup.javapoet.FieldSpec;
-import com.squareup.javapoet.MethodSpec;
-import com.squareup.javapoet.ParameterSpec;
-import com.squareup.javapoet.TypeSpec;
 import com.github.dynodao.processor.schema.DynamoSchema;
 import com.github.dynodao.processor.schema.attribute.DocumentDynamoAttribute;
 import com.github.dynodao.processor.schema.attribute.DynamoAttribute;
 import com.github.dynodao.processor.schema.serialize.MappingMethod;
+import com.squareup.javapoet.FieldSpec;
+import com.squareup.javapoet.MethodSpec;
+import com.squareup.javapoet.ParameterSpec;
+import com.squareup.javapoet.TypeSpec;
 
 import javax.inject.Inject;
 import javax.lang.model.element.Modifier;
 import java.util.Arrays;
 
-import static java.util.Collections.singletonList;
 import static com.github.dynodao.processor.util.DynamoDbUtil.attributeValue;
+import static java.util.Collections.singletonList;
 
 /**
  * Adds all of the methods which serialize to {@link com.amazonaws.services.dynamodbv2.model.AttributeValue}.

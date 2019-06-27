@@ -1,6 +1,11 @@
 package com.github.dynodao.processor.schema.parse;
 
+import com.github.dynodao.annotation.DynoDaoAttribute;
+import com.github.dynodao.annotation.DynoDaoDocument;
+import com.github.dynodao.annotation.DynoDaoIgnore;
+import com.github.dynodao.annotation.DynoDaoSchema;
 import com.github.dynodao.processor.context.Processors;
+import com.github.dynodao.processor.schema.SchemaContext;
 import com.github.dynodao.processor.schema.attribute.DocumentDynamoAttribute;
 import com.github.dynodao.processor.schema.attribute.DynamoAttribute;
 import com.github.dynodao.processor.schema.serialize.DeserializationMappingMethod;
@@ -10,11 +15,6 @@ import com.github.dynodao.processor.schema.serialize.SerializationMappingMethod;
 import com.squareup.javapoet.CodeBlock;
 import com.squareup.javapoet.ParameterSpec;
 import com.squareup.javapoet.TypeName;
-import com.github.dynodao.annotation.DynoDaoAttribute;
-import com.github.dynodao.annotation.DynoDaoDocument;
-import com.github.dynodao.annotation.DynoDaoIgnore;
-import com.github.dynodao.annotation.DynoDaoSchema;
-import com.github.dynodao.processor.schema.SchemaContext;
 
 import javax.inject.Inject;
 import javax.lang.model.element.Element;
@@ -25,10 +25,10 @@ import javax.lang.model.type.TypeMirror;
 import java.util.LinkedHashMap;
 import java.util.List;
 
-import static java.util.stream.Collectors.toList;
 import static com.github.dynodao.processor.util.DynamoDbUtil.attributeValue;
 import static com.github.dynodao.processor.util.DynamoDbUtil.item;
 import static com.github.dynodao.processor.util.StringUtil.capitalize;
+import static java.util.stream.Collectors.toList;
 
 /**
  * Parses a type which is annotated with {@link DynoDaoSchema} or {@link DynoDaoDocument}.

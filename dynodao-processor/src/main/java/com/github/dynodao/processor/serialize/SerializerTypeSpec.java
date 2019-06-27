@@ -1,9 +1,9 @@
 package com.github.dynodao.processor.serialize;
 
+import com.github.dynodao.processor.BuiltTypeSpec;
 import com.squareup.javapoet.TypeSpec;
 import lombok.Builder;
 import lombok.Value;
-import com.github.dynodao.processor.BuiltTypeSpec;
 
 import javax.lang.model.element.TypeElement;
 

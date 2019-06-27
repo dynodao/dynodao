@@ -1,7 +1,7 @@
 package com.github.dynodao.processor.serialize.generate;
 
-import com.squareup.javapoet.TypeSpec;
 import com.github.dynodao.processor.schema.DynamoSchema;
+import com.squareup.javapoet.TypeSpec;
 
 /**
  * Builds a component of {@link TypeSpec} for the serializer utility class.

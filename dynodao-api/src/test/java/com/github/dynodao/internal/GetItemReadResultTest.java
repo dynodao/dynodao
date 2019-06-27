@@ -10,8 +10,8 @@ import java.util.Map;
 import java.util.Spliterator;
 import java.util.stream.Stream;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static com.github.dynodao.test.Item.item;
+import static org.assertj.core.api.Assertions.assertThat;
 
 class GetItemReadResultTest extends AbstractUnitTest {
 

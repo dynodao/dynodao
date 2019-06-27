@@ -1,11 +1,11 @@
 package com.github.dynodao.processor.stage.generate;
 
 import com.github.dynodao.processor.schema.attribute.DynamoAttribute;
+import com.github.dynodao.processor.stage.Stage;
 import com.squareup.javapoet.FieldSpec;
 import com.squareup.javapoet.MethodSpec;
 import com.squareup.javapoet.ParameterSpec;
 import com.squareup.javapoet.TypeSpec;
-import com.github.dynodao.processor.stage.Stage;
 
 import javax.inject.Inject;
 

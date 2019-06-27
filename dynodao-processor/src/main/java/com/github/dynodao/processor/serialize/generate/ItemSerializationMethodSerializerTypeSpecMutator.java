@@ -1,13 +1,13 @@
 package com.github.dynodao.processor.serialize.generate;
 
-import com.squareup.javapoet.MethodSpec;
-import com.squareup.javapoet.ParameterSpec;
-import com.squareup.javapoet.TypeSpec;
 import com.github.dynodao.processor.schema.DynamoSchema;
 import com.github.dynodao.processor.schema.attribute.DocumentDynamoAttribute;
 import com.github.dynodao.processor.schema.attribute.DynamoAttribute;
 import com.github.dynodao.processor.schema.serialize.MappingMethod;
 import com.github.dynodao.processor.util.SimpleDynamoAttributeVisitor;
+import com.squareup.javapoet.MethodSpec;
+import com.squareup.javapoet.ParameterSpec;
+import com.squareup.javapoet.TypeSpec;
 
 import javax.inject.Inject;
 import javax.lang.model.element.Modifier;

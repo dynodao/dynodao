@@ -14,10 +14,10 @@ import java.util.Map;
 import java.util.Spliterator;
 import java.util.stream.Stream;
 
+import static com.github.dynodao.test.Item.items;
 import static java.util.stream.Collectors.toList;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static com.github.dynodao.test.Item.items;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
