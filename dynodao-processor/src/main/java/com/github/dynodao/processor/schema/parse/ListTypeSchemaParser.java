@@ -21,6 +21,7 @@ import javax.lang.model.util.SimpleTypeVisitor8;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.github.dynodao.processor.schema.serialize.DeserializationMappingMethod.parameter;
 import static com.github.dynodao.processor.util.DynamoDbUtil.attributeValue;
 
 /**
@@ -110,7 +111,7 @@ class ListTypeSchemaParser implements SchemaParser {
         String valueDeserializationMethod = listElement.getDeserializationMethod().getMethodName();
         CodeBlock.Builder body = CodeBlock.builder()
                 .addStatement("$T list = new $T$L()", typeMirror, getListImplementationType(typeMirror), hasTypeArguments(typeMirror) ? "<>" : "")
-                .beginControlFlow("for ($T element : $N.getL())", attributeValue(), DeserializationMappingMethod.parameter())
+                .beginControlFlow("for ($T element : $N.getL())", attributeValue(), parameter())
                 .addStatement("list.add($L(element))", valueDeserializationMethod)
                 .endControlFlow()
                 .addStatement("return list");

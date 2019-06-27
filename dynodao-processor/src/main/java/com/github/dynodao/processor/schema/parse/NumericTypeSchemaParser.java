@@ -19,6 +19,7 @@ import java.math.BigInteger;
 import java.util.Arrays;
 import java.util.Collection;
 
+import static com.github.dynodao.processor.schema.serialize.DeserializationMappingMethod.parameter;
 import static com.github.dynodao.processor.util.DynamoDbUtil.attributeValue;
 import static com.github.dynodao.processor.util.StringUtil.capitalize;
 
@@ -100,11 +101,11 @@ class NumericTypeSchemaParser implements SchemaParser {
 
         if (isNumericPrimitive(typeMirror)) {
             TypeMirror boxed = processors.boxedClass((PrimitiveType) typeMirror).asType();
-            body.addStatement("return $T.$L($N.getN())", boxed, "parse" + capitalize(typeMirror.toString()), DeserializationMappingMethod.parameter());
+            body.addStatement("return $T.$L($N.getN())", boxed, "parse" + capitalize(typeMirror.toString()), parameter());
         } else if (isBoxedNumericPrimitive(typeMirror)) {
-            body.addStatement("return $T.valueOf($N.getN())", typeMirror, DeserializationMappingMethod.parameter());
+            body.addStatement("return $T.valueOf($N.getN())", typeMirror, parameter());
         } else if (isBigInteger(typeMirror) || isBigDecimal(typeMirror)) {
-            body.addStatement("return new $T($N.getN())", typeMirror, DeserializationMappingMethod.parameter());
+            body.addStatement("return new $T($N.getN())", typeMirror, parameter());
         }
 
         return DeserializationMappingMethod.builder()

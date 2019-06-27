@@ -14,6 +14,7 @@ import javax.lang.model.element.Element;
 import javax.lang.model.type.TypeKind;
 import javax.lang.model.type.TypeMirror;
 
+import static com.github.dynodao.processor.schema.serialize.DeserializationMappingMethod.parameter;
 import static com.github.dynodao.processor.util.DynamoDbUtil.attributeValue;
 import static com.github.dynodao.processor.util.StringUtil.capitalize;
 
@@ -71,7 +72,7 @@ class CharacterTypeSchemaParser implements SchemaParser {
 
     private DeserializationMappingMethod buildDeserializationMethod(TypeMirror typeMirror) {
         CodeBlock body = CodeBlock.builder()
-                .addStatement("return $N.getS().charAt(0)", DeserializationMappingMethod.parameter())
+                .addStatement("return $N.getS().charAt(0)", parameter())
                 .build();
 
         return DeserializationMappingMethod.builder()

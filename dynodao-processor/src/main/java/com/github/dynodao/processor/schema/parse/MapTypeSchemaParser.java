@@ -27,6 +27,7 @@ import java.util.TreeMap;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentSkipListMap;
 
+import static com.github.dynodao.processor.schema.serialize.DeserializationMappingMethod.parameter;
 import static com.github.dynodao.processor.util.DynamoDbUtil.attributeValue;
 import static com.github.dynodao.processor.util.DynamoDbUtil.item;
 
@@ -144,7 +145,7 @@ class MapTypeSchemaParser implements SchemaParser {
         String valueDeserializationMethod = mapElement.getDeserializationMethod().getMethodName();
         CodeBlock.Builder body = CodeBlock.builder()
                 .addStatement("$T map = new $T$L()", typeMirror, getMapImplementationType(typeMirror), hasTypeArguments(typeMirror) ? "<>" : "")
-                .addStatement("$T it = $N.getM().entrySet().iterator()", ITEM_MAP_ENTRY_ITERATOR, DeserializationMappingMethod.parameter())
+                .addStatement("$T it = $N.getM().entrySet().iterator()", ITEM_MAP_ENTRY_ITERATOR, parameter())
                 .beginControlFlow("while (it.hasNext())")
                 .addStatement("$T entry = it.next()", ITEM_MAP_ENTRY)
                 .addStatement("$T value = $L(entry.getValue())", getValueType(typeMirror), valueDeserializationMethod)

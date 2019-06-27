@@ -25,6 +25,7 @@ import javax.lang.model.type.TypeMirror;
 import java.util.LinkedHashMap;
 import java.util.List;
 
+import static com.github.dynodao.processor.schema.serialize.DeserializationMappingMethod.parameter;
 import static com.github.dynodao.processor.util.DynamoDbUtil.attributeValue;
 import static com.github.dynodao.processor.util.DynamoDbUtil.item;
 import static com.github.dynodao.processor.util.StringUtil.capitalize;
@@ -161,7 +162,7 @@ class DocumentSchemaParser implements SchemaParser {
                 .methodName(itemDeserializationMethod.getMethodName().replaceAll("FromItem$", ""))
                 .returnType(itemDeserializationMethod.getReturnType())
                 .coreMethodBody(CodeBlock.builder()
-                        .addStatement("return $L($N.getM())", itemDeserializationMethod.getMethodName(), DeserializationMappingMethod.parameter())
+                        .addStatement("return $L($N.getM())", itemDeserializationMethod.getMethodName(), parameter())
                         .build())
                 .build();
     }

@@ -13,6 +13,7 @@ import javax.inject.Inject;
 import javax.lang.model.element.Element;
 import javax.lang.model.type.TypeMirror;
 
+import static com.github.dynodao.processor.schema.serialize.DeserializationMappingMethod.parameter;
 import static com.github.dynodao.processor.util.DynamoDbUtil.attributeValue;
 
 /**
@@ -58,7 +59,7 @@ class StringTypeSchemaParser implements SchemaParser {
 
     private DeserializationMappingMethod buildDeserializationMethod(TypeMirror typeMirror) {
         CodeBlock.Builder body = CodeBlock.builder()
-                .addStatement("return $N.getS()", DeserializationMappingMethod.parameter());
+                .addStatement("return $N.getS()", parameter());
         return DeserializationMappingMethod.builder()
                 .methodName("deserializeString")
                 .returnType(TypeName.get(typeMirror))
