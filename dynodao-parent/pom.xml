@@ -47,9 +47,13 @@
     </scm>
 
     <distributionManagement>
+        <repository>
+            <id>packagecloud-travis</id>
+            <url>packagecloud+https://packagecloud.io/dynodao/dynodao</url>
+        </repository>
         <snapshotRepository>
-            <id>ossrh</id>
-            <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+            <id>packagecloud-travis</id>
+            <url>packagecloud+https://packagecloud.io/dynodao/dynodao</url>
         </snapshotRepository>
     </distributionManagement>
 
