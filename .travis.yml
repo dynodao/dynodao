@@ -9,7 +9,7 @@ matrix:
 
 deploy:
   provider: script
-  script: "mvn -s .travis.settings.xml -DskipTests=true deploy"
+  script: "mvn -s .travis.settings.xml -DskipTests=true deploy -B"
   skip_cleanup: true
   on:
     tags: true
