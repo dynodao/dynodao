@@ -7,7 +7,7 @@
     <parent>
         <artifactId>dynodao-parent</artifactId>
         <groupId>com.github.dynodao</groupId>
-        <version>1.0-SNAPSHOT</version>
+        <version>0.1.Beta</version>
         <relativePath>dynodao-parent/pom.xml</relativePath>
     </parent>
 
