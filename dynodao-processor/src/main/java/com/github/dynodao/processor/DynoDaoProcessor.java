@@ -39,16 +39,11 @@ import static java.util.stream.Collectors.toSet;
 @SupportedAnnotationTypes("com.github.dynodao.annotation.DynoDaoSchema")
 public class DynoDaoProcessor extends AbstractProcessor {
 
-    @Inject
-    ProcessorContext processorContext;
-    @Inject
-    ProcessorMessager processorMessager;
-    @Inject
-    DynamoSchemaParser dynamoSchemaParser;
-    @Inject
-    SerializerTypeSpecFactory serializerTypeSpecFactory;
-    @Inject
-    StageTypeSpecFactory stageTypeSpecFactory;
+    @Inject ProcessorContext processorContext;
+    @Inject ProcessorMessager processorMessager;
+    @Inject DynamoSchemaParser dynamoSchemaParser;
+    @Inject SerializerTypeSpecFactory serializerTypeSpecFactory;
+    @Inject StageTypeSpecFactory stageTypeSpecFactory;
     @Inject TypeSpecWriter typeSpecWriter;
 
     @Override
