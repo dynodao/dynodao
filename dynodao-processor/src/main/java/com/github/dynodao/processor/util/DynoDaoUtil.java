@@ -13,9 +13,9 @@ import java.time.ZonedDateTime;
 public class DynoDaoUtil {
 
     private static final AnnotationSpec GENERATED_ANNOTATION = AnnotationSpec.builder(Generated.class)
-            .addMember("value", "$S", "org.dynodao.processor")
+            .addMember("value", "$S", "com.github.dynodao.processor")
             .addMember("date", "$S", ZonedDateTime.now())
-            .addMember("comments", "$S", "https://github.com/twentylemon/dynodao")
+            .addMember("comments", "$S", "https://github.com/dynodao/dynodao")
             .build();
 
     /**
