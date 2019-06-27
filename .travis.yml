@@ -7,14 +7,26 @@ matrix:
   - jdk: openjdk8
     after_success: mvn jacoco:report -pl "com.github.dynodao:dynodao-api,com.github.dynodao:dynodao-processor" -B && bash <(curl -s https://codecov.io/bash)
 
+before_deploy:
+- gpg2 --keyring=$TRAVIS_BUILD_DIR/pubring.gpg --no-default-keyring --import .etc/signingkey.asc
+- gpg2 --allow-secret-key-import --keyring=$TRAVIS_BUILD_DIR/secring.gpg --no-default-keyring --import .etc/signingkey.asc
+
 deploy:
   provider: script
-  script: "mvn -s .travis.settings.xml -DskipTests=true deploy -B"
+  script: mvn -s .etc/travis.settings.xml -DskipTests=true -Dgpg.executable=gpg2 -Dgpg.keyname=A9C96D5B27E6390733A4DEF73ED8EF3F9F7CE8F2 -Dgpg.passphrase=$PASSPHRASE -Dgpg.publicKeyring=$TRAVIS_BUILD_DIR/pubring.gpg -Dgpg.secretKeyring=$TRAVIS_BUILD_DIR/secring.gpg deploy -B
   skip_cleanup: true
   on:
-    tags: true
-    jdk: openjdk8
+    branch: master
 
 cache:
   directories:
-  - $HOME/.m2
+  - "$HOME/.m2"
+
+env:
+  global:
+  - secure: nsPVDZXTpDlyZJJmIgaNyImjGLvE1C4fnbaQtPf8MXzw/2yWASPGVDF7zdl777P+2BNPOBM6VtVzGCoi4NU7yBPYbuSKCYyVhF3hdwF5dUl6XbIbGrP//LJGJScdAlVvAhrTW9yRMhr2ajjqG952e3rIlxledep8/CzquVUCkIJDsjw6JlcZZDpc8+ABHdSdyIaxAEJb4jiHMbSwpzIBXIt4YUDOOyqgxeI0rILCgKTDvIMHC6dSrNYxHSnMS8/Dgyc5JQB8i1ETgKPMNok7iK1tkN2lhUrx+wNCy1UXerX2Mgy/DV+D4roKxQhz5YCM3PB9yfTg7nAnBitsPmXQnlwobI46qNviCr9Zlrqfjm6t5eEd/MaVw4ejxpZcunfzGEWGfj9lCQPvFKniM4XEjHAa/dOPll3Rj0etJ0vDSBFiYG4gE3hLUFDU3pAhDp36Fu8Yl8lo6SN7Ch4FZaRXpd/m4AekcJIUU5qCaRIEQSYwiXqPhUjWQtTa8qp1F+lP0GR0UIgK2GVfGsImTmmG1R8xok1XrrWP2Lo091lXx1mKX9tx6iF0FIksnaQuApL4tMkO7HmpEeRBOboHNKl3B9JG64VivSe8rKg6foJDoY9FFN5VyZ4RuGTR5QYSgzz0wn5rQgTE3FTsu0vKoEiv/7kGh4WAuF6Vl68uvT3CtKU=
+  - secure: YsXm6FnyDb4Gn9wziDC0Y/v9fcpF55nkpjou/47Smco9BP1xjBeqP5IhI6nX6haHR9Fz5lu8fiEcNphb18hjaRp0fWWlLdXGUDXmhdnJIpVV8mm6r6T5woYjCLWE52p0UturpKuAQx4jVMBF3zgLsTcU1r7D92BQez0BcveNRvNMSkzYC7mAvx7G5OY6ufJwxRw9IQdobA1hW8EuVORZ7xzSLCUo3TtbAQjEyOeTS3M8xkfdNOaVHIyNvUa76NF6DaBkmsuW38iq7MzNe0qiSrzIY6VLKTVMXqPvsM+C/oRpI4M8vq3tj004OvKhFLC+sVJWit/VQWrLVJ4G19/ZkZ81mpXhWcpS/oB5NlVpJ0pYAx09f8cGfMtioIK1VazdVLwdXdjG+DLPaPaXEgqKPzyMGppKMtvpDpiI0WQKYDGYPundF+MNQilLUXveIO4FiXLblyY9daRvVQ9HET/me7X45cZj5KnuBJ9Sctk3jyN0XZDba5yAOuaGJll8U0Fns2+jnyaJJBM1E1aOEP3gLUS1bGAlTIzcUf8RnhByZkILwGC1Spep/xUO8R2dzlvLVIpkXhWF9BYpvH6kmO6wZ2LOCEBY7Ibt3ODX8Y64ST5mk5NkGhF7Y/QoVa4mBwS1v5l32gGPlF7OMQ4PRWc5MHSgqfse7i9giF9uzLNOsj4=
+  - secure: K0X5u4Dhr8jtyKs9v/hOTVk9SaHoUV6bwJe8ZraBXnjscPbXC4Hun3ndhjPsgl4rzyNBGdjflvR9IDVfz8WYqtfr4/1UBiaMj7FVT7TLQw1UJeMm9awdc8bz076+U3vRoqLUvfR3sJ+Mq9ATd0F7jrURuOmrCOUPta35xMbbAhok2x++kfg5snhn3jJfRSNOjF657esxpuXpVgu+0pOhoHJM9or6ANrQDozlRyFXMA/AH/Oqr5ILvLufliRpDmHtxTlDX7H9cKSEIYBwusfBDNo2QYNBLrfnRHGMmYk8f/VgAYAgf4wnEKBpuUSUaMspFqp5td59Ikgk4Vxie1Jy+SLxN7/vyL4XgfZBHdV6LMLRXbiWcuPxZ/dv9WWVZFqJPr/+J1BbzlLgBX/c0iJUuMigmHGC3LrMDDOQ6i9tGTwW9g47YDF4T4hA07Q/TzmrKmpNLRWUIuWRqc0IY8eTDvhfK1dfvShMxSQ6qroN2BR5dKZzr6rAWVb/eA/mVsO2Ak3o7BFNyxOz+zPI6iRxyMhgYDak38BfwialKa87j+Yz0l01zjCytI2UXUbaZexo+jgd8Kl5kcqbwMkJrDS1pkS4zOYwQKgv+SkAQl83HFRfWkX9G9GgsDuCwt/LtzAS/QIJ0o3ohxU95vIlTElWqLPnj8U+vD+CVx8mEN/XHBE=
+before_install:
+- openssl aes-256-cbc -K $encrypted_ba2684aa2cfa_key -iv $encrypted_ba2684aa2cfa_iv
+  -in .etc/signingkey.asc.enc -out .etc/signingkey.asc -d

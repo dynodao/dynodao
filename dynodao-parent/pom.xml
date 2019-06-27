@@ -47,14 +47,14 @@
     </scm>
 
     <distributionManagement>
-        <repository>
-            <id>packagecloud-travis</id>
-            <url>packagecloud+https://packagecloud.io/dynodao/dynodao</url>
-        </repository>
         <snapshotRepository>
-            <id>packagecloud-travis</id>
-            <url>packagecloud+https://packagecloud.io/dynodao/dynodao</url>
+            <id>ossrh</id>
+            <url>https://oss.sonatype.org/content/repositories/snapshots</url>
         </snapshotRepository>
+        <repository>
+            <id>ossrh</id>
+            <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+        </repository>
     </distributionManagement>
 
     <properties>
@@ -240,15 +240,32 @@
                     <argLine>${jacoco.agent.ut.arg}</argLine>
                 </configuration>
             </plugin>
+            <plugin>
+                <groupId>org.sonatype.plugins</groupId>
+                <artifactId>nexus-staging-maven-plugin</artifactId>
+                <version>1.6.8</version>
+                <extensions>true</extensions>
+                <configuration>
+                    <serverId>ossrh</serverId>
+                    <nexusUrl>https://oss.sonatype.org/</nexusUrl>
+                    <autoReleaseAfterClose>true</autoReleaseAfterClose>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-gpg-plugin</artifactId>
+                <version>1.6</version>
+                <executions>
+                    <execution>
+                        <id>sign-artifacts</id>
+                        <phase>verify</phase>
+                        <goals>
+                            <goal>sign</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
         </plugins>
-
-        <extensions>
-            <extension>
-                <groupId>io.packagecloud.maven.wagon</groupId>
-                <artifactId>maven-packagecloud-wagon</artifactId>
-                <version>0.0.4</version>
-            </extension>
-        </extensions>
     </build>
 
 </project>

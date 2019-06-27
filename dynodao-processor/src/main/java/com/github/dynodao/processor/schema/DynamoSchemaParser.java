@@ -31,6 +31,7 @@ public class DynamoSchemaParser {
      * If a parse is impossible, attributes are mapped to {@link NullDynamoAttribute}
      * and compile errors are submitted.
      * @param documentElement the schema document type
+     * @return the dynamo db schema that the type describes
      */
     public DynamoSchema parse(TypeElement documentElement) {
         String tableName = getTableName(documentElement);
