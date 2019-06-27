@@ -27,8 +27,8 @@ class DynoDaoUtilTest extends AbstractUnitTest {
         Map<String, List<CodeBlock>> members = generated.members;
         assertThat(members).containsOnlyKeys("value", "date", "comments");
 
-        assertThat(members).contains(entry("value", singletonList(CodeBlock.of("\"org.dynodao.processor\""))));
-        assertThat(members).contains(entry("comments", singletonList(CodeBlock.of("\"https://github.com/twentylemon/dynodao\""))));
+        assertThat(members).contains(entry("value", singletonList(CodeBlock.of("\"com.github.dynodao.processor\""))));
+        assertThat(members).contains(entry("comments", singletonList(CodeBlock.of("\"https://github.com/dynodao/dynodao\""))));
 
         List<CodeBlock> date = members.get("date");
         assertThat(date)
