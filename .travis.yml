@@ -2,6 +2,12 @@ language: java
 sudo: false
 script: mvn clean install -B -V
 
+before_install:
+- sudo apt-get install expect -y
+addons:
+  apt:
+    update: true
+
 matrix:
   include:
   - jdk: openjdk8
