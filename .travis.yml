@@ -5,16 +5,32 @@ script: mvn clean install -B -V
 matrix:
   include:
   - jdk: openjdk8
-    after_success: mvn jacoco:report -pl "com.github.dynodao:dynodao-api,com.github.dynodao:dynodao-processor" -B && bash <(curl -s https://codecov.io/bash)
+    after_success: mvn jacoco:report -pl "com.github.dynodao:dynodao-api,com.github.dynodao:dynodao-processor"
+      -B && bash <(curl -s https://codecov.io/bash)
+
+before_deploy:
+- openssl aes-256-cbc -K $encrypted_ba2684aa2cfa_key -iv $encrypted_ba2684aa2cfa_iv
+  -in .etc/signingkey.asc.enc -out .etc/signingkey.asc -d
+- gpg2 --keyring=$TRAVIS_BUILD_DIR/pubring.gpg --no-default-keyring --import .etc/signingkey.asc
+- gpg2 --allow-secret-key-import --keyring=$TRAVIS_BUILD_DIR/secring.gpg --no-default-keyring
+  --import .etc/signingkey.asc
 
 deploy:
   provider: script
-  script: "mvn -s .travis.settings.xml -DskipTests=true deploy -B"
+  script: mvn -s .etc/travis.settings.xml -DskipTests=true -Dgpg.executable=gpg2 -Dgpg.keyname=A9C96D5B27E6390733A4DEF73ED8EF3F9F7CE8F2
+    -Dgpg.passphrase=$PASSPHRASE -Dgpg.publicKeyring=$TRAVIS_BUILD_DIR/pubring.gpg
+    -Dgpg.secretKeyring=$TRAVIS_BUILD_DIR/secring.gpg deploy -B -P release
   skip_cleanup: true
   on:
-    tags: true
-    jdk: openjdk8
+    branch: master
+    repo: dynodao/dynodao
 
 cache:
   directories:
-  - $HOME/.m2
+  - "$HOME/.m2"
+
+env:
+  global:
+  - secure: nDMNIbr8jwfK2SmFKNl5bdAIbf5ZiL9buebPta/iWhObSZ8U6jcqsz2damLyw5vEIDWPSVt4JIsRf8bDlLnCmobVW3XVHIK5fVL+aBP68Jn6WLPtfduefg9bBtHNQGWrpO5MWKJxXxQ//v/RzW1NuGOfBAXDt87jkshbpuz/Ft2TsxZOND8BzXQNBkjD3l2x8Z4x2HpQnwkfZV0i5vIRdfzcBm/oqaUA0gtNxw8EKIjX31cwvZH7WnyeGhzfVMGVcrTx565P0ljiaoFq2fXjlzHvps4HW5XHu/U2CnqEDiDUtQeSv+8E17MokCyiWX0FtzcgJTXSwNVyJ3hQVoUY1xJ9aUCwH++BuelzkHZscMtHWhogSAu3sYyD5d5YcFk+MtKs9hSgsconvAOnLjH7LkM3G1MhlpIQnrY67FQMwwF/BAO6iJfVP8NjLnTvMdl+HGUiWAnJH5LYToTT7O4I2Db+kkPHRgUwGtqBfMk2Hhz9RWUC8SuVOH/i4brh4sSkeua8jSoOsvG6Mg1WP6wXRizG06u4/N+T9VerGE2tJES7egU5we1wLWNzpHeJNRCkpoTi7EwTlaenLECUZBv6mJ1ZDpeLWDF8m5az+fSiBsZIqN+e5LO9E3RsmQB5B11dLVE43QYlEtrQ2WBHWKyOiFwrEP6yv95f9251WJgP07k=
+  - secure: 37rL7bCWlEHF5l/4m6fU+/oyI9F/H6vd06FfG71HYfbSsoSU9WpJpvrpo7EOCZTXY/qZm8Zrfp60OCAF7FUPiSGLmmunTGBB3SoSKPnvYlK5s7hqwtv2z4ajiBQSArItUOkdbtdssAU4Q5O3KJMymXdgDglEf3QYqlMfqHIAYBb+gkKvjC3zMGCbI6oau79X6fqMRFjdKDGZnOR/y70Ht47IuWVmpaCFbwGhvfI9GacyCQPar1Rup/1cxjEBAmb0JVwQYipd9A9IzgZnNuuDq5Y4CSDp0aMr3ARa+mtoOUcVkSxbmk1g9gaORZhkXzdLanEoskEI8wJvVTzf4boDwwi1PfvT7gqlBCm/QlxH1NuLwnWgsx57cPxqQ7FwCUfbDd3L+K7az8W9wIYkvizioZ7EaVWijHYrs/ZLw8yLSuU4K6mtAwGYNM9VggcqLR63+QJOA2szuAc+K6OobHjv5CbGlLYWwRiwhVGbSZnCxJ+4vshG0zt7AhBtBQDWrBVDbVRFNG1Bl2XwxkqTQgOvty3TYJvNQ+hGiUhmWDTwPMpjrGQK730r3DIrGuIRFo/oVMLer19fBSA1RjeBV1o6x3PjT9FDhVhLjgsfCWD/t6CiWaSGjQmmjdhRgAWTSNbJxEMX2+A3nJgfi7ZPMOYIRw9YS69P+7fnQju9a54rT+k=
+  - secure: 4ukYOBvTEKkuf+0hgdCozWEabsDbvVdLy5cA+3vVTFC1Ooq5fcLRFZOD06myhZo3uP5Bva31zdyugEb4w1igTbgYKmLbvhiDt2pxydh3BMITqFCQhYOxouS2mikxt7lr7xoCQOkEe3Jfrnvsr3kHAZyghagbCVjufcqHm4kc+/sjbd+oghuaD5NrjLYw1f5oqAEx4ks02/MCwjvpX4gsmpabFP4HYk5W100ox52DHxUrx9KxUh3xm737Zp11JQ573JrfIk5TXFB7Iu6/9WKaXiOID1AF0xYaUfORJOtxCfrIdwh1iRxXoeNn97Xh6DgDx5Q40jReyWOyAm4g3YooPSyzUDOXZWlTCg9IUOx7fTxzmVNoAFhCQrS9R8HAdYRmdMHct+g2SIqXYMiVC+UHa53ovqBAmlGEAG1AEs5WQAfN8YsX5ho4rkZI4To286qRIrh3kWkQmZNSe9Dp1hogpL4gZZqSVXX0owvITyo/NI7/LCVrkonNtQ2gMC0IN1sXtY3kl0tN3vUPpvIkQDOo71TzR3y6Vkr44BkqcKlBh37xPxLiFFdOT/NISTll14v4cXkFchBz38UNDaZbrt8D74gixulojXOIax4ys+hhBWcPS6NrwFBFNcVOD7p9ZEofzU384Qw3flmrkUAcZQi19zNwAKOkCw4dj9AfpNtS8RA=
