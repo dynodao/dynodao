@@ -3,7 +3,6 @@ package com.github.dynodao.processor.itest.serialization.map;
 import com.amazonaws.services.dynamodbv2.model.AttributeValue;
 import com.github.dynodao.processor.itest.AbstractIntegrationTest;
 import com.github.dynodao.processor.test.params.AttributeValueSource;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -112,7 +111,7 @@ class NoTypeArgsMapSerializationTest extends AbstractIntegrationTest {
 
         NoTypeArgsMap expected = noTypeArgsMap.entrySet().stream()
                 .collect(toMap(e -> e.getKey(), e -> e.getValue(), (l, r) -> l, NoTypeArgsMap::new));
-        Assertions.assertThat(items).containsExactly(schema(expected));
+        assertThat(items).containsExactly(schema(expected));
     }
 
     @ParameterizedTest
@@ -128,7 +127,7 @@ class NoTypeArgsMapSerializationTest extends AbstractIntegrationTest {
                 .filter(e -> e.getKey() != null)
                 .filter(e -> e.getValue() != null)
                 .collect(toMap(e -> e.getKey(), e -> e.getValue(), (l, r) -> l, NoTypeArgsMap::new));
-        Assertions.assertThat(items).containsExactly(schema(expected));
+        assertThat(items).containsExactly(schema(expected));
     }
 
     private void put(Schema item) {

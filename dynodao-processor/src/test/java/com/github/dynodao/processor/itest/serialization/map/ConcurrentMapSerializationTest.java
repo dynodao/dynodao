@@ -3,7 +3,6 @@ package com.github.dynodao.processor.itest.serialization.map;
 import com.amazonaws.services.dynamodbv2.model.AttributeValue;
 import com.github.dynodao.processor.itest.AbstractIntegrationTest;
 import com.github.dynodao.processor.test.params.AttributeValueSource;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
@@ -84,7 +83,7 @@ class ConcurrentMapSerializationTest extends AbstractIntegrationTest {
         Stream<Schema> items = dynoDao.get(new SchemaStagedDynamoBuilder()
                 .usingTable()
                 .withHashKey(HASH_KEY_VALUE));
-        Assertions.assertThat(items).containsExactly(schema);
+        assertThat(items).containsExactly(schema);
     }
 
     private void put(Schema item) {

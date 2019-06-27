@@ -2,7 +2,6 @@ package com.github.dynodao.processor.itest.table.hash_key;
 
 import com.amazonaws.services.dynamodbv2.model.AttributeValue;
 import com.github.dynodao.processor.itest.AbstractIntegrationTest;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
@@ -10,6 +9,7 @@ import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 import static java.util.Collections.singletonMap;
+import static org.assertj.core.api.Assertions.assertThat;
 
 class ScanTest extends AbstractIntegrationTest {
 
@@ -19,7 +19,7 @@ class ScanTest extends AbstractIntegrationTest {
     @Test
     void scan_noResults_returnsEmptyStream() {
         Stream<Schema> scan = dynoDao.get(new SchemaStagedDynamoBuilder().usingTable());
-        Assertions.assertThat(scan).isEmpty();
+        assertThat(scan).isEmpty();
     }
 
     @Test
@@ -28,7 +28,7 @@ class ScanTest extends AbstractIntegrationTest {
         put(schema);
 
         Stream<Schema> scan = dynoDao.get(new SchemaStagedDynamoBuilder().usingTable());
-        Assertions.assertThat(scan).containsExactly(schema);
+        assertThat(scan).containsExactly(schema);
     }
 
     @Test
@@ -38,7 +38,7 @@ class ScanTest extends AbstractIntegrationTest {
         put(schema1, schema2);
 
         Stream<Schema> scan = dynoDao.get(new SchemaStagedDynamoBuilder().usingTable());
-        Assertions.assertThat(scan).containsExactlyInAnyOrder(schema1, schema2);
+        assertThat(scan).containsExactlyInAnyOrder(schema1, schema2);
     }
 
     @Test
@@ -49,7 +49,7 @@ class ScanTest extends AbstractIntegrationTest {
         put(items);
 
         Stream<Schema> scan = dynoDao.get(new SchemaStagedDynamoBuilder().usingTable());
-        Assertions.assertThat(scan).containsExactlyInAnyOrder(items);
+        assertThat(scan).containsExactlyInAnyOrder(items);
     }
 
     private void put(Schema... items) {

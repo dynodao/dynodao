@@ -3,7 +3,6 @@ package com.github.dynodao.processor.itest.serialization.string;
 import com.amazonaws.services.dynamodbv2.model.AttributeValue;
 import com.github.dynodao.processor.itest.AbstractIntegrationTest;
 import com.github.dynodao.processor.test.params.AttributeValueSource;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.EmptySource;
 import org.junit.jupiter.params.provider.NullAndEmptySource;
@@ -57,7 +56,7 @@ class StringSerializationTest extends AbstractIntegrationTest {
         Stream<Schema> items = dynoDao.get(new SchemaStagedDynamoBuilder()
                 .usingTable()
                 .withHashKey(HASH_KEY_VALUE));
-        Assertions.assertThat(items).containsExactly(schema);
+        assertThat(items).containsExactly(schema);
     }
 
     @ParameterizedTest
@@ -68,7 +67,7 @@ class StringSerializationTest extends AbstractIntegrationTest {
         Stream<Schema> items = dynoDao.get(new SchemaStagedDynamoBuilder()
                 .usingTable()
                 .withHashKey(HASH_KEY_VALUE));
-        Assertions.assertThat(items).containsExactly(schema(null));
+        assertThat(items).containsExactly(schema(null));
     }
 
     private void put(Schema item) {
