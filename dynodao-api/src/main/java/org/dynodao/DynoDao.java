@@ -13,21 +13,25 @@ import java.util.stream.Stream;
  * annotated with {@link org.dynodao.annotation.DynoDaoSchema @DynoDaoSchema}. This schema defined the structure of the DynamoDB table
  * that stores objects of that type, including indexes etc. For example, for a table named <tt>ITEMS</tt> with a single index, the
  * schema may look similar to:
- * <pre>{@code
- *  @DynoDaoSchema(tableName = "ITEMS")
+ *
+ * <pre>
+ * <code>
+ * {@literal @}DynoDaoSchema(tableName = "ITEMS")
  *  class Item {
- *      @DynoDaoHashKey
+ *     {@literal @}DynoDaoHashKey
  *      private String hashKey;
  *
- *      @DynoDaoRangeKey
+ *     {@literal @}DynoDaoRangeKey
  *      private String rangeKey;
  *
- *      @DynoDaoIndexRangeKey(lsiNames = "hash-key-lsi-range-key-index")
+ *     {@literal @}DynoDaoIndexRangeKey(lsiNames = "hash-key-lsi-range-key-index")
  *      private String lsiRangeKey;
  *
  *      // default constructor, getters and setters omitted
  *  }
- * }</pre>
+ * </code>
+ * </pre>
+ *
  * Given this <tt>Item</tt>, the annotation processor will generate a <tt>ItemStagedDynamoBuilder</tt> class which is the entry
  * point to a fluent builder for interacting with {@link DynoDao} and DynamoDB.
  *
@@ -35,6 +39,7 @@ import java.util.stream.Stream;
  * Most the supported read operations have a similar look and feel (with the exception of {@link DynoDao#get(DynoDaoScan, int)},
  * which is explained in further detail on the method documentation). To read items, you must create a new <em>staged builder</em>,
  * specify the index to operate on, filters, then pass the result to {@code get}.
+ *
  * <pre>{@code
  *  // GetItem
  *  Stream<Item> item = dynoDao.get(new ItemStagedDynamoBuilder()

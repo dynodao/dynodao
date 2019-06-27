@@ -47,7 +47,7 @@ class DeserializationMethodsSerializerTypeSpecMutator implements SerializerTypeS
         MappingMethod method = attribute.getDeserializationMethod();
         ParameterSpec parameter = method.getParameter();
         return MethodSpec.methodBuilder(method.getMethodName())
-                .addJavadoc("Deserializes <tt>$N</tt> into {@link $T}.\n", parameter, method.getReturnType())
+                .addJavadoc("Deserializes <tt>$N</tt> into {@code $T}.\n", parameter, method.getReturnType())
                 .addJavadoc("@param $N the value to deserialize\n", parameter)
                 .addJavadoc("@return the deserialization of <tt>$N</tt>\n", parameter)
                 .addModifiers(modifiers)
