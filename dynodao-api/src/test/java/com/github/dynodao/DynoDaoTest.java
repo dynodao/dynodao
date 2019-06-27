@@ -9,6 +9,7 @@ import org.mockito.Mock;
 
 import java.util.stream.Stream;
 
+import static com.github.dynodao.test.Item.item;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
@@ -16,7 +17,7 @@ import static org.mockito.Mockito.when;
 
 class DynoDaoTest extends AbstractUnitTest {
 
-    private static final Item ITEM = Item.item("item", 0);
+    private static final Item ITEM = item("item", 0);
     private static final int SEGMENTS = 4;
 
     @Mock private DynoDaoLoad<Item> loadMock;
