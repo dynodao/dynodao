@@ -28,7 +28,7 @@ questions.
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>org.dynodao</groupId>
+        <groupId>com.github.dynodao</groupId>
         <artifactId>dynodao-parent</artifactId>
         <version>1.0-SNAPSHOT</version>
         <relativePath>../dynodao-parent/pom.xml</relativePath>
