@@ -5,7 +5,7 @@ script: mvn clean install -B -V
 matrix:
   include:
   - jdk: openjdk8
-    after_success: mvn jacoco:report -pl "org.dynodao:dynodao-api,org.dynodao:dynodao-processor" -B && bash <(curl -s https://codecov.io/bash)
+    after_success: mvn jacoco:report -pl "com.github.dynodao:dynodao-api,com.github.dynodao:dynodao-processor" -B && bash <(curl -s https://codecov.io/bash)
 
 deploy:
   provider: script
