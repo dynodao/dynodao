@@ -12,8 +12,7 @@ before_deploy:
 - openssl aes-256-cbc -K $encrypted_ba2684aa2cfa_key -iv $encrypted_ba2684aa2cfa_iv
   -in .etc/signingkey.asc.enc -out .etc/signingkey.asc -d
 - gpg2 --keyring=$TRAVIS_BUILD_DIR/pubring.gpg --no-default-keyring --import .etc/signingkey.asc
-- gpg2 --allow-secret-key-import --keyring=$TRAVIS_BUILD_DIR/secring.gpg --no-default-keyring
-  --import .etc/signingkey.asc
+- gpg2 --keyring=$TRAVIS_BUILD_DIR/secring.gpg --no-default-keyring --import .etc/signingkey.asc
 
 deploy:
   provider: script
