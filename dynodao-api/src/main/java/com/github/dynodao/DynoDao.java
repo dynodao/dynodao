@@ -60,7 +60,7 @@ import java.util.stream.Stream;
  * If your schema class contains some types which cannot be converted to {@code AttributeValue}, a compilation error will
  * be issued.
  *
- * @see <a href="https://github.com/twentylemon/dynodao">Project Page</a>
+ * @see <a href="https://github.com/dynodao/dynodao">Project Page</a>
  */
 public class DynoDao {
 
