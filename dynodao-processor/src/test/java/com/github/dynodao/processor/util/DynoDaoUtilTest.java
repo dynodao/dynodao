@@ -19,6 +19,7 @@ class DynoDaoUtilTest extends AbstractUnitTest {
 
     @Test
     void generatedAnnotation_onlyUseCase_returnsAnnotation() {
+        ZonedDateTime testStartTime = ZonedDateTime.now();
         AnnotationSpec generated = DynoDaoUtil.generatedAnnotation();
 
         // assertions field by field, as the date contains the current time
@@ -41,7 +42,7 @@ class DynoDaoUtilTest extends AbstractUnitTest {
                             .endsWith("\"")
                             .hasSize(2 + ZonedDateTime.now().toString().length());
                     ZonedDateTime time = ZonedDateTime.parse(value.replaceAll("\"", ""));
-                    assertThat(time).isBetween(ZonedDateTime.now().minusMinutes(1), ZonedDateTime.now());
+                    assertThat(time).isBetween(testStartTime, ZonedDateTime.now());
                 });
     }
 
