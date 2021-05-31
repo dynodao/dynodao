@@ -1,5 +1,5 @@
 # dynodao
-[![Build Status](https://travis-ci.org/dynodao/dynodao.svg?branch=master)](https://travis-ci.org/dynodao/dynodao)
+[![Build Status](https://img.shields.io/github/workflow/status/dynodao/dynodao/CI)](https://github.com/dynodao/dynodao/actions/workflows/maven.yml)
 [![codecov](https://codecov.io/gh/dynodao/dynodao/branch/master/graph/badge.svg)](https://codecov.io/gh/dynodao/dynodao)
 ```
 taras@me:~$ dynodao
