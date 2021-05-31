@@ -64,7 +64,7 @@
         <javac.target>1.8</javac.target>
 
         <aws.sdk.version>1.11.119</aws.sdk.version>
-        <guava.version>21.0</guava.version>
+        <guava.version>30.0-jre</guava.version>
         <apache.commons.version>4.3</apache.commons.version>
         <lombok.version>1.16.18</lombok.version>
         <junit.version>4.13.1</junit.version>
